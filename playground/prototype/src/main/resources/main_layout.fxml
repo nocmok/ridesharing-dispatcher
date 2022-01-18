@@ -1,27 +1,166 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <GridPane xmlns="http://javafx.com/javafx"
           xmlns:fx="http://javafx.com/fxml"
           fx:controller="com.nocmok.orp.proto.MainController"
           fx:id="root">
 
-    <Button fx:id="stepButton" GridPane.rowIndex="0">
-        Step
-    </Button>
+    <HBox GridPane.rowIndex="0"
+          GridPane.columnIndex="0"
+          GridPane.columnSpan="2"
+          spacing="5"
+          alignment="CENTER">
 
-    <ScrollPane GridPane.rowIndex="1" vbarPolicy="NEVER" hbarPolicy="NEVER" hvalue="0.5" vvalue="0.5">
+        <padding>
+            <Insets left="5" top="5" bottom="5"/>
+        </padding>
+
+        <Button fx:id="stepButton">
+            Step
+        </Button>
+
+        <Button fx:id="runButton">
+            Run
+        </Button>
+
+        <Button fx:id="stopButton">
+            Stop
+        </Button>
+
+        <HBox spacing="5" alignment="CENTER">
+            <Label>
+                Time
+            </Label>
+            <Slider fx:id="timeSlider"
+                    min="1"
+                    max="16"
+                    showTickLabels="true"
+                    showTickMarks="true"
+                    value="1">
+
+            </Slider>
+        </HBox>
+    </HBox>
+
+    <ScrollPane GridPane.rowIndex="1"
+                GridPane.columnIndex="0"
+                GridPane.columnSpan="1"
+                vbarPolicy="NEVER"
+                hbarPolicy="NEVER"
+                hvalue="0.5" vvalue="0.5">
+
         <Canvas fx:id="canvas">
 
         </Canvas>
     </ScrollPane>
 
+    <VBox GridPane.columnIndex="1"
+          GridPane.rowIndex="1"
+          spacing="5">
+
+        <padding>
+            <Insets left="5" right="5"/>
+        </padding>
+
+        <Label>
+            Time
+        </Label>
+        <Label fx:id="timeLabel">
+
+        </Label>
+
+        <Label>
+            Layers
+        </Label>
+
+        <HBox spacing="5">
+            <CheckBox fx:id="vehicleLayerCheckBox"
+                      selected="true">
+            </CheckBox>
+            <Label>
+                Vehicle layer
+            </Label>
+        </HBox>
+
+        <HBox spacing="5">
+            <CheckBox fx:id="routeLayerCheckBox"
+                      selected="true">
+            </CheckBox>
+            <Label>
+                Route layer
+            </Label>
+        </HBox>
+
+        <HBox spacing="5">
+            <CheckBox fx:id="requestLayerCheckBox"
+                      selected="true">
+            </CheckBox>
+            <Label>
+                Request layer
+            </Label>
+        </HBox>
+
+        <VBox spacing="5">
+            <Label>
+                Request
+            </Label>
+
+            <Label>
+                Departure node
+            </Label>
+
+            <TextField fx:id="departureNodeTextField">
+            </TextField>
+
+            <Label>
+                Arrival node
+            </Label>
+
+            <TextField fx:id="arrivalNodeTextField">
+            </TextField>
+
+            <Label>
+                Load
+            </Label>
+
+            <TextField fx:id="clientLoadTextField">
+                1
+            </TextField>
+
+            <Button fx:id="submitRequestButton">
+                Submit
+            </Button>
+        </VBox>
+
+    </VBox>
+
     <rowConstraints>
-        <RowConstraints vgrow="NEVER" maxHeight="50" valignment="CENTER"/>
-        <RowConstraints vgrow="ALWAYS" valignment="CENTER"/>
+        <RowConstraints vgrow="NEVER"
+                        maxHeight="50"
+                        valignment="CENTER"/>
+
+        <RowConstraints vgrow="ALWAYS"
+                        valignment="CENTER"/>
     </rowConstraints>
+
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS"
+                           halignment="CENTER"/>
+
+        <ColumnConstraints hgrow="NEVER"
+                           minWidth="200" halignment="CENTER"/>
+    </columnConstraints>
 </GridPane>
