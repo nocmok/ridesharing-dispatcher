@@ -13,6 +13,7 @@ public class Vehicle {
 
     private List<GPS> gpsLog = new ArrayList<>();
     private List<Integer> schedule = new ArrayList<>();
+    private List<Request> requests = new ArrayList<>();
     // How much nodes from schedule was passed by vehicle
     private int nodesPassed = 1;
 

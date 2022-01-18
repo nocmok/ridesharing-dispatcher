@@ -15,9 +15,11 @@ public class ORPInstance {
     private Graph graph;
     private int time = 0;
     private List<Vehicle> vehicleList;
+    private List<Request> requestLog;
 
     public ORPInstance(Graph graph, List<Vehicle> vehicles) {
         this.graph = graph;
         this.vehicleList = new ArrayList<>(vehicles);
+        this.requestLog = new ArrayList<>();
     }
 }

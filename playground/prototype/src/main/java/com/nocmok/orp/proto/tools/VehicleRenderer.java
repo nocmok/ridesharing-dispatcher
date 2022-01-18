@@ -10,25 +10,27 @@ public class VehicleRenderer {
 
     private AffineTransformation transformation;
     private Color vehicleColor = Color.ROYALBLUE;
-    private double vehicleSize = 30;
+    private double vehicleSize = 20;
 
     public VehicleRenderer(AffineTransformation transformation) {
         this.transformation = transformation;
     }
 
     private void drawRectangle(GraphicsContext gc, double x, double y, double size) {
-        double h = size * Math.cos(Math.PI / 6);
+//        double h = size * Math.cos(Math.PI / 6);
         double[] xPoints = new double[] {
-                x,
+                x - size / 2d,
+                x + size / 2d,
                 x + size / 2d,
                 x - size / 2d,
         };
         double[] yPoints = new double[] {
-                y - h * 2d / 3d,
-                y + h / 3d,
-                y + h / 3d,
+                y - size / 2d,
+                y - size / 2d,
+                y + size / 2d,
+                y + size / 2d,
         };
-        gc.fillPolygon(xPoints, yPoints, 3);
+        gc.fillPolygon(xPoints, yPoints, 4);
     }
 
     public void render(Canvas canvas, Vehicle vehicle, Color color) {

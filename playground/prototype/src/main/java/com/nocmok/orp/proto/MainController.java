@@ -10,10 +10,15 @@ import com.nocmok.orp.proto.tools.AffineTransformation;
 import com.nocmok.orp.proto.tools.DimacsGraphConverter;
 import com.nocmok.orp.proto.tools.DimacsParser;
 import com.nocmok.orp.proto.tools.ORPStateRenderer;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
@@ -31,9 +36,37 @@ public class MainController implements Initializable {
     private Canvas canvas;
     @FXML
     private Button stepButton;
+    @FXML
+    private Button runButton;
+    @FXML
+    private Button stopButton;
+    @FXML
+    private CheckBox vehicleLayerCheckBox;
+    @FXML
+    private CheckBox routeLayerCheckBox;
+    @FXML
+    private CheckBox requestLayerCheckBox;
+    @FXML
+    private Slider timeSlider;
+    @FXML
+    private Label timeLabel;
+    @FXML
+    private TextField departureNodeTextField;
+    @FXML
+    private TextField arrivalNodeTextField;
+    @FXML
+    private TextField clientLoadTextField;
+    @FXML
+    private Button submitRequestButton;
 
     private Simulator simulator;
     private ORPStateRenderer renderer;
+
+    // Определяет, будет ли поток, ответственный за автоматическое итерирование симуляции вызывать ticTac
+    private volatile boolean stepAutomatically = false;
+    private Thread stepper;
+
+    private int nextRequestId = 0;
 
     private AffineTransformation getTransformationForRenderer(Graph graph, double x, double y, double xSize,
                                                               double ySize) {
@@ -73,9 +106,51 @@ public class MainController implements Initializable {
     }
 
     private void step() {
-        simulator.ticTac(4);
+        simulator.ticTac((int) timeSlider.getValue());
+    }
+
+    private void render() {
         clearCanvas(canvas);
         renderer.render(canvas, simulator.getState());
+        timeLabel.setText(Integer.toString(simulator.getState().getTime()));
+    }
+
+    private Thread getStepper() {
+        return new Thread(() -> {
+            try {
+                while (true) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
+                    if (MainController.this.stepAutomatically) {
+                        step();
+                        Platform.runLater(this::render);
+                    }
+                    Thread.sleep(1000);
+                }
+            } catch (InterruptedException ignore) {
+            }
+        });
+    }
+
+    private Request createRequest(int startNode, int endNode, int load) {
+        // максимальное время ожидания тс клиентом
+        int maxClientWaitingTimeSeconds = 480; // 8 min
+
+        // максимальная задержка прибытия связанная с применением райдшеринга
+        int maxRidesharingLagSeconds = 480;
+
+        return Request.builder()
+                .requestId(nextRequestId++)
+                .userId(1)
+                .departurePoint(simulator.getState().getGraph().getGps(startNode))
+                .arrivalPoint(simulator.getState().getGraph().getGps(endNode))
+                .departureTimeWindow(new int[]{simulator.getState().getTime(),
+                        simulator.getState().getTime() + maxClientWaitingTimeSeconds})
+                .arrivalTimeWindow(new int[]{0, maxRidesharingLagSeconds})
+                .load(1)
+                .state(Request.State.PENDING)
+                .build();
     }
 
     @Override public void initialize(URL location, ResourceBundle resources) {
@@ -83,7 +158,6 @@ public class MainController implements Initializable {
         canvas.setWidth(primaryScreen.getWidth());
         canvas.setHeight(primaryScreen.getHeight());
         clearCanvas(canvas);
-        stepButton.setOnMouseClicked((e) -> step());
 
         Graph graph = loadGraph();
 
@@ -105,8 +179,6 @@ public class MainController implements Initializable {
         vehicles.add(new Vehicle(List.of(7), List.of(graph.getGps(7)), Vehicle.State.PENDING, 20));
 
 
-
-
         var orpInstance = new ORPInstance(graph, vehicles);
         var solver = new TaxiSolver(orpInstance);
         this.simulator = new Simulator(orpInstance, solver);
@@ -115,14 +187,50 @@ public class MainController implements Initializable {
 
         renderer.render(canvas, orpInstance);
 
-        var request = Request.builder()
-                .userId(1)
-                .departurePoint(graph.getGps(5))
-                .arrivalPoint(graph.getGps(13))
-                .departureTimeWindow(new int[]{0, 10_000})
-                .load(1)
-                .build();
+        // Actions
 
-        simulator.acceptRequest(request);
+        stepButton.setOnMouseClicked((e) -> {
+            step();
+            render();
+        });
+
+        runButton.setOnMouseClicked((e) -> {
+            this.stepAutomatically = true;
+        });
+
+        stopButton.setOnMouseClicked((e) -> {
+            this.stepAutomatically = false;
+        });
+
+        vehicleLayerCheckBox.selectedProperty().addListener((e) -> {
+            renderer.setRenderVehicles(vehicleLayerCheckBox.isSelected());
+            clearCanvas(canvas);
+            renderer.render(canvas, orpInstance);
+        });
+
+        routeLayerCheckBox.selectedProperty().addListener((e) -> {
+            renderer.setRenderRoutes(routeLayerCheckBox.isSelected());
+            clearCanvas(canvas);
+            renderer.render(canvas, orpInstance);
+        });
+
+        requestLayerCheckBox.selectedProperty().addListener((e) -> {
+            renderer.setRenderServingRequests(requestLayerCheckBox.isSelected());
+            clearCanvas(canvas);
+            renderer.render(canvas, orpInstance);
+        });
+
+        timeLabel.setText(Integer.toString(simulator.getState().getTime()));
+
+        submitRequestButton.setOnMouseClicked((e) -> {
+            simulator.acceptRequest(createRequest(
+                    Integer.parseInt(departureNodeTextField.getText()),
+                    Integer.parseInt(arrivalNodeTextField.getText()),
+                    Integer.parseInt(clientLoadTextField.getText())));
+            render();
+        });
+
+        this.stepper = getStepper();
+        stepper.start();
     }
 }

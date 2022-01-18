@@ -6,13 +6,13 @@ import javafx.scene.paint.Color;
 
 import java.util.List;
 
-public class PathRenderer {
+public class RouteRenderer {
 
     private Color pathColor = Color.SKYBLUE;
     private double pathWidth = 2;
     private AffineTransformation transformation;
 
-    public PathRenderer(AffineTransformation transformation) {
+    public RouteRenderer(AffineTransformation transformation) {
         this.transformation = transformation;
     }
 
