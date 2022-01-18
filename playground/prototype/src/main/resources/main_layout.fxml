@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.Button?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="com.nocmok.orp.proto.MainController"
+          fx:id="root">
+
+    <Button fx:id="stepButton" GridPane.rowIndex="0">
+        Step
+    </Button>
+
+    <ScrollPane GridPane.rowIndex="1" vbarPolicy="NEVER" hbarPolicy="NEVER" hvalue="0.5" vvalue="0.5">
+        <Canvas fx:id="canvas">
+
+        </Canvas>
+    </ScrollPane>
+
+    <rowConstraints>
+        <RowConstraints vgrow="NEVER" maxHeight="50" valignment="CENTER"/>
+        <RowConstraints vgrow="ALWAYS" valignment="CENTER"/>
+    </rowConstraints>
+</GridPane>
