@@ -26,15 +26,15 @@ public class Benchmarking {
     private List<Integer> vehicleInitialNodes;
     private List<Benchmark.DelayedRequest> requestPlan;
     private int nIterations = 86_400;
-    private int nRequests = 1000;
-    private int nVehicles = 100;
+    private int nRequests = 10000;
+    private int nVehicles = 10;
     private double avgVehicleVelocity = 40;
     private int maxRidesharingLagSeconds = 480;
     private int maxClientWaitingTimeSeconds = 480;
 
     public Benchmarking() {
         this.graph = loadGraph();
-        this.shortestPathSolver = new ShortestPathSolver();
+        this.shortestPathSolver = new ShortestPathSolver(graph);
 
         this.requestPlan = new ArrayList<>();
         for (int i = 0; i < nRequests; ++i) {
@@ -71,7 +71,7 @@ public class Benchmarking {
     }
 
     private Request createRequest(int time, int startNode, int endNode) {
-        double shortestDistance = shortestPathSolver.dijkstra(graph, startNode, endNode).getDistance();
+        double shortestDistance = shortestPathSolver.dijkstra(startNode, endNode).getDistance();
         int shortestRouteTime = (int) (shortestDistance / avgVehicleVelocity);
 
         return Request.builder()
@@ -91,8 +91,8 @@ public class Benchmarking {
     private Graph loadGraph() {
         try {
             var dimacsParser = new DimacsParser();
-            var gr = dimacsParser.readGr(Benchmark.class.getClassLoader().getResourceAsStream("ny1056.gr"));
-            var co = dimacsParser.readCo(Benchmark.class.getClassLoader().getResourceAsStream("ny1056.co"));
+            var gr = dimacsParser.readGr(Benchmark.class.getClassLoader().getResourceAsStream("ny131.gr"));
+            var co = dimacsParser.readCo(Benchmark.class.getClassLoader().getResourceAsStream("ny131.co"));
             return new DimacsGraphConverter().convert(gr, co);
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -6,16 +6,19 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class ShortestPathSolver {
 
-    public Route dijkstra(Graph graph, int startNode, int endNode) {
-        // есть множество просмотренных вершин
-        // проходимся по всем вершинам, в которые можно попасть из просмотренных и выбираем ближайшую
-        // добавляем вершину в множество
-        // релаксируем связанные вершины
+    private HashMap<Long, Route> cache = new HashMap<>();
+    private Graph graph;
 
+    public ShortestPathSolver(Graph graph) {
+        this.graph = graph;
+    }
+
+    private Route _dijkstra(int startNode, int endNode) {
         double[] bestDistances = new double[graph.nNodes()];
         Arrays.fill(bestDistances, Double.POSITIVE_INFINITY);
 
@@ -88,5 +91,9 @@ public class ShortestPathSolver {
         }
 
         return new Route(new ArrayList<>(route), bestDistances[endNode]);
+    }
+
+    public Route dijkstra(int startNode, int endNode) {
+        return cache.computeIfAbsent((((long)startNode << 32) | endNode), (k) -> _dijkstra(startNode, endNode));
     }
 }

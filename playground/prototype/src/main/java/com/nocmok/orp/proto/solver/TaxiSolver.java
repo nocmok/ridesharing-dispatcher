@@ -18,10 +18,11 @@ public class TaxiSolver implements ORPSolver {
 
     private ORPInstance state;
 
-    private ShortestPathSolver shortestPathSolver = new ShortestPathSolver();
+    private ShortestPathSolver shortestPathSolver;
 
     public TaxiSolver(ORPInstance state) {
         this.state = state;
+        this.shortestPathSolver = new ShortestPathSolver(state.getGraph());
     }
 
     private double distance(GPS startPoint, GPS endPoint) {
@@ -70,14 +71,14 @@ public class TaxiSolver implements ORPSolver {
     private Optional<Matching> matchPendingVehicle(Request request, Vehicle vehicle) {
         int vehicleNode = closestNode(state.getGraph(), vehicle.getGpsLog().get(vehicle.getGpsLog().size() - 1));
         Route routeToClient =
-                shortestPathSolver.dijkstra(state.getGraph(), vehicleNode, request.getDepartureNode());
+                shortestPathSolver.dijkstra(vehicleNode, request.getDepartureNode());
         int timeToClient = (int) (routeToClient.getDistance() / vehicle.getAvgVelocity());
 
         if (!checkTimeFrame(state.getTime() + timeToClient, request.getEarliestDepartureTime(), request.getLatestDepartureTime())) {
             return Optional.empty();
         }
 
-        var routeWithClient = shortestPathSolver.dijkstra(state.getGraph(), request.getDepartureNode(), request.getArrivalNode());
+        var routeWithClient = shortestPathSolver.dijkstra(request.getDepartureNode(), request.getArrivalNode());
         var fullRoute = combineRoutes(List.of(routeToClient, routeWithClient));
         var schedule = List.of(new ScheduleCheckpoint(request, request.getDepartureNode()),
                 new ScheduleCheckpoint(request, request.getArrivalNode()));
@@ -90,14 +91,14 @@ public class TaxiSolver implements ORPSolver {
         int vehicleNextNode = vehicle.getNextNode().get();
         int vehicleLastNode = vehicle.getRoute().get(vehicle.getRoute().size() - 1);
         var currentRoute = getRoute(vehicle.getCurrentRoute());
-        var routeToNewClient = shortestPathSolver.dijkstra(state.getGraph(), vehicleLastNode, request.getDepartureNode());
+        var routeToNewClient = shortestPathSolver.dijkstra(vehicleLastNode, request.getDepartureNode());
         int timeToClient = (int) ((currentRoute.getDistance() + routeToNewClient.getDistance()) / vehicle.getAvgVelocity());
 
         if (!checkTimeFrame(state.getTime() + timeToClient, request.getEarliestDepartureTime(), request.getLatestDepartureTime())) {
             return Optional.empty();
         }
 
-        var newClientRoute = shortestPathSolver.dijkstra(state.getGraph(), request.getDepartureNode(), request.getArrivalNode());
+        var newClientRoute = shortestPathSolver.dijkstra(request.getDepartureNode(), request.getArrivalNode());
         var fullRoute = combineRoutes(List.of(currentRoute, routeToNewClient, newClientRoute));
         var schedule = new ArrayList<>(vehicle.getCurrentSchedule());
         schedule.add(new ScheduleCheckpoint(request, request.getDepartureNode()));
@@ -131,7 +132,7 @@ public class TaxiSolver implements ORPSolver {
                     continue;
                 }
                 int vehicleNode = closestNode(state.getGraph(), vehicle.getGpsLog().get(vehicle.getGpsLog().size() - 1));
-                var routeToClient = shortestPathSolver.dijkstra(state.getGraph(), vehicleNode, request.getDepartureNode());
+                var routeToClient = shortestPathSolver.dijkstra(vehicleNode, request.getDepartureNode());
                 if (routeToClient.getDistance() >= bestRouteDistanceToClient) {
                     continue;
                 }
@@ -143,7 +144,7 @@ public class TaxiSolver implements ORPSolver {
                     continue;
                 }
                 int vehicleLastNode = vehicle.getRoute().get(vehicle.getRoute().size() - 1);
-                var routeToClient = shortestPathSolver.dijkstra(state.getGraph(), vehicleLastNode, request.getDepartureNode());
+                var routeToClient = shortestPathSolver.dijkstra(vehicleLastNode, request.getDepartureNode());
                 if (routeToClient.getDistance() >= bestRouteDistanceToClient) {
                     continue;
                 }

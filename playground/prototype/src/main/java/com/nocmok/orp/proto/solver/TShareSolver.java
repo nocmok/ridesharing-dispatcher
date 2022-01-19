@@ -15,10 +15,11 @@ import java.util.stream.IntStream;
 public class TShareSolver implements ORPSolver {
 
     private ORPInstance state;
-    private ShortestPathSolver shortestPathSolver = new ShortestPathSolver();
+    private ShortestPathSolver shortestPathSolver;
 
     public TShareSolver(ORPInstance state) {
         this.state = state;
+        this.shortestPathSolver = new ShortestPathSolver(state.getGraph());
     }
 
     // Проверяет валиден ли план с точки зрения соблюдения ограничений на вместимость тс
@@ -45,7 +46,7 @@ public class TShareSolver implements ORPSolver {
         int prevNode = startNode;
 
         for (var checkpoint : schedule) {
-            Route route = shortestPathSolver.dijkstra(state.getGraph(), prevNode, checkpoint.getNode());
+            Route route = shortestPathSolver.dijkstra(prevNode, checkpoint.getNode());
             time += route.getDistance() / avgVelocity;
             if (time > checkpoint.getRequest().getArrivalTimeWindow()[1]) {
                 return false;
@@ -64,7 +65,7 @@ public class TShareSolver implements ORPSolver {
         double distance = 0;
         int prevNode = startNode;
         for (var checkpoint : schedule) {
-            Route route = shortestPathSolver.dijkstra(state.getGraph(), prevNode, checkpoint);
+            Route route = shortestPathSolver.dijkstra(prevNode, checkpoint);
             // удаляем дублирующуюся вершины
             if (!nodes.isEmpty()) {
                 nodes.remove(nodes.size() - 1);
@@ -82,12 +83,12 @@ public class TShareSolver implements ORPSolver {
                                                                   ScheduleCheckpoint endCheckpoint) {
         // Вершина с которой должны начинаться маршруты для планов.
         // В качестве начальной, берется ближайшая вершина к которой движется тс
-        int startNode = vehicle.getNextNode().orElse(vehicle.getRoute().get(vehicle.getNodesPassed() - 1));
+        int startNode = vehicle.getNextNode()
+                .orElseGet(() -> vehicle.getRoute().get(vehicle.getNodesPassed() - 1));
 
         // Ожидаемое время системы в момент когда тс окажется в начальной вершине
         // Используется для того, чтобы проверять нарушает ли маршрут дедлайны чекпоинтов
-        // TODO: сделать поправку на оставшуюся дистанцию на ребре
-        int startTime = state.getTime();
+        int startTime = state.getTime() + (int) (distance(vehicle.getGPS().get(), state.getGraph().getGps(startNode)) / vehicle.getAvgVelocity());
 
         var oldSchedule = vehicle.getCurrentSchedule();
         var oldScheduleRoute = getRouteForSchedule(startNode,
@@ -171,13 +172,14 @@ public class TShareSolver implements ORPSolver {
         }
         int nextVehicleNode = closestNode(state.getGraph(), vehicle.getGPS().get());
 
-        var routeToClient = shortestPathSolver.dijkstra(state.getGraph(), nextVehicleNode, request.getDepartureNode());
-        int timeToClient = (int) (routeToClient.getDistance() / vehicle.getAvgVelocity());
+        var routeToClient = shortestPathSolver.dijkstra(nextVehicleNode, request.getDepartureNode());
+        int timeToClient =
+                (int) (distance(state.getGraph().getGps(nextVehicleNode), vehicle.getGPS().get()) + routeToClient.getDistance() / vehicle.getAvgVelocity());
         if (!checkTimeFrame(state.getTime() + timeToClient, request.getEarliestDepartureTime(), request.getLatestDepartureTime())) {
             return Optional.empty();
         }
 
-        var routeWithClient = shortestPathSolver.dijkstra(state.getGraph(), request.getDepartureNode(), request.getArrivalNode());
+        var routeWithClient = shortestPathSolver.dijkstra(request.getDepartureNode(), request.getArrivalNode());
 
         var fullRoute = combineRoutes(List.of(routeToClient, routeWithClient));
         var schedule = List.of(new ScheduleCheckpoint(request, request.getDepartureNode()),
