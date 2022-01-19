@@ -15,11 +15,14 @@ public class Request {
     private int userId;
     private GPS departurePoint;
     private GPS arrivalPoint;
+    private int departureNode;
+    private int arrivalNode;
     private int[] departureTimeWindow;
     private int[] arrivalTimeWindow;
     // Нагрузка на тс, оказываемое выполнением запроса
     private int load;
     @Setter
+    @Builder.Default
     private State state = State.PENDING;
 
     public enum State {
@@ -27,5 +30,21 @@ public class Request {
         SERVING,
         SERVED,
         DENIED,
+    }
+
+    public int getEarliestDepartureTime() {
+        return departureTimeWindow[0];
+    }
+
+    public int getLatestDepartureTime() {
+        return departureTimeWindow[1];
+    }
+
+    public int getEarliestArrivalTime() {
+        return arrivalTimeWindow[0];
+    }
+
+    public int getLatestArrivalTime() {
+        return arrivalTimeWindow[1];
     }
 }

@@ -7,8 +7,6 @@ import com.nocmok.orp.proto.solver.Request;
 import com.nocmok.orp.proto.solver.Vehicle;
 import lombok.Getter;
 
-import java.util.Collections;
-
 @Getter
 public class Simulator {
 
@@ -21,36 +19,52 @@ public class Simulator {
         this.solver = solver;
     }
 
-    public void addVehicle(Vehicle vehicle) {
-        state.getVehicleList().add(vehicle);
-    }
-
     public void acceptRequest(Request request) {
         var matching = solver.computeMatching(request);
         if (matching.getDenialReason() != Matching.DenialReason.ACCEPTED) {
             request.setState(Request.State.DENIED);
             return;
         }
-        matching.getServingVehicle().setSchedule(matching.getAugmentedRoute());
-        matching.getServingVehicle().setNodesPassed(1);
-        matching.getServingVehicle().setState(Vehicle.State.SERVING);
-        matching.getServingVehicle().getRequests().add(request);
+        var vehicle = matching.getServingVehicle();
+        vehicle.getRoute().clear();
+        vehicle.getRoute().addAll(matching.getRoute().getRoute());
+        vehicle.setNodesPassed(0);
+
+        vehicle.getSchedule().clear();
+        vehicle.getSchedule().addAll(matching.getSchedule());
+        vehicle.setCheckpointsPassed(0);
+
+        vehicle.setState(Vehicle.State.SERVING);
+        vehicle.getRequests().add(request);
+
         request.setState(Request.State.SERVING);
         state.getRequestLog().add(request);
     }
 
     public void ticTac(int timeSeconds) {
-        gpsGenerator.moveVehicles(state.getGraph(), state.getVehicleList(), timeSeconds);
-        state.setTime(state.getTime() + timeSeconds);
-        for (var vehicle : state.getVehicleList()) {
-            if (vehicle.getState() == Vehicle.State.SERVING &&
-                    vehicle.getNodesPassed() >= vehicle.getSchedule().size()) {
-                vehicle.setState(Vehicle.State.PENDING);
-                vehicle.setSchedule(Collections.emptyList());
-                vehicle.setNodesPassed(1);
 
-                // TODO Не будет работать на нормальных алгоритмах. Переделать!!!
-                vehicle.getRequests().get(vehicle.getRequests().size() - 1).setState(Request.State.SERVED);
+        for (var vehicle : state.getVehicleList()) {
+            if (vehicle.getState() != Vehicle.State.SERVING) {
+                continue;
+            }
+            var nextPosition = gpsGenerator.getNextVehicleGPS(state.getGraph(), vehicle, timeSeconds);
+            int checkPointsPassed = vehicle.getCheckpointsPassed();
+            for (int nodesPassed = vehicle.getNodesPassed(); nodesPassed < nextPosition.getNodesPassed(); ++nodesPassed) {
+                while (checkPointsPassed < vehicle.getSchedule().size() && vehicle.getRoute().get(nodesPassed) == vehicle.getSchedule().get(checkPointsPassed).getNode()) {
+                    if (vehicle.getSchedule().get(checkPointsPassed).isArrivalCheckpoint()) {
+                        vehicle.getSchedule().get(checkPointsPassed).getRequest().setState(Request.State.SERVED);
+                    }
+                    ++checkPointsPassed;
+                }
+            }
+            vehicle.setNodesPassed(nextPosition.getNodesPassed());
+            vehicle.setCheckpointsPassed(checkPointsPassed);
+            vehicle.getGpsLog().add(nextPosition.getGps());
+
+            if (vehicle.getRoute().size() == vehicle.getNodesPassed()) {
+                vehicle.setState(Vehicle.State.PENDING);
+                vehicle.getRoute().clear();
+                vehicle.setNodesPassed(0);
             }
         }
     }

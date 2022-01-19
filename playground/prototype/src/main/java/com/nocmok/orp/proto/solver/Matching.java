@@ -16,21 +16,20 @@ public class Matching {
     private DenialReason denialReason = DenialReason.ACCEPTED;
 
     // Скорректированный маршрут тс с учетом нового запроса
-    private List<Integer> augmentedRoute;
+    private Route route;
 
-    // Суммарная дистанция построенного маршрута
-    private double augmentedRouteDistance;
+    private List<ScheduleCheckpoint> schedule;
 
-    public Matching(Vehicle servingVehicle, List<Integer> augmentedRoute, double augmentedRouteDistance) {
+    public Matching(Vehicle servingVehicle, Route route, List<ScheduleCheckpoint> schedule) {
         this.servingVehicle = servingVehicle;
-        this.augmentedRoute = augmentedRoute;
-        this.augmentedRouteDistance = augmentedRouteDistance;
+        this.route = route;
+        this.schedule = schedule;
     }
 
     public Matching(DenialReason denialReason) {
         this.servingVehicle = null;
-        this.augmentedRoute = Collections.emptyList();
-        this.augmentedRouteDistance = Double.POSITIVE_INFINITY;
+        this.route = new Route(Collections.emptyList(), Double.POSITIVE_INFINITY);
+        this.schedule = Collections.emptyList();
         this.denialReason = denialReason;
     }
 
