@@ -24,9 +24,16 @@ public class TaxiSolver implements ORPSolver {
         this.state = state;
     }
 
-
     private double distance(GPS startPoint, GPS endPoint) {
         return Math.hypot(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
+    }
+
+    private Route getRoute(List<Integer> nodes) {
+        double distance = 0;
+        for (int i = 1; i < nodes.size(); ++i) {
+            distance += state.getGraph().getRoadCost(nodes.get(i - 1), nodes.get(i));
+        }
+        return new Route(new ArrayList<>(nodes), distance);
     }
 
     private int closestNode(Graph graph, GPS point) {
@@ -82,10 +89,11 @@ public class TaxiSolver implements ORPSolver {
         // найти приблизительное время в конечной точке текущего плана
         int vehicleNextNode = vehicle.getNextNode().get();
         int vehicleLastNode = vehicle.getRoute().get(vehicle.getRoute().size() - 1);
-        var currentRoute = shortestPathSolver.dijkstra(state.getGraph(), vehicleNextNode, vehicleLastNode);
+        var currentRoute = getRoute(vehicle.getCurrentRoute());
         var routeToNewClient = shortestPathSolver.dijkstra(state.getGraph(), vehicleLastNode, request.getDepartureNode());
+        int timeToClient = (int) ((currentRoute.getDistance() + routeToNewClient.getDistance()) / vehicle.getAvgVelocity());
 
-        if ((currentRoute.getDistance() + routeToNewClient.getDistance()) / vehicle.getAvgVelocity() > request.getLatestDepartureTime()) {
+        if (!checkTimeFrame(state.getTime() + timeToClient, request.getEarliestDepartureTime(), request.getLatestDepartureTime())) {
             return Optional.empty();
         }
 
