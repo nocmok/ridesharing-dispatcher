@@ -33,21 +33,19 @@ public class Vehicle {
     // Serving
     // AFK
     @Setter
-    private State state = State.AFK;
+    private State state;
     // Средняя скорость беспрепятственного движения
     // Единицы измерения - м/с
     private double avgVelocity = 0;
 
-    public Vehicle(List<Integer> schedule, List<GPS> gpsLog) {
-        this.route = new ArrayList<>(schedule);
-        this.gpsLog = new ArrayList<>(gpsLog);
-    }
-
-    public Vehicle(List<Integer> schedule, List<GPS> gpsLog, State state, double avgVelocity) {
-        this.route = new ArrayList<>(schedule);
-        this.gpsLog = new ArrayList<>(gpsLog);
+    public Vehicle(GPS gps, State state, double avgVelocity) {
+        this.gpsLog = new ArrayList<>(List.of(gps));
         this.state = state;
         this.avgVelocity = avgVelocity;
+    }
+
+    public Vehicle(GPS gps) {
+        this(gps, State.AFK, 0d);
     }
 
     // Возвращает следующую в плане контрольную точку
@@ -66,6 +64,10 @@ public class Vehicle {
 
     public List<ScheduleCheckpoint> getCurrentSchedule() {
         return schedule.subList(checkpointsPassed, schedule.size());
+    }
+
+    public List<Integer> getCurrentRoute() {
+        return route.subList(nodesPassed, route.size());
     }
 
     public enum State {

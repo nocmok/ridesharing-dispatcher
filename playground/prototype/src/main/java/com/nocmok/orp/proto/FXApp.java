@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class Main extends Application {
+public class FXApp extends Application {
 
     public static void main(String[] args) {
         launch(args);
@@ -20,7 +20,7 @@ public class Main extends Application {
         stage.setWidth(800);
         stage.setHeight(600);
 
-        var fxmlLoader = new FXMLLoader(Main.class.getClassLoader().getResource("main_layout.fxml"));
+        var fxmlLoader = new FXMLLoader(FXApp.class.getClassLoader().getResource("main_layout.fxml"));
         var root = fxmlLoader.<GridPane>load();
         var controller = fxmlLoader.<MainController>getController();
 

@@ -19,12 +19,14 @@ public class Simulator {
         this.solver = solver;
     }
 
-    public void acceptRequest(Request request) {
+    public Matching acceptRequest(Request request) {
         var matching = solver.computeMatching(request);
+
         if (matching.getDenialReason() != Matching.DenialReason.ACCEPTED) {
             request.setState(Request.State.DENIED);
-            return;
+            return matching;
         }
+
         var vehicle = matching.getServingVehicle();
         vehicle.getRoute().clear();
         vehicle.getRoute().addAll(matching.getRoute().getRoute());
@@ -39,6 +41,8 @@ public class Simulator {
 
         request.setState(Request.State.SERVING);
         state.getRequestLog().add(request);
+
+        return matching;
     }
 
     public void ticTac(int timeSeconds) {
@@ -50,8 +54,15 @@ public class Simulator {
             var nextPosition = gpsGenerator.getNextVehicleGPS(state.getGraph(), vehicle, timeSeconds);
             int checkPointsPassed = vehicle.getCheckpointsPassed();
             for (int nodesPassed = vehicle.getNodesPassed(); nodesPassed < nextPosition.getNodesPassed(); ++nodesPassed) {
-                while (checkPointsPassed < vehicle.getSchedule().size() && vehicle.getRoute().get(nodesPassed) == vehicle.getSchedule().get(checkPointsPassed).getNode()) {
+                while (checkPointsPassed < vehicle.getSchedule().size() &&
+                        vehicle.getRoute().get(nodesPassed) == vehicle.getSchedule().get(checkPointsPassed).getNode()) {
                     if (vehicle.getSchedule().get(checkPointsPassed).isArrivalCheckpoint()) {
+
+                        if (state.getTime() > vehicle.getSchedule().get(checkPointsPassed).getRequest().getLatestArrivalTime()) {
+                            System.out.println("[anomaly] request served time=" + state.getTime() + ", but latest acceptable time=" +
+                                    vehicle.getSchedule().get(checkPointsPassed).getRequest().getLatestArrivalTime());
+                        }
+
                         vehicle.getSchedule().get(checkPointsPassed).getRequest().setState(Request.State.SERVED);
                     }
                     ++checkPointsPassed;
@@ -67,5 +78,7 @@ public class Simulator {
                 vehicle.setNodesPassed(0);
             }
         }
+
+        state.setTime(state.getTime() + timeSeconds);
     }
 }
