@@ -3,8 +3,7 @@ package com.nocmok.orp.proto.simulator;
 import com.nocmok.orp.proto.graph.Graph;
 import com.nocmok.orp.proto.pojo.GPS;
 import com.nocmok.orp.proto.solver.Vehicle;
-
-import java.util.List;
+import lombok.Getter;
 
 // Module to simulate car moving
 public class VehicleGPSGenerator {
@@ -17,45 +16,41 @@ public class VehicleGPSGenerator {
         return new GPS(point.x + x, point.y + y);
     }
 
-    private GPS getNextVehicleGPS(Graph graph, Vehicle vehicle, int time) {
-        GPS currentGPS = vehicle.getGpsLog().size() > 0 ?
-                vehicle.getGpsLog().get(vehicle.getGpsLog().size() - 1)
-                : graph.getGps(vehicle.getSchedule().get(vehicle.getNodesPassed() - 1));
+    // Возвращает положение тс через time секунд
+    public Position getNextVehicleGPS(Graph graph, Vehicle vehicle, int time) {
+        GPS currentGPS = vehicle.getGpsLog().get(vehicle.getGpsLog().size() - 1);
 
         double distancePassed = time * vehicle.getAvgVelocity();
 
         // Меняем текущее ребро тс, если тс прошло большее расстояние чем осталось на его текущем участке дороги
-        while (vehicle.getNodesPassed() < vehicle.getSchedule().size() &&
-                distancePassed >=
-                        distance(currentGPS, graph.getGps(vehicle.getSchedule().get(vehicle.getNodesPassed())))) {
-            distancePassed -=
-                    distance(currentGPS, graph.getGps(vehicle.getSchedule().get(vehicle.getNodesPassed())));
-            currentGPS = graph.getGps(vehicle.getSchedule().get(vehicle.getNodesPassed()));
-            vehicle.incrementNodesPassed();
+        int nodesPassed = vehicle.getNodesPassed();
+        for (; nodesPassed < vehicle.getRoute().size(); ++nodesPassed) {
+            if (distancePassed < distance(currentGPS, graph.getGps(vehicle.getRoute().get(nodesPassed)))) {
+                break;
+            }
+            distancePassed -= distance(currentGPS, graph.getGps(vehicle.getRoute().get(nodesPassed)));
+            currentGPS = graph.getGps(vehicle.getRoute().get(nodesPassed));
         }
 
         // Если тс не завершило маршрут, то прибавляем остаточное расстояние
-        if (vehicle.getNodesPassed() < vehicle.getSchedule().size()) {
-            GPS currentEdgeStartGPS = graph.getGps(vehicle.getSchedule().get(vehicle.getNodesPassed() - 1));
-            GPS currentEdgeEndGPS = graph.getGps(vehicle.getSchedule().get(vehicle.getNodesPassed()));
-            double currentEdgeDistance = distance(currentEdgeStartGPS, currentEdgeEndGPS);
-            currentGPS = addVector(currentGPS,
-                    (currentEdgeEndGPS.x - currentEdgeStartGPS.x) * distancePassed / currentEdgeDistance,
-                    (currentEdgeEndGPS.y - currentEdgeStartGPS.y) * distancePassed / currentEdgeDistance);
+        if (nodesPassed < vehicle.getRoute().size()) {
+            GPS nextGPS = graph.getGps(vehicle.getRoute().get(nodesPassed));
+            currentGPS =
+                    addVector(currentGPS, (nextGPS.x - currentGPS.x) * distancePassed / distance(currentGPS, nextGPS),
+                            (nextGPS.y - currentGPS.y) * distancePassed / distance(currentGPS, nextGPS));
         }
 
-        return currentGPS;
+        return new Position(currentGPS, nodesPassed);
     }
 
-    // time - amount of time in seconds
-    public void moveVehicles(Graph graph, List<Vehicle> vehicles, int time) {
-        for (var vehicle : vehicles) {
-            // Если тс завершило поездку, не рассматриваем его
-            if (vehicle.getNodesPassed() >= vehicle.getSchedule().size()) {
-                continue;
-            }
-            vehicle.getGpsLog().add(getNextVehicleGPS(graph, vehicle, time));
-        }
+    @Getter
+    public static class Position {
+        private GPS gps;
+        private int nodesPassed;
 
+        private Position(GPS position, int nodesPassed) {
+            this.gps = position;
+            this.nodesPassed = nodesPassed;
+        }
     }
 }

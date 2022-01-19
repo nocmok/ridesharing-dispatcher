@@ -4,7 +4,7 @@ import com.nocmok.orp.proto.graph.Graph;
 import com.nocmok.orp.proto.simulator.Simulator;
 import com.nocmok.orp.proto.solver.ORPInstance;
 import com.nocmok.orp.proto.solver.Request;
-import com.nocmok.orp.proto.solver.TaxiSolver;
+import com.nocmok.orp.proto.solver.TShareSolver;
 import com.nocmok.orp.proto.solver.Vehicle;
 import com.nocmok.orp.proto.tools.AffineTransformation;
 import com.nocmok.orp.proto.tools.DimacsGraphConverter;
@@ -145,10 +145,12 @@ public class MainController implements Initializable {
                 .userId(1)
                 .departurePoint(simulator.getState().getGraph().getGps(startNode))
                 .arrivalPoint(simulator.getState().getGraph().getGps(endNode))
+                .departureNode(startNode)
+                .arrivalNode(endNode)
                 .departureTimeWindow(new int[]{simulator.getState().getTime(),
                         simulator.getState().getTime() + maxClientWaitingTimeSeconds})
                 .arrivalTimeWindow(new int[]{0, maxRidesharingLagSeconds})
-                .load(1)
+                .load(load)
                 .state(Request.State.PENDING)
                 .build();
     }
@@ -173,14 +175,14 @@ public class MainController implements Initializable {
         vehicles.add(new Vehicle(List.of(1), List.of(graph.getGps(1)), Vehicle.State.PENDING, 20));
         vehicles.add(new Vehicle(List.of(2), List.of(graph.getGps(2)), Vehicle.State.PENDING, 20));
         vehicles.add(new Vehicle(List.of(3), List.of(graph.getGps(3)), Vehicle.State.PENDING, 20));
-        vehicles.add(new Vehicle(List.of(4), List.of(graph.getGps(4)), Vehicle.State.PENDING, 20));
-        vehicles.add(new Vehicle(List.of(5), List.of(graph.getGps(5)), Vehicle.State.PENDING, 20));
-        vehicles.add(new Vehicle(List.of(6), List.of(graph.getGps(6)), Vehicle.State.PENDING, 20));
-        vehicles.add(new Vehicle(List.of(7), List.of(graph.getGps(7)), Vehicle.State.PENDING, 20));
-
+//        vehicles.add(new Vehicle(List.of(4), List.of(graph.getGps(4)), Vehicle.State.PENDING, 20));
+//        vehicles.add(new Vehicle(List.of(5), List.of(graph.getGps(5)), Vehicle.State.PENDING, 20));
+//        vehicles.add(new Vehicle(List.of(6), List.of(graph.getGps(6)), Vehicle.State.PENDING, 20));
+//        vehicles.add(new Vehicle(List.of(7), List.of(graph.getGps(7)), Vehicle.State.PENDING, 20));
 
         var orpInstance = new ORPInstance(graph, vehicles);
-        var solver = new TaxiSolver(orpInstance);
+//        var solver = new TaxiSolver(orpInstance);
+        var solver = new TShareSolver(orpInstance);
         this.simulator = new Simulator(orpInstance, solver);
 
         this.renderer = new ORPStateRenderer(transformation);

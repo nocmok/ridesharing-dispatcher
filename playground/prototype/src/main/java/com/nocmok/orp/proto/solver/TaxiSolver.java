@@ -6,6 +6,7 @@ import com.nocmok.orp.proto.pojo.GPS;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -57,12 +58,10 @@ public class TaxiSolver implements ORPSolver {
         Vehicle bestVehicle = null;
         Route bestRouteToClient = new Route(Collections.emptyList(), Double.POSITIVE_INFINITY);
 
-        int departureNode = closestNode(state.getGraph(), request.getDeparturePoint());
-        int arrivalNode = closestNode(state.getGraph(), request.getArrivalPoint());
-
         for (var vehicle : pendingVehicles) {
             int vehicleNode = closestNode(state.getGraph(), vehicle.getGpsLog().get(vehicle.getGpsLog().size() - 1));
-            Route routeToClient = shortestPathSolver.dijkstra(state.getGraph(), vehicleNode, departureNode);
+            Route routeToClient =
+                    shortestPathSolver.dijkstra(state.getGraph(), vehicleNode, request.getDepartureNode());
             int timeToClient = (int) (routeToClient.getDistance() / vehicle.getAvgVelocity());
 
             if (routeToClient.getDistance() < bestRouteToClient.getDistance()) {
@@ -86,12 +85,17 @@ public class TaxiSolver implements ORPSolver {
         }
 
         // Лучший маршрут от точки посадки до точки прибытия клиента
-        Route routeWithClient = shortestPathSolver.dijkstra(state.getGraph(), departureNode, arrivalNode);
+        Route routeWithClient =
+                shortestPathSolver.dijkstra(state.getGraph(), request.getDepartureNode(), request.getArrivalNode());
         var completeRoute = new ArrayList<Integer>();
         completeRoute.addAll(bestRouteToClient.getRoute().subList(0, bestRouteToClient.getRoute().size() - 1));
         completeRoute.addAll(routeWithClient.getRoute());
         double compleRouteDistance = bestRouteToClient.getDistance() + routeWithClient.getDistance();
 
-        return new Matching(bestVehicle, completeRoute, compleRouteDistance);
+        List<ScheduleCheckpoint> schedule = new ArrayList<>();
+        schedule.add(new ScheduleCheckpoint(request, request.getDepartureNode()));
+        schedule.add(new ScheduleCheckpoint(request, request.getArrivalNode()));
+
+        return new Matching(bestVehicle, new Route(completeRoute, compleRouteDistance), schedule);
     }
 }

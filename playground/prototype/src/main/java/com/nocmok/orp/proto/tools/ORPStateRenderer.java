@@ -49,7 +49,7 @@ public class ORPStateRenderer {
         int v = 0;
         for (var vehicle : state.getVehicleList()) {
             if (renderRoutes) {
-                routeRenderer.render(canvas, state.getGraph(), vehicle.getSchedule(), colors[v]);
+                routeRenderer.render(canvas, state.getGraph(), vehicle.getRoute(), colors[v]);
             }
             if (renderVehicles) {
                 vehicleRenderer.render(canvas, vehicle, colors[v]);
