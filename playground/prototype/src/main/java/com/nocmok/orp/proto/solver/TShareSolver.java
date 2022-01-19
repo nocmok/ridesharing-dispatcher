@@ -82,12 +82,12 @@ public class TShareSolver implements ORPSolver {
                                                                   ScheduleCheckpoint endCheckpoint) {
         // Вершина с которой должны начинаться маршруты для планов.
         // В качестве начальной, берется ближайшая вершина к которой движется тс
-        int startNode = vehicle.getNextNode().orElse(vehicle.getRoute().get(vehicle.getNodesPassed() - 1));
+        int startNode = vehicle.getNextNode()
+                .orElseGet(() -> vehicle.getRoute().get(vehicle.getNodesPassed() - 1));
 
         // Ожидаемое время системы в момент когда тс окажется в начальной вершине
         // Используется для того, чтобы проверять нарушает ли маршрут дедлайны чекпоинтов
-        // TODO: сделать поправку на оставшуюся дистанцию на ребре
-        int startTime = state.getTime();
+        int startTime = state.getTime() + (int) (distance(vehicle.getGPS().get(), state.getGraph().getGps(startNode)) / vehicle.getAvgVelocity());
 
         var oldSchedule = vehicle.getCurrentSchedule();
         var oldScheduleRoute = getRouteForSchedule(startNode,
@@ -172,7 +172,8 @@ public class TShareSolver implements ORPSolver {
         int nextVehicleNode = closestNode(state.getGraph(), vehicle.getGPS().get());
 
         var routeToClient = shortestPathSolver.dijkstra(state.getGraph(), nextVehicleNode, request.getDepartureNode());
-        int timeToClient = (int) (routeToClient.getDistance() / vehicle.getAvgVelocity());
+        int timeToClient =
+                (int) (distance(state.getGraph().getGps(nextVehicleNode), vehicle.getGPS().get()) + routeToClient.getDistance() / vehicle.getAvgVelocity());
         if (!checkTimeFrame(state.getTime() + timeToClient, request.getEarliestDepartureTime(), request.getLatestDepartureTime())) {
             return Optional.empty();
         }
