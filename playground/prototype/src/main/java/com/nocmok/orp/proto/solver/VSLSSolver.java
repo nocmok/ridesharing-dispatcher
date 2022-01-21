@@ -12,12 +12,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class TShareSolver implements ORPSolver {
+// VSSS - Vehicle Selection Lazy Search
+// Ленивый перебор планов. Контрольные точки из старого плана не меняют относительного порядка
+public class VSLSSolver implements ORPSolver {
 
     private ORPInstance state;
     private ShortestPathSolver shortestPathSolver;
 
-    public TShareSolver(ORPInstance state) {
+    public VSLSSolver(ORPInstance state) {
         this.state = state;
         this.shortestPathSolver = new ShortestPathSolver(state.getGraph());
     }

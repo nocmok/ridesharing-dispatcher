@@ -4,7 +4,7 @@ import com.nocmok.orp.proto.graph.Graph;
 import com.nocmok.orp.proto.simulator.Simulator;
 import com.nocmok.orp.proto.solver.ORPInstance;
 import com.nocmok.orp.proto.solver.Request;
-import com.nocmok.orp.proto.solver.TShareSolver;
+import com.nocmok.orp.proto.solver.VSLSSolver;
 import com.nocmok.orp.proto.solver.Vehicle;
 import com.nocmok.orp.proto.tools.AffineTransformation;
 import com.nocmok.orp.proto.tools.DimacsGraphConverter;
@@ -25,7 +25,6 @@ import javafx.scene.paint.Color;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -92,8 +91,8 @@ public class MainController implements Initializable {
     private Graph loadGraph() {
         try {
             var dimacsParser = new DimacsParser();
-            var gr = dimacsParser.readGr(Main.class.getClassLoader().getResourceAsStream("USA-road-d.NY.reduced.gr"));
-            var co = dimacsParser.readCo(Main.class.getClassLoader().getResourceAsStream("USA-road-d.NY.reduced.co"));
+            var gr = dimacsParser.readGr(FXApp.class.getClassLoader().getResourceAsStream("ny131.gr"));
+            var co = dimacsParser.readCo(FXApp.class.getClassLoader().getResourceAsStream("ny131.co"));
             return new DimacsGraphConverter().convert(gr, co);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -163,18 +162,19 @@ public class MainController implements Initializable {
 
         Graph graph = loadGraph();
 
-        double graphWidth = 600;
-        double graphHeight = 400;
+        double graphWidth = 800;
+        double graphHeight = 600;
         var transformation = getTransformationForRenderer(graph,
                 (primaryScreen.getWidth() - graphWidth) / 2,
                 (primaryScreen.getHeight() - graphHeight) / 2,
                 graphWidth, graphHeight);
 
         var vehicles = new ArrayList<Vehicle>();
-        vehicles.add(new Vehicle(List.of(0), List.of(graph.getGps(0)), Vehicle.State.PENDING, 20));
-        vehicles.add(new Vehicle(List.of(1), List.of(graph.getGps(1)), Vehicle.State.PENDING, 20));
-        vehicles.add(new Vehicle(List.of(2), List.of(graph.getGps(2)), Vehicle.State.PENDING, 20));
-        vehicles.add(new Vehicle(List.of(3), List.of(graph.getGps(3)), Vehicle.State.PENDING, 20));
+        vehicles.add(new Vehicle(graph.getGps(0), Vehicle.State.PENDING, 20));
+        vehicles.add(new Vehicle(graph.getGps(1), Vehicle.State.PENDING, 20));
+        vehicles.add(new Vehicle(graph.getGps(2), Vehicle.State.PENDING, 20));
+        vehicles.add(new Vehicle(graph.getGps(3), Vehicle.State.PENDING, 20));
+
 //        vehicles.add(new Vehicle(List.of(4), List.of(graph.getGps(4)), Vehicle.State.PENDING, 20));
 //        vehicles.add(new Vehicle(List.of(5), List.of(graph.getGps(5)), Vehicle.State.PENDING, 20));
 //        vehicles.add(new Vehicle(List.of(6), List.of(graph.getGps(6)), Vehicle.State.PENDING, 20));
@@ -182,7 +182,7 @@ public class MainController implements Initializable {
 
         var orpInstance = new ORPInstance(graph, vehicles);
 //        var solver = new TaxiSolver(orpInstance);
-        var solver = new TShareSolver(orpInstance);
+        var solver = new VSLSSolver(orpInstance);
         this.simulator = new Simulator(orpInstance, solver);
 
         this.renderer = new ORPStateRenderer(transformation);
