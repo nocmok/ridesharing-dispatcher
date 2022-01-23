@@ -1,133 +1,151 @@
 package com.nocmok.orp.proto.solver;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Supplier;
 
-public class KineticTree<T> {
+// Пайплайн работы
+// Вставка двух нод
+// Обход дфсом и удаление невалидных ветвей
+public class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
 
-    private TreeNode<T> root;
-    // Количество элементов из которых строятся перестановки
+    // Валидатор, который всегда возвращает true
+    private static final Validator optimisticValidator = new Validator() {
 
-    public KineticTree() {
-        this.root = new TreeNode<>();
+        @Override public boolean validate(TreeNode parent, TreeNode child) {
+            return true;
+        }
+
+        @Override public boolean validate(TreeNode tree) {
+            return true;
+        }
+    };
+
+    // Агрегатор, который ничего не делает
+    private static final Aggregator idleAggregator = new Aggregator() {
+
+        @Override public void aggregate(TreeNode parent, TreeNode child) {
+
+        }
+
+        @Override public void aggregate(TreeNode tree) {
+
+        }
+    };
+
+    @Getter
+    private N root;
+    private Supplier<N> fabric;
+    @Getter
+    private int depth = 0;
+
+    public KineticTree(Supplier<N> fabric) {
+        this.fabric = fabric;
+        this.root = fabric.get();
     }
 
-    public void insert(T pickup, T dropoff, InsertionValidator<T> validator, InsertionAggregator<T> aggregator) {
-        insert(root, pickup, dropoff, validator, aggregator);
+    public KineticTree(KineticTree<T, N> other) {
+        this.root = copyTree(other.root);
+        this.fabric = other.fabric;
     }
 
     public void insert(T pickup, T dropoff) {
-        insert(root, pickup, dropoff, (a, b) -> true, (a, b) -> {
-        });
-    }
-
-    public void insert(T pickup, T dropoff, InsertionValidator<T> validator) {
-        insert(root, pickup, dropoff, validator, (a, b) -> {
-        });
-    }
-
-    public void insert(T pickup, T dropoff, InsertionAggregator<T> aggregator) {
-        insert(root, pickup, dropoff, (a, b) -> true, aggregator);
+        insertPair(root, pickup, dropoff);
+        depth += 2;
     }
 
     // Спускает корень дерева в поддерево с указанным префиксом
     public void descendRoot(T prefix) {
-        var newRoot = root.subtrees.get(prefix);
+        var newRoot = root.getSubtrees().get(prefix);
         if (newRoot == null) {
             throw new NoSuchElementException("invalid prefix");
         }
+        this.root.value = null;
         this.root = newRoot;
+        depth -= 1;
     }
 
-    // Вызывается при каждой попытке сделать одно дерево поддеревом другого
-    // Вставка осуществляется только если validator возвращает true
-    // Перед вставкой вызывается aggregator
-    private boolean put(TreeNode<T> parent, TreeNode<T> child, InsertionValidator<T> validator, InsertionAggregator<T> aggregator) {
+    private N createNode(T value) {
+        var node = fabric.get();
+        node.setValue(value);
+        return node;
+    }
+
+    private void insertOne(N root, T value) {
+        var valueSubtree = createNode(value);
+        for (var child : root.getSubtrees().values()) {
+            valueSubtree.getSubtrees().put(child.getValue(), copyTree(child));
+            insertOne(child, value);
+        }
+        root.getSubtrees().put(value, valueSubtree);
+    }
+
+    // Вставляет в дерево пару вершин, так, что генерируются только ветви, в которых первое значение стоит перед вторым
+    private void insertPair(N root, T pickup, T dropoff) {
+        var pickupSubtree = copyTree(root);
+        pickupSubtree.value = pickup;
+        insertOne(pickupSubtree, dropoff);
+
+        for (var child : root.getSubtrees().values()) {
+            insertPair(child, pickup, dropoff);
+        }
+
+        root.getSubtrees().put(pickup, pickupSubtree);
+    }
+
+    private boolean validate(N parent, N child, Validator<T, N> validator) {
         if (parent == this.root) {
-            parent.subtrees.put(child.value, child);
-            return true;
+            return validator.validate(child);
+        } else {
+            return validator.validate(parent, child);
         }
-        if (validator.validate(parent, child)) {
+    }
+
+    private void aggregate(N parent, N child, Aggregator<T, N> aggregator) {
+        if (parent == this.root) {
+            aggregator.aggregate(child);
+        } else {
             aggregator.aggregate(parent, child);
-            parent.subtrees.put(child.value, child);
-            return true;
         }
-        return false;
     }
 
-    private boolean insert(TreeNode<T> root, T checkpoint, InsertionValidator<T> validator, InsertionAggregator<T> aggregator) {
-        if (root.isEmpty()) {
-            var checkpointSubtree = new TreeNode<>(checkpoint);
-            put(root, checkpointSubtree, validator, aggregator);
-            return true;
-        }
-
-        var checkpointSubtree = new TreeNode<>(checkpoint);
-        for (var subtree : root.subtrees.values()) {
-            put(checkpointSubtree, subtree, validator, aggregator);
-        }
-
-        for (var subtree : root.subtrees.values()) {
-            insert(subtree, checkpoint, validator, aggregator);
-        }
-
-        put(root, checkpointSubtree, validator, aggregator);
-
-        root.subtrees.entrySet().removeIf(subtree -> subtree.getValue().isEmpty());
-
-        return !root.isEmpty();
+    public void harvest(Validator<T, N> validator, Aggregator<T, N> aggregator) {
+        harvest(root, validator, aggregator);
     }
 
-    private boolean insert(TreeNode<T> root, T pickup, T dropoff, InsertionValidator<T> validator, InsertionAggregator<T> aggregator) {
-        if (root.isEmpty()) {
-            var pickupSubtree = new TreeNode<>(pickup);
-            var dropoffSubtree = new TreeNode<>(dropoff);
-            if (put(pickupSubtree, dropoffSubtree, validator, aggregator)) {
-                put(root, pickupSubtree, validator, aggregator);
-                return true;
-            }
-            return false;
-        }
-        var pickupSubtree = new TreeNode<>(pickup);
-
-        for (var subtree : root.subtrees.values()) {
-            if (validator.validate(pickupSubtree, subtree)) {
-                var dropoffSubtree = copyTree(subtree);
-                if (insert(dropoffSubtree, dropoff, validator, aggregator)) {
-                    put(pickupSubtree, dropoffSubtree, (a, b) -> true, aggregator);
+    private void harvest(N root, Validator<T, N> validator, Aggregator<T, N> aggregator) {
+        var treesToPrune = new ArrayList<T>();
+        for (var child : root.getSubtrees().values()) {
+            aggregate(root, child, aggregator);
+            if (!validate(root, child, validator)) {
+                treesToPrune.add(child.value);
+            } else {
+                if (child.isEmpty()) {
+                    // ничего не делаем, так как ниже нет вершин
+                    continue;
+                }
+                harvest(child, validator, aggregator);
+                // Если нода стала пустой, значит ее надо обрезать
+                if (child.isEmpty()) {
+                    treesToPrune.add(child.value);
                 }
             }
         }
-
-        var dropoffSubtree = new TreeNode<>(dropoff);
-        for (var subtree : root.subtrees.values()) {
-            if (validator.validate(dropoffSubtree, subtree)) {
-                put(dropoffSubtree, copyTree(subtree), (a, b) -> true, aggregator);
-            }
+        for (var tree : treesToPrune) {
+            root.getSubtrees().remove(tree);
         }
-
-        put(pickupSubtree, dropoffSubtree, validator, aggregator);
-
-        for (var subtree : root.subtrees.values()) {
-            insert(subtree, pickup, dropoff, validator, aggregator);
-        }
-
-        put(root, pickupSubtree, validator, aggregator);
-
-        root.subtrees.entrySet().removeIf(subtree -> subtree.getValue().isEmpty());
-
-        return !root.isEmpty();
     }
 
-    private TreeNode<T> copyTree(TreeNode<T> root) {
-        var rootCopy = new TreeNode<>(root.value);
-        for (var subtree : root.subtrees.entrySet()) {
-            rootCopy.subtrees.put(subtree.getKey(), copyTree(subtree.getValue()));
+    private N copyTree(N root) {
+        var rootCopy = root.copy();
+        for (var subtree : root.getSubtrees().entrySet()) {
+            rootCopy.getSubtrees().put(subtree.getKey(), copyTree(subtree.getValue()));
         }
         return rootCopy;
     }
@@ -136,46 +154,58 @@ public class KineticTree<T> {
         return getAllPermutationsDfs(root, new ArrayList<>(), new ArrayList<>());
     }
 
-    private List<List<T>> getAllPermutationsDfs(TreeNode<T> root, List<T> permutation, List<List<T>> allPermutations) {
+    private List<List<T>> getAllPermutationsDfs(N root, List<T> permutation, List<List<T>> allPermutations) {
         if (root.isEmpty()) {
             if (!permutation.isEmpty()) {
                 allPermutations.add(new ArrayList<>(permutation));
             }
             return allPermutations;
         }
-        for (var subtree : root.subtrees.entrySet()) {
-            permutation.add(subtree.getKey());
+        for (var subtree : root.getSubtrees().entrySet()) {
+            permutation.add(subtree.getValue().value);
             getAllPermutationsDfs(subtree.getValue(), permutation, allPermutations);
             permutation.remove(permutation.size() - 1);
         }
         return allPermutations;
     }
 
-    public interface InsertionValidator<T> {
-        boolean validate(TreeNode<T> parent, TreeNode<T> child);
+    public interface Validator<T, N extends TreeNode<T, N>> {
+        boolean validate(N parent, N child);
+
+        boolean validate(N tree);
     }
 
-    public interface InsertionAggregator<T> {
-        void aggregate(TreeNode<T> parent, TreeNode<T> child);
+    public interface Aggregator<T, N extends TreeNode<T, N>> {
+        void aggregate(N parent, N child);
+
+        void aggregate(N tree);
     }
 
-    public static class TreeNode<T> {
+    public static abstract class TreeNode<T, N extends TreeNode<T, N>> {
+
         @Getter
-        private T value;
-        private Map<T, TreeNode<T>> subtrees;
+        @Setter
+        protected T value;
+
+        private Map<T, N> subtrees = new HashMap<>();
+
+        public TreeNode() {
+
+        }
 
         public TreeNode(T value) {
-            this.subtrees = new HashMap<>();
             this.value = value;
         }
 
-        public TreeNode() {
-            this.subtrees = new HashMap<>();
+        protected Map<T, N> getSubtrees() {
+            return this.subtrees;
         }
 
         // Содержит ли дерево какие-либо перестановки
-        public boolean isEmpty() {
+        protected boolean isEmpty() {
             return subtrees.isEmpty();
         }
+
+        public abstract N copy();
     }
 }
