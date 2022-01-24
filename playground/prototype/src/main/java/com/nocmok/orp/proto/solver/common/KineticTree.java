@@ -1,13 +1,15 @@
-package com.nocmok.orp.proto.solver;
+package com.nocmok.orp.proto.solver.common;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
@@ -139,23 +141,22 @@ public class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
         return rootCopy;
     }
 
-    public List<List<T>> getAllPermutations() {
-        return getAllPermutationsDfs(root, new ArrayList<>(), new ArrayList<>());
+    public void forEachPermutation(Consumer<List<T>> callback) {
+        getAllPermutationsDfs(root, new ArrayList<>(), callback);
     }
 
-    private List<List<T>> getAllPermutationsDfs(N root, List<T> permutation, List<List<T>> allPermutations) {
+    private void getAllPermutationsDfs(N root, List<T> permutation, Consumer<List<T>> callback) {
         if (root.isEmpty()) {
             if (!permutation.isEmpty()) {
-                allPermutations.add(new ArrayList<>(permutation));
+                callback.accept(Collections.unmodifiableList(permutation));
             }
-            return allPermutations;
+            return;
         }
         for (var subtree : root.getSubtrees().entrySet()) {
             permutation.add(subtree.getValue().value);
-            getAllPermutationsDfs(subtree.getValue(), permutation, allPermutations);
+            getAllPermutationsDfs(subtree.getValue(), permutation, callback);
             permutation.remove(permutation.size() - 1);
         }
-        return allPermutations;
     }
 
     public interface Validator<T, N extends TreeNode<T, N>> {

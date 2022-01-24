@@ -7,7 +7,8 @@ import com.nocmok.orp.proto.solver.ORPSolver;
 import com.nocmok.orp.proto.solver.Request;
 import com.nocmok.orp.proto.solver.Route;
 import com.nocmok.orp.proto.solver.ScheduleCheckpoint;
-import com.nocmok.orp.proto.solver.ShortestPathSolver;
+import com.nocmok.orp.proto.solver.common.LazyScheduleGenerator;
+import com.nocmok.orp.proto.solver.common.ShortestPathSolver;
 import com.nocmok.orp.proto.solver.common.SimpleORPInstance;
 import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 
@@ -20,7 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-// VSSS - Vehicle Selection Lazy Search
+// VSLS - Vehicle Selection Lazy Search
 // Ленивый перебор планов. Контрольные точки из старого плана не меняют относительного порядка
 public class VSLSSolver implements ORPSolver {
 
@@ -88,9 +89,9 @@ public class VSLSSolver implements ORPSolver {
     }
 
     // Возвращает пустой список, если невозможно составить план без нарушения ограничений
-    private List<ScheduleCheckpoint> computeBestAugmentedSchedule(SimpleVehicle vehicle,
-                                                                  ScheduleCheckpoint startCheckpoint,
-                                                                  ScheduleCheckpoint endCheckpoint) {
+    private List<ScheduleCheckpoint> getAugmentedScheduleLazy(SimpleVehicle vehicle,
+                                                              ScheduleCheckpoint startCheckpoint,
+                                                              ScheduleCheckpoint endCheckpoint) {
         // Вершина с которой должны начинаться маршруты для планов.
         // В качестве начальной, берется ближайшая вершина к которой движется тс
         int startNode = vehicle.getNextNode()
@@ -106,38 +107,38 @@ public class VSLSSolver implements ORPSolver {
                         .map(ScheduleCheckpoint::getNode)
                         .collect(Collectors.toList()));
 
-        var bestAugmentedSchedule = Collections.<ScheduleCheckpoint>emptyList();
-        var bestAugmentedScheduleRoute = new Route(Collections.emptyList(), Double.POSITIVE_INFINITY);
+        var bestAugmentedSchedule = new Object() {
+            List<ScheduleCheckpoint> value = Collections.<ScheduleCheckpoint>emptyList();
+        };
+        var bestAugmentedScheduleRoute = new Object() {
+            Route value = new Route(Collections.emptyList(), Double.POSITIVE_INFINITY);
+        };
 
-        for (int start = 0; start <= oldSchedule.size(); ++start) {
-            for (int end = start + 1; end <= oldSchedule.size() + 1; ++end) {
-                var augmentedSchedule = new ArrayList<>(oldSchedule);
-                augmentedSchedule.add(start, startCheckpoint);
-                augmentedSchedule.add(end, endCheckpoint);
+        var scheduleGenerator = new LazyScheduleGenerator(oldSchedule, startCheckpoint, endCheckpoint);
+        scheduleGenerator.forEachSchedule(augmentedSchedule -> {
 
-                if (!checkCapacityViolation(vehicle.getCapacity(), augmentedSchedule)) {
-                    continue;
-                }
-
-                if (!checkDeadlineViolation(vehicle.getAverageVelocity(), startNode, startTime, augmentedSchedule)) {
-                    continue;
-                }
-
-                Route augmentedScheduleRoute = this.getRouteForSchedule(startNode,
-                        augmentedSchedule.stream()
-                                .map(ScheduleCheckpoint::getNode)
-                                .collect(Collectors.toList()));
-
-                // Если добавочное расстояние уменьшилось, то обновляем лучший план
-                if (augmentedScheduleRoute.getDistance() - oldScheduleRoute.getDistance() <
-                        bestAugmentedScheduleRoute.getDistance() - oldScheduleRoute.getDistance()) {
-                    bestAugmentedSchedule = augmentedSchedule;
-                    bestAugmentedScheduleRoute = augmentedScheduleRoute;
-                }
+            if (!checkCapacityViolation(vehicle.getCapacity(), augmentedSchedule)) {
+                return;
             }
-        }
 
-        return bestAugmentedSchedule;
+            if (!checkDeadlineViolation(vehicle.getAverageVelocity(), startNode, startTime, augmentedSchedule)) {
+                return;
+            }
+
+            Route augmentedScheduleRoute = this.getRouteForSchedule(startNode,
+                    augmentedSchedule.stream()
+                            .map(ScheduleCheckpoint::getNode)
+                            .collect(Collectors.toList()));
+
+            // Если добавочное расстояние уменьшилось, то обновляем лучший план
+            if (augmentedScheduleRoute.getDistance() - oldScheduleRoute.getDistance() <
+                    bestAugmentedScheduleRoute.value.getDistance() - oldScheduleRoute.getDistance()) {
+                bestAugmentedSchedule.value = new ArrayList<>(augmentedSchedule);
+                bestAugmentedScheduleRoute.value = augmentedScheduleRoute;
+            }
+        });
+
+        return bestAugmentedSchedule.value;
     }
 
     private double distance(GPS startPoint, GPS endPoint) {
@@ -205,7 +206,7 @@ public class VSLSSolver implements ORPSolver {
 
         int nextVehicleNode = vehicle.getNextNode().get();
 
-        var schedule = computeBestAugmentedSchedule(vehicle,
+        var schedule = getAugmentedScheduleLazy(vehicle,
                 new ScheduleCheckpoint(request, request.getDepartureNode()),
                 new ScheduleCheckpoint(request, request.getArrivalNode()));
 

@@ -1,6 +1,6 @@
 package com.nocmok.orp.proto.solver.vskt;
 
-import com.nocmok.orp.proto.solver.KineticTree;
+import com.nocmok.orp.proto.solver.common.KineticTree;
 import com.nocmok.orp.proto.solver.ScheduleCheckpoint;
 import lombok.Getter;
 import lombok.Setter;

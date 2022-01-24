@@ -8,7 +8,7 @@ import com.nocmok.orp.proto.solver.ORPSolver;
 import com.nocmok.orp.proto.solver.Request;
 import com.nocmok.orp.proto.solver.Route;
 import com.nocmok.orp.proto.solver.ScheduleCheckpoint;
-import com.nocmok.orp.proto.solver.ShortestPathSolver;
+import com.nocmok.orp.proto.solver.common.ShortestPathSolver;
 import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 
 import java.util.ArrayList;
