@@ -1,74 +1,45 @@
 package com.nocmok.orp.proto.solver;
 
 import com.nocmok.orp.proto.pojo.GPS;
-import lombok.Getter;
-import lombok.Setter;
+import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+public interface Vehicle {
 
-// GPS генератору нужен текущий gps и хотя бы две точки в, чтобы генерировать GPS
-//
-@Getter
-public class Vehicle {
+    // Вызывается, когда тс проходит ноду графа
+    void passNode(int node);
 
-    private List<GPS> gpsLog = new ArrayList<>();
-    private List<Integer> route = new ArrayList<>();
-    private List<Request> requests = new ArrayList<>();
-    private List<ScheduleCheckpoint> schedule = new ArrayList<>();
+    // Этот метод не нужен, так как тс может само трекать пройденные чекпоинты в методе passCheckpoint
+    // void passCheckpoint();
 
-    // How much nodes from schedule was passed by vehicle
-    @Setter
-    private int nodesPassed;
+    // Обновляет координату тс
+    void updateGps(GPS gps);
 
-    // Сколько чекпоинтов было пройдено тс
-    @Setter
-    private int checkpointsPassed;
+    // Обновляет состояние тс
+    void updateState(SimpleVehicle.State state);
 
-    private int capacity = 3;
-    private int load;
-    // Waiting for request
-    // Serving
-    // AFK
-    @Setter
-    private State state;
-    // Средняя скорость беспрепятственного движения
-    // Единицы измерения - м/с
-    private double avgVelocity = 0;
+    State getState();
 
-    public Vehicle(GPS gps, State state, double avgVelocity) {
-        this.gpsLog = new ArrayList<>(List.of(gps));
-        this.state = state;
-        this.avgVelocity = avgVelocity;
-    }
+    void updateSchedule(List<ScheduleCheckpoint> schedule);
 
-    public Vehicle(GPS gps) {
-        this(gps, State.AFK, 0d);
-    }
+    void updateRoute(List<Integer> route);
 
-    // Возвращает следующую в плане контрольную точку
-    public Optional<ScheduleCheckpoint> getNextCheckpoint() {
-        return checkpointsPassed >= schedule.size() ? Optional.empty() : Optional.of(schedule.get(checkpointsPassed));
-    }
+    List<Integer> getRoute();
 
-    // Возвращает следующую в маршруте вершину
-    public Optional<Integer> getNextNode() {
-        return nodesPassed >= route.size() ? Optional.empty() : Optional.of(route.get(nodesPassed));
-    }
+    // Следующая в маршруте вершина
+    Optional<Integer> getNextNode();
 
-    public Optional<GPS> getGPS() {
-        return gpsLog.isEmpty() ? Optional.empty() : Optional.of(gpsLog.get(gpsLog.size() - 1));
-    }
+    GPS getGps();
 
-    public List<ScheduleCheckpoint> getCurrentSchedule() {
-        return schedule.subList(checkpointsPassed, schedule.size());
-    }
+    List<ScheduleCheckpoint> getSchedule();
 
-    public List<Integer> getCurrentRoute() {
-        return route.subList(nodesPassed, route.size());
-    }
+    Optional<ScheduleCheckpoint> getNextCheckpoint();
+
+    double getAverageVelocity();
+
+    int getCapacity();
 
     public enum State {
         PENDING,

@@ -1,14 +1,20 @@
 package com.nocmok.orp.proto.benchmark;
 
 import com.nocmok.orp.proto.graph.Graph;
+import com.nocmok.orp.proto.pojo.GPS;
 import com.nocmok.orp.proto.simulator.Simulator;
-import com.nocmok.orp.proto.solver.VSHSSolver;
-import com.nocmok.orp.proto.solver.VSLSSolver;
-import com.nocmok.orp.proto.solver.ORPInstance;
 import com.nocmok.orp.proto.solver.Request;
 import com.nocmok.orp.proto.solver.ShortestPathSolver;
-import com.nocmok.orp.proto.solver.TaxiSolver;
 import com.nocmok.orp.proto.solver.Vehicle;
+import com.nocmok.orp.proto.solver.common.SimpleORPInstance;
+import com.nocmok.orp.proto.solver.common.SimpleVehicle;
+import com.nocmok.orp.proto.solver.taxi.TaxiSolver;
+import com.nocmok.orp.proto.solver.vshs.VSHSSolver;
+import com.nocmok.orp.proto.solver.vskt.ScheduleTree;
+import com.nocmok.orp.proto.solver.vskt.VSKTORPInstance;
+import com.nocmok.orp.proto.solver.vskt.VSKTSolver;
+import com.nocmok.orp.proto.solver.vskt.VSKTVehicle;
+import com.nocmok.orp.proto.solver.vsls.VSLSSolver;
 import com.nocmok.orp.proto.tools.DimacsGraphConverter;
 import com.nocmok.orp.proto.tools.DimacsParser;
 
@@ -25,6 +31,7 @@ public class Benchmarking {
     private Graph graph;
     private ShortestPathSolver shortestPathSolver;
     private List<Integer> vehicleInitialNodes;
+    private List<GPS> vehicleInitialGPS;
     private List<Benchmark.DelayedRequest> requestPlan;
     private int nIterations = 86_400;
     private int nRequests = 1000;
@@ -49,8 +56,11 @@ public class Benchmarking {
         requestPlan.sort(Comparator.comparingInt(Benchmark.DelayedRequest::getTimeToAccept));
 
         this.vehicleInitialNodes = new ArrayList<>();
+        this.vehicleInitialGPS = new ArrayList<>();
         for (int i = 0; i < nVehicles; ++i) {
-            vehicleInitialNodes.add(random.nextInt(graph.nNodes()));
+            int node = random.nextInt(graph.nNodes());
+            vehicleInitialNodes.add(node);
+            vehicleInitialGPS.add(graph.getGps(node));
         }
     }
 
@@ -66,9 +76,9 @@ public class Benchmarking {
 
     public static void main(String[] args) {
         var benchMarking = new Benchmarking();
-        runBenchmark(VSHSSolver.class.toString(), benchMarking.getGRFBenchmark());
+        runBenchmark(VSKTSolver.class.toString(), benchMarking.getVSKTBenchmark());
         System.out.println();
-        runBenchmark(VSLSSolver.class.toString(), benchMarking.getGRBenchmark());
+//        runBenchmark(VSHSSolver.class.toString(), benchMarking.getVSHSBenchmark());
     }
 
     private Request createRequest(int time, int startNode, int endNode) {
@@ -100,19 +110,10 @@ public class Benchmarking {
         }
     }
 
-    private ORPInstance getORPInstance() {
-        return new ORPInstance(graph, vehicles());
-    }
-
-    private List<Vehicle> vehicles() {
-        return vehicleInitialNodes.stream()
-                .map(graph::getGps)
-                .map(gps -> new Vehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity))
-                .collect(Collectors.toList());
-    }
-
-    public Benchmark getGRBenchmark() {
-        var state = getORPInstance();
+    public Benchmark getVSLSBenchmark() {
+        var state = new SimpleORPInstance(graph, vehicleInitialGPS.stream()
+                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity))
+                .collect(Collectors.toList()));
         var solver = new VSLSSolver(state);
         var simulator = new Simulator(state, solver);
         return Benchmark.builder()
@@ -122,8 +123,10 @@ public class Benchmarking {
                 .build();
     }
 
-    private Benchmark getGRFBenchmark() {
-        var state = getORPInstance();
+    private Benchmark getVSHSBenchmark() {
+        var state = new SimpleORPInstance(graph, vehicleInitialGPS.stream()
+                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity))
+                .collect(Collectors.toList()));
         var solver = new VSHSSolver(state);
         var simulator = new Simulator(state, solver);
         return Benchmark.builder()
@@ -133,8 +136,24 @@ public class Benchmarking {
                 .build();
     }
 
+    private Benchmark getVSKTBenchmark() {
+        var state = new VSKTORPInstance(graph);
+        for (var gps : vehicleInitialGPS) {
+            state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, (v) -> new ScheduleTree(v, state)));
+        }
+        var solver = new VSKTSolver(state);
+        var simulator = new Simulator(state, solver);
+        return Benchmark.builder()
+                .nIterations(nIterations)
+                .requestPlan(requestPlan)
+                .simulator(simulator)
+                .build();
+    }
+
     public Benchmark getTaxiBenchmark() {
-        var state = getORPInstance();
+        var state = new SimpleORPInstance(graph, vehicleInitialGPS.stream()
+                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity))
+                .collect(Collectors.toList()));
         var solver = new TaxiSolver(state);
         var simulator = new Simulator(state, solver);
         return Benchmark.builder()

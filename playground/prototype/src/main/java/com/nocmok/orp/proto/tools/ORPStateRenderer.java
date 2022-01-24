@@ -1,6 +1,7 @@
 package com.nocmok.orp.proto.tools;
 
 import com.nocmok.orp.proto.solver.ORPInstance;
+import com.nocmok.orp.proto.solver.common.SimpleORPInstance;
 import com.nocmok.orp.proto.solver.Request;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;

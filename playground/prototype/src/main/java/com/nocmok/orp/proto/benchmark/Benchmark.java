@@ -29,13 +29,13 @@ public class Benchmark {
     }
 
     private void updateTotalDistances(Metrics metrics) {
-        for (var vehicle : simulator.getState().getVehicleList()) {
-            int nGps = vehicle.getGpsLog().size();
-            if (nGps < 2) {
-                continue;
-            }
-            metrics.totalDistance += distance(vehicle.getGpsLog().get(nGps - 2), vehicle.getGpsLog().get(nGps - 1));
-        }
+//        for (var vehicle : simulator.getState().getVehicleList()) {
+//            int nGps = vehicle.getGpsLog().size();
+//            if (nGps < 2) {
+//                continue;
+//            }
+//            metrics.totalDistance += distance(vehicle.getGpsLog().get(nGps - 2), vehicle.getGpsLog().get(nGps - 1));
+//        }
     }
 
     private void updateTotalRequests(Metrics metrics) {

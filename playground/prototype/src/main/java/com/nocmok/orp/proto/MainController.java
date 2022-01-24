@@ -2,10 +2,10 @@ package com.nocmok.orp.proto;
 
 import com.nocmok.orp.proto.graph.Graph;
 import com.nocmok.orp.proto.simulator.Simulator;
-import com.nocmok.orp.proto.solver.ORPInstance;
+import com.nocmok.orp.proto.solver.common.SimpleORPInstance;
 import com.nocmok.orp.proto.solver.Request;
-import com.nocmok.orp.proto.solver.VSLSSolver;
-import com.nocmok.orp.proto.solver.Vehicle;
+import com.nocmok.orp.proto.solver.vsls.VSLSSolver;
+import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 import com.nocmok.orp.proto.tools.AffineTransformation;
 import com.nocmok.orp.proto.tools.DimacsGraphConverter;
 import com.nocmok.orp.proto.tools.DimacsParser;
@@ -169,18 +169,18 @@ public class MainController implements Initializable {
                 (primaryScreen.getHeight() - graphHeight) / 2,
                 graphWidth, graphHeight);
 
-        var vehicles = new ArrayList<Vehicle>();
-        vehicles.add(new Vehicle(graph.getGps(0), Vehicle.State.PENDING, 20));
-        vehicles.add(new Vehicle(graph.getGps(1), Vehicle.State.PENDING, 20));
-        vehicles.add(new Vehicle(graph.getGps(2), Vehicle.State.PENDING, 20));
-        vehicles.add(new Vehicle(graph.getGps(3), Vehicle.State.PENDING, 20));
+        var vehicles = new ArrayList<SimpleVehicle>();
+        vehicles.add(new SimpleVehicle(graph.getGps(0), SimpleVehicle.State.PENDING, 20));
+        vehicles.add(new SimpleVehicle(graph.getGps(1), SimpleVehicle.State.PENDING, 20));
+        vehicles.add(new SimpleVehicle(graph.getGps(2), SimpleVehicle.State.PENDING, 20));
+        vehicles.add(new SimpleVehicle(graph.getGps(3), SimpleVehicle.State.PENDING, 20));
 
 //        vehicles.add(new Vehicle(List.of(4), List.of(graph.getGps(4)), Vehicle.State.PENDING, 20));
 //        vehicles.add(new Vehicle(List.of(5), List.of(graph.getGps(5)), Vehicle.State.PENDING, 20));
 //        vehicles.add(new Vehicle(List.of(6), List.of(graph.getGps(6)), Vehicle.State.PENDING, 20));
 //        vehicles.add(new Vehicle(List.of(7), List.of(graph.getGps(7)), Vehicle.State.PENDING, 20));
 
-        var orpInstance = new ORPInstance(graph, vehicles);
+        var orpInstance = new SimpleORPInstance(graph, vehicles);
 //        var solver = new TaxiSolver(orpInstance);
         var solver = new VSLSSolver(orpInstance);
         this.simulator = new Simulator(orpInstance, solver);

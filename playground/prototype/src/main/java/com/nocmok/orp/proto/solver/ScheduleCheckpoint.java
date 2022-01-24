@@ -2,6 +2,8 @@ package com.nocmok.orp.proto.solver;
 
 import lombok.Getter;
 
+import java.util.Objects;
+
 @Getter
 public class ScheduleCheckpoint {
     // Нода на которой находится чекпоинт
@@ -21,5 +23,20 @@ public class ScheduleCheckpoint {
     // Завершает ли чекпоинт запрос
     public boolean isArrivalCheckpoint() {
         return request.getArrivalNode() == node;
+    }
+
+    @Override public int hashCode() {
+        return Objects.hash(node, request);
+    }
+
+    @Override public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ScheduleCheckpoint)) {
+            return false;
+        }
+        ScheduleCheckpoint other = (ScheduleCheckpoint) obj;
+        return other.node == this.node && Objects.equals(other.request, request);
     }
 }

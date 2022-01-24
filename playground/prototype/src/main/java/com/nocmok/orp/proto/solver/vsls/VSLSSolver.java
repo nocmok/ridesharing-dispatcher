@@ -1,7 +1,15 @@
-package com.nocmok.orp.proto.solver;
+package com.nocmok.orp.proto.solver.vsls;
 
 import com.nocmok.orp.proto.graph.Graph;
 import com.nocmok.orp.proto.pojo.GPS;
+import com.nocmok.orp.proto.solver.Matching;
+import com.nocmok.orp.proto.solver.ORPSolver;
+import com.nocmok.orp.proto.solver.Request;
+import com.nocmok.orp.proto.solver.Route;
+import com.nocmok.orp.proto.solver.ScheduleCheckpoint;
+import com.nocmok.orp.proto.solver.ShortestPathSolver;
+import com.nocmok.orp.proto.solver.common.SimpleORPInstance;
+import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,10 +24,10 @@ import java.util.stream.IntStream;
 // Ленивый перебор планов. Контрольные точки из старого плана не меняют относительного порядка
 public class VSLSSolver implements ORPSolver {
 
-    private ORPInstance state;
+    private SimpleORPInstance state;
     private ShortestPathSolver shortestPathSolver;
 
-    public VSLSSolver(ORPInstance state) {
+    public VSLSSolver(SimpleORPInstance state) {
         this.state = state;
         this.shortestPathSolver = new ShortestPathSolver(state.getGraph());
     }
@@ -80,19 +88,19 @@ public class VSLSSolver implements ORPSolver {
     }
 
     // Возвращает пустой список, если невозможно составить план без нарушения ограничений
-    private List<ScheduleCheckpoint> computeBestAugmentedSchedule(Vehicle vehicle,
+    private List<ScheduleCheckpoint> computeBestAugmentedSchedule(SimpleVehicle vehicle,
                                                                   ScheduleCheckpoint startCheckpoint,
                                                                   ScheduleCheckpoint endCheckpoint) {
         // Вершина с которой должны начинаться маршруты для планов.
         // В качестве начальной, берется ближайшая вершина к которой движется тс
         int startNode = vehicle.getNextNode()
-                .orElseGet(() -> vehicle.getRoute().get(vehicle.getNodesPassed() - 1));
+                .orElseGet(() -> closestNode(state.getGraph(), vehicle.getGps()));
 
         // Ожидаемое время системы в момент когда тс окажется в начальной вершине
         // Используется для того, чтобы проверять нарушает ли маршрут дедлайны чекпоинтов
-        int startTime = state.getTime() + (int) (distance(vehicle.getGPS().get(), state.getGraph().getGps(startNode)) / vehicle.getAvgVelocity());
+        int startTime = state.getTime() + (int) (distance(vehicle.getGps(), state.getGraph().getGps(startNode)) / vehicle.getAverageVelocity());
 
-        var oldSchedule = vehicle.getCurrentSchedule();
+        var oldSchedule = vehicle.getSchedule();
         var oldScheduleRoute = getRouteForSchedule(startNode,
                 oldSchedule.stream()
                         .map(ScheduleCheckpoint::getNode)
@@ -111,7 +119,7 @@ public class VSLSSolver implements ORPSolver {
                     continue;
                 }
 
-                if (!checkDeadlineViolation(vehicle.getAvgVelocity(), startNode, startTime, augmentedSchedule)) {
+                if (!checkDeadlineViolation(vehicle.getAverageVelocity(), startNode, startTime, augmentedSchedule)) {
                     continue;
                 }
 
@@ -168,15 +176,15 @@ public class VSLSSolver implements ORPSolver {
     }
 
     // Возвращает null если временные ограничения запроса не могут быть выполнены
-    private Optional<Matching> matchPendingVehicle(Request request, Vehicle vehicle) {
+    private Optional<Matching> matchPendingVehicle(Request request, SimpleVehicle vehicle) {
         if (request.getLoad() > vehicle.getCapacity()) {
             return Optional.empty();
         }
-        int nextVehicleNode = closestNode(state.getGraph(), vehicle.getGPS().get());
+        int nextVehicleNode = closestNode(state.getGraph(), vehicle.getGps());
 
         var routeToClient = shortestPathSolver.dijkstra(nextVehicleNode, request.getDepartureNode());
         int timeToClient =
-                (int) (distance(state.getGraph().getGps(nextVehicleNode), vehicle.getGPS().get()) + routeToClient.getDistance() / vehicle.getAvgVelocity());
+                (int) (distance(state.getGraph().getGps(nextVehicleNode), vehicle.getGps()) + routeToClient.getDistance() / vehicle.getAverageVelocity());
         if (!checkTimeFrame(state.getTime() + timeToClient, request.getEarliestDepartureTime(), request.getLatestDepartureTime())) {
             return Optional.empty();
         }
@@ -190,7 +198,7 @@ public class VSLSSolver implements ORPSolver {
         return Optional.of(new Matching(vehicle, fullRoute, schedule));
     }
 
-    private Optional<Matching> matchServingVehicle(Request request, Vehicle vehicle) {
+    private Optional<Matching> matchServingVehicle(Request request, SimpleVehicle vehicle) {
         if (request.getLoad() > vehicle.getCapacity()) {
             return Optional.empty();
         }
@@ -216,7 +224,7 @@ public class VSLSSolver implements ORPSolver {
     @Override public Matching computeMatching(Request request) {
 
         var candidateVehicles = state.getVehicleList().stream()
-                .filter(vehicle -> vehicle.getState() != Vehicle.State.AFK)
+                .filter(vehicle -> vehicle.getState() != SimpleVehicle.State.AFK)
                 .collect(Collectors.toCollection(ArrayList::new));
 
         if (candidateVehicles.isEmpty()) {
@@ -228,7 +236,7 @@ public class VSLSSolver implements ORPSolver {
 
         for (var vehicle : candidateVehicles) {
             // Тс в данный момент не выполняет план
-            if (vehicle.getState() == Vehicle.State.PENDING) {
+            if (vehicle.getState() == SimpleVehicle.State.PENDING) {
                 var matching = matchPendingVehicle(request, vehicle);
                 if (matching.isEmpty()) {
                     continue;
@@ -237,9 +245,9 @@ public class VSLSSolver implements ORPSolver {
                     bestMatching = matching.get();
                     bestScheduleDistanceLag = matching.get().getRoute().getDistance();
                 }
-            } else if (vehicle.getState() == Vehicle.State.SERVING) {
+            } else if (vehicle.getState() == SimpleVehicle.State.SERVING) {
                 int nextVehicleNode = vehicle.getNextNode().get();
-                var oldSchedule = vehicle.getCurrentSchedule();
+                var oldSchedule = vehicle.getSchedule();
                 var oldScheduleRoute = getRouteForSchedule(nextVehicleNode,
                         oldSchedule.stream()
                                 .map(ScheduleCheckpoint::getNode)

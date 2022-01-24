@@ -10,54 +10,42 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-// Пайплайн работы
-// Вставка двух нод
-// Обход дфсом и удаление невалидных ветвей
 public class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
-
-    // Валидатор, который всегда возвращает true
-    private static final Validator optimisticValidator = new Validator() {
-
-        @Override public boolean validate(TreeNode parent, TreeNode child) {
-            return true;
-        }
-
-        @Override public boolean validate(TreeNode tree) {
-            return true;
-        }
-    };
-
-    // Агрегатор, который ничего не делает
-    private static final Aggregator idleAggregator = new Aggregator() {
-
-        @Override public void aggregate(TreeNode parent, TreeNode child) {
-
-        }
-
-        @Override public void aggregate(TreeNode tree) {
-
-        }
-    };
-
     @Getter
     private N root;
     private Supplier<N> fabric;
     @Getter
     private int depth = 0;
+    private Validator<T, N> validator;
+    private Aggregator<T, N> aggregator;
 
-    public KineticTree(Supplier<N> fabric) {
+    public KineticTree(Supplier<N> fabric, Validator<T, N> validator, Aggregator<T, N> aggregator) {
         this.fabric = fabric;
         this.root = fabric.get();
+        this.validator = validator;
+        this.aggregator = aggregator;
     }
 
     public KineticTree(KineticTree<T, N> other) {
         this.root = copyTree(other.root);
+        this.validator = other.validator;
+        this.aggregator = other.aggregator;
         this.fabric = other.fabric;
     }
 
-    public void insert(T pickup, T dropoff) {
-        insertPair(root, pickup, dropoff);
+    // Вставляет в дерево пару значений, связанных ограничением, что
+    // значение parent во всех перестановках должно идти перед значением child
+    public void insert(T parent, T child) {
+        insertPair(root, parent, child);
+        harvest(root);
         depth += 2;
+    }
+
+    // Вставляет значение в дерево
+    public void insert(T value) {
+        insertOne(root, value);
+        harvest(root);
+        depth += 1;
     }
 
     // Спускает корень дерева в поддерево с указанным префиксом
@@ -69,6 +57,11 @@ public class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
         this.root.value = null;
         this.root = newRoot;
         depth -= 1;
+    }
+
+    public void clear() {
+        root.getSubtrees().clear();
+        depth = 0;
     }
 
     private N createNode(T value) {
@@ -87,19 +80,19 @@ public class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
     }
 
     // Вставляет в дерево пару вершин, так, что генерируются только ветви, в которых первое значение стоит перед вторым
-    private void insertPair(N root, T pickup, T dropoff) {
-        var pickupSubtree = copyTree(root);
-        pickupSubtree.value = pickup;
-        insertOne(pickupSubtree, dropoff);
+    private void insertPair(N root, T parent, T child) {
+        var parentSubtree = copyTree(root);
+        parentSubtree.value = parent;
+        insertOne(parentSubtree, child);
 
-        for (var child : root.getSubtrees().values()) {
-            insertPair(child, pickup, dropoff);
+        for (var subtree : root.getSubtrees().values()) {
+            insertPair(subtree, parent, child);
         }
 
-        root.getSubtrees().put(pickup, pickupSubtree);
+        root.getSubtrees().put(parent, parentSubtree);
     }
 
-    private boolean validate(N parent, N child, Validator<T, N> validator) {
+    private boolean validate(N parent, N child) {
         if (parent == this.root) {
             return validator.validate(child);
         } else {
@@ -107,7 +100,7 @@ public class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
         }
     }
 
-    private void aggregate(N parent, N child, Aggregator<T, N> aggregator) {
+    private void aggregate(N parent, N child) {
         if (parent == this.root) {
             aggregator.aggregate(child);
         } else {
@@ -115,22 +108,18 @@ public class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
         }
     }
 
-    public void harvest(Validator<T, N> validator, Aggregator<T, N> aggregator) {
-        harvest(root, validator, aggregator);
-    }
-
-    private void harvest(N root, Validator<T, N> validator, Aggregator<T, N> aggregator) {
+    private void harvest(N root) {
         var treesToPrune = new ArrayList<T>();
         for (var child : root.getSubtrees().values()) {
-            aggregate(root, child, aggregator);
-            if (!validate(root, child, validator)) {
+            aggregate(root, child);
+            if (!validate(root, child)) {
                 treesToPrune.add(child.value);
             } else {
                 if (child.isEmpty()) {
                     // ничего не делаем, так как ниже нет вершин
                     continue;
                 }
-                harvest(child, validator, aggregator);
+                harvest(child);
                 // Если нода стала пустой, значит ее надо обрезать
                 if (child.isEmpty()) {
                     treesToPrune.add(child.value);

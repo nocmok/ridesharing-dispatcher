@@ -5,6 +5,8 @@ import com.nocmok.orp.proto.pojo.GPS;
 import com.nocmok.orp.proto.solver.Vehicle;
 import lombok.Getter;
 
+import java.util.List;
+
 // Module to simulate car moving
 public class VehicleGPSGenerator {
 
@@ -18,23 +20,23 @@ public class VehicleGPSGenerator {
 
     // Возвращает положение тс через time секунд
     public Position getNextVehicleGPS(Graph graph, Vehicle vehicle, int time) {
-        GPS currentGPS = vehicle.getGpsLog().get(vehicle.getGpsLog().size() - 1);
+        GPS currentGPS = vehicle.getGps();
 
-        double distancePassed = time * vehicle.getAvgVelocity();
+        double distancePassed = time * vehicle.getAverageVelocity();
+        int nodesPassed = 0;
+        List<Integer> route = vehicle.getRoute();
 
-        // Меняем текущее ребро тс, если тс прошло большее расстояние чем осталось на его текущем участке дороги
-        int nodesPassed = vehicle.getNodesPassed();
-        for (; nodesPassed < vehicle.getRoute().size(); ++nodesPassed) {
-            if (distancePassed < distance(currentGPS, graph.getGps(vehicle.getRoute().get(nodesPassed)))) {
+        for (; nodesPassed < route.size(); ++nodesPassed) {
+            if (distancePassed < distance(currentGPS, graph.getGps(route.get(nodesPassed)))) {
                 break;
             }
-            distancePassed -= distance(currentGPS, graph.getGps(vehicle.getRoute().get(nodesPassed)));
-            currentGPS = graph.getGps(vehicle.getRoute().get(nodesPassed));
+            distancePassed -= distance(currentGPS, graph.getGps(route.get(nodesPassed)));
+            currentGPS = graph.getGps(route.get(nodesPassed));
         }
 
         // Если тс не завершило маршрут, то прибавляем остаточное расстояние
-        if (nodesPassed < vehicle.getRoute().size()) {
-            GPS nextGPS = graph.getGps(vehicle.getRoute().get(nodesPassed));
+        if (nodesPassed < route.size()) {
+            GPS nextGPS = graph.getGps(route.get(nodesPassed));
             currentGPS =
                     addVector(currentGPS, (nextGPS.x - currentGPS.x) * distancePassed / distance(currentGPS, nextGPS),
                             (nextGPS.y - currentGPS.y) * distancePassed / distance(currentGPS, nextGPS));
@@ -45,7 +47,9 @@ public class VehicleGPSGenerator {
 
     @Getter
     public static class Position {
+
         private GPS gps;
+        // Количество вершин, которое было пройдено тс за такт
         private int nodesPassed;
 
         private Position(GPS position, int nodesPassed) {
