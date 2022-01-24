@@ -9,23 +9,17 @@ import lombok.Getter;
 
 import java.util.List;
 
-// Принимает на вход симулятор со всеми его гиперпараметрами
-// Необходимое количество циклов
-// Запускает n циклов симуляции и считает метрики
-// Метрики:
-// 1) Суммарное пройденное всеми тс расстояние
-// 2) Среднее время ожидания клиентом тс
-// 3) Количество отклоненных запросов
 @AllArgsConstructor
 @Builder
 public class Benchmark {
+
+    @Getter
     private Simulator simulator;
-    private int nIterations;
     private List<DelayedRequest> requestPlan;
 
     public Metrics runBenchmarking() {
         int nextRequest = 0;
-        for (int i = 0; i < nIterations; ++i) {
+        while (simulator.getProcessedRequests() < requestPlan.size()) {
             while (nextRequest < requestPlan.size() && requestPlan.get(nextRequest).getTimeToAccept() <= simulator.getState().getTime()) {
                 var request = requestPlan.get(nextRequest).getRequest();
                 simulator.acceptRequest(request);
