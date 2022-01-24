@@ -60,10 +60,6 @@ public class VSKTSolver implements ORPSolver {
         int startNode = vehicle.getNextNode()
                 .orElseGet(() -> closestNode(state.getGraph(), vehicle.getGps()));
 
-        // Ожидаемое время системы в момент когда тс окажется в начальной вершине
-        // Используется для того, чтобы проверять нарушает ли маршрут дедлайны чекпоинтов
-        int startTime = state.getTime() + (int) (distance(vehicle.getGps(), state.getGraph().getGps(startNode)) / vehicle.getAverageVelocity());
-
         var oldSchedule = vehicle.getSchedule();
         var oldScheduleRoute = getRouteForSchedule(startNode,
                 oldSchedule.stream()
@@ -74,6 +70,7 @@ public class VSKTSolver implements ORPSolver {
         var bestAugmentedScheduleRoute = new Route(Collections.emptyList(), Double.POSITIVE_INFINITY);
 
         var scheduleTree = new ScheduleTree(vehicle.getScheduleTree());
+        scheduleTree.insert(startCheckpoint, endCheckpoint);
 
         for (var augmentedSchedule : scheduleTree.getSchedules()) {
             Route augmentedScheduleRoute = this.getRouteForSchedule(startNode,

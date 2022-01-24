@@ -1,5 +1,6 @@
 package com.nocmok.orp.proto.simulator;
 
+import com.nocmok.orp.proto.pojo.GPS;
 import com.nocmok.orp.proto.solver.Matching;
 import com.nocmok.orp.proto.solver.ORPInstance;
 import com.nocmok.orp.proto.solver.ORPSolver;
@@ -15,16 +16,36 @@ public class Simulator {
     private ORPInstance state;
     private ORPSolver solver;
     private VehicleGPSGenerator gpsGenerator = new VehicleGPSGenerator();
+    @Getter
+    private Metrics metrics = new Metrics();
 
     public Simulator(ORPInstance state, ORPSolver solver) {
         this.state = state;
         this.solver = solver;
     }
 
+    private void updateTotalRequests() {
+        metrics.setTotalRequests(metrics.getTotalRequests() + 1);
+    }
+
+    private void updateDeniedRequests() {
+        metrics.setDeniedRequests(metrics.getDeniedRequests() + 1);
+    }
+
+    private void updateTotalDistance(double extraDistance) {
+        metrics.setTotalDistance(metrics.getTotalDistance() + extraDistance);
+    }
+
+    private double distance(GPS from, GPS to) {
+        return Math.hypot(to.x - from.x, to.y - from.y);
+    }
+
     public Matching acceptRequest(Request request) {
         var matching = solver.computeMatching(request);
+        updateTotalRequests();
 
         if (matching.getDenialReason() != Matching.DenialReason.ACCEPTED) {
+            updateDeniedRequests();
             request.setState(Request.State.DENIED);
             return matching;
         }
@@ -48,6 +69,8 @@ public class Simulator {
                 continue;
             }
             var nextPosition = gpsGenerator.getNextVehicleGPS(state.getGraph(), vehicle, timeSeconds);
+
+            updateTotalDistance(distance(vehicle.getGps(), nextPosition.getGps()));
 
             // нужно как-то получить список чекпоинтов, которые были пройдены
             var scheduleBeforeMove = new ArrayList<>(vehicle.getSchedule());

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -51,9 +52,9 @@ public class VSKTVehicle implements Vehicle {
 
     @Override public void passNode(int node) {
         ++nodesPassed;
-        while (getNextCheckpoint().isPresent() && getNextCheckpoint().get().getNode() == node) {
-            ++checkpointsPassed;
+        while (getNextCheckpoint().isPresent() && Objects.equals(getNextCheckpoint().get().getNode(), node)) {
             scheduleTree.passCheckpoint(getNextCheckpoint().get());
+            ++checkpointsPassed;
         }
     }
 
@@ -83,7 +84,7 @@ public class VSKTVehicle implements Vehicle {
     @Override public void updateSchedule(List<ScheduleCheckpoint> newSchedule) {
         var newScheduleSet = new HashSet<>(newSchedule);
         // Если в текущем плане есть ноды, которых нет в новом плане - перестраиваем дерево целиком
-        if (!newScheduleSet.containsAll(newSchedule)) {
+        if (!newScheduleSet.containsAll(this.schedule)) {
             scheduleTree.clear();
             for (var checkpointPair : getCoupledCheckpoints(newSchedule)) {
                 if (checkpointPair.length == 1) {
@@ -92,13 +93,15 @@ public class VSKTVehicle implements Vehicle {
                     scheduleTree.insert(checkpointPair[0], checkpointPair[1]);
                 } else {
                     throw new RuntimeException(
-                            "expected neither one chekpoint neither checkpoint pair, but " + checkpointPair.length + " checkpoints provided");
+                            "expected neither one checkpoint neither checkpoint pair, but " + checkpointPair.length + " checkpoints provided");
                 }
             }
         } else {
             // найти точки, которых нет в текущем плане
-            var newCheckpoints = getSchedule().stream()
-                    .filter(Predicate.not(newScheduleSet::contains))
+            var scheduleSet = new HashSet<>(getSchedule());
+
+            var newCheckpoints = newSchedule.stream()
+                    .filter(Predicate.not(scheduleSet::contains))
                     .collect(Collectors.toList());
 
             // Проверяем, что новых точек четное число
@@ -115,6 +118,7 @@ public class VSKTVehicle implements Vehicle {
             }
         }
         this.schedule = new ArrayList<>(newSchedule);
+
         this.checkpointsPassed = 0;
     }
 

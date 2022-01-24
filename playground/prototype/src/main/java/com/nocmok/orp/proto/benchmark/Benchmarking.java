@@ -76,9 +76,13 @@ public class Benchmarking {
 
     public static void main(String[] args) {
         var benchMarking = new Benchmarking();
+        runBenchmark(TaxiSolver.class.toString(), benchMarking.getTaxiBenchmark());
+        System.out.println();
+        runBenchmark(VSLSSolver.class.toString(), benchMarking.getVSLSBenchmark());
+        System.out.println();
         runBenchmark(VSKTSolver.class.toString(), benchMarking.getVSKTBenchmark());
         System.out.println();
-//        runBenchmark(VSHSSolver.class.toString(), benchMarking.getVSHSBenchmark());
+        runBenchmark(VSHSSolver.class.toString(), benchMarking.getVSHSBenchmark());
     }
 
     private Request createRequest(int time, int startNode, int endNode) {
