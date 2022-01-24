@@ -2,13 +2,14 @@ package com.nocmok.orp.proto.solver.vskt;
 
 import com.nocmok.orp.proto.graph.Graph;
 import com.nocmok.orp.proto.pojo.GPS;
-import com.nocmok.orp.proto.solver.KineticTree;
 import com.nocmok.orp.proto.solver.ScheduleCheckpoint;
-import com.nocmok.orp.proto.solver.ShortestPathSolver;
 import com.nocmok.orp.proto.solver.Vehicle;
+import com.nocmok.orp.proto.solver.common.KineticTree;
+import com.nocmok.orp.proto.solver.common.ShortestPathSolver;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 // Дерево для построения всех вариантов валидных маршрутов тс
@@ -87,8 +88,8 @@ public class ScheduleTree {
         kineticTree.insert(dropoff);
     }
 
-    public List<List<ScheduleCheckpoint>> getSchedules() {
-        return kineticTree.getAllPermutations();
+    public void forEachSchedule(Consumer<List<ScheduleCheckpoint>> callback) {
+        kineticTree.forEachPermutation(callback);
     }
 
     public void clear() {

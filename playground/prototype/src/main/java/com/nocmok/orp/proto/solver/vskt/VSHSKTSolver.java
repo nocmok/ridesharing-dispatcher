@@ -7,6 +7,7 @@ import com.nocmok.orp.proto.solver.ORPSolver;
 import com.nocmok.orp.proto.solver.Request;
 import com.nocmok.orp.proto.solver.Route;
 import com.nocmok.orp.proto.solver.ScheduleCheckpoint;
+import com.nocmok.orp.proto.solver.common.LazyScheduleGenerator;
 import com.nocmok.orp.proto.solver.common.ShortestPathSolver;
 
 import java.util.ArrayList;
@@ -20,13 +21,13 @@ import java.util.stream.IntStream;
 
 // VSKT - Vehicle Selection Kinetic Tree search
 // Полный перебор планов с помощью кинетического дерева
-public class VSKTSolver implements ORPSolver {
+public class VSHSKTSolver implements ORPSolver {
 
     private VSKTORPInstance state;
     private ShortestPathSolver shortestPathSolver;
     private int scheduleSizeThreshold = 8;
 
-    public VSKTSolver(VSKTORPInstance state) {
+    public VSHSKTSolver(VSKTORPInstance state) {
         this.state = state;
         this.shortestPathSolver = new ShortestPathSolver(state.getGraph());
     }
@@ -77,6 +78,92 @@ public class VSKTSolver implements ORPSolver {
         scheduleTree.insert(startCheckpoint, endCheckpoint);
 
         scheduleTree.forEachSchedule(augmentedSchedule -> {
+            Route augmentedScheduleRoute = this.getRouteForSchedule(startNode,
+                    augmentedSchedule.stream()
+                            .map(ScheduleCheckpoint::getNode)
+                            .collect(Collectors.toList()));
+
+            // Если добавочное расстояние уменьшилось, то обновляем лучший план
+            if (augmentedScheduleRoute.getDistance() - oldScheduleRoute.getDistance() <
+                    bestAugmentedScheduleRouteWrapper.value.getDistance() - oldScheduleRoute.getDistance()) {
+                bestAugmentedScheduleWrapper.value = new ArrayList<>(augmentedSchedule);
+                bestAugmentedScheduleRouteWrapper.value = augmentedScheduleRoute;
+            }
+        });
+
+        return bestAugmentedScheduleWrapper.value;
+    }
+
+    // Проверяет валиден ли план с точки зрения соблюдения ограничений на вместимость тс
+    private boolean checkCapacityViolation(int initialCapacity,
+                                           List<ScheduleCheckpoint> schedule) {
+        int capacity = initialCapacity;
+        for (var checkpoint : schedule) {
+            if (checkpoint.isArrivalCheckpoint()) {
+                capacity += checkpoint.getRequest().getLoad();
+            } else {
+                capacity -= checkpoint.getRequest().getLoad();
+            }
+            if (capacity < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Проверяет валиден ли план с точки зрения соблюдения дедлайнов прибытия в контрольные точки
+    private boolean checkDeadlineViolation(double avgVelocity, int startNode, int startTime,
+                                           List<ScheduleCheckpoint> schedule) {
+        double time = startTime;
+        int prevNode = startNode;
+
+        for (var checkpoint : schedule) {
+            Route route = shortestPathSolver.dijkstra(prevNode, checkpoint.getNode());
+            time += route.getDistance() / avgVelocity;
+            if (time > checkpoint.getRequest().getArrivalTimeWindow()[1]) {
+                return false;
+            }
+            prevNode = checkpoint.getNode();
+        }
+
+        return true;
+    }
+
+    private List<ScheduleCheckpoint> getAugmentedScheduleLazy(VSKTVehicle vehicle,
+                                                              ScheduleCheckpoint startCheckpoint,
+                                                              ScheduleCheckpoint endCheckpoint) {
+        // Вершина с которой должны начинаться маршруты для планов.
+        // В качестве начальной, берется ближайшая вершина к которой движется тс
+        int startNode = vehicle.getNextNode()
+                .orElseGet(() -> closestNode(state.getGraph(), vehicle.getGps()));
+
+        // Ожидаемое время системы в момент когда тс окажется в начальной вершине
+        // Используется для того, чтобы проверять нарушает ли маршрут дедлайны чекпоинтов
+        int startTime = state.getTime() + (int) (distance(vehicle.getGps(), state.getGraph().getGps(startNode)) / vehicle.getAverageVelocity());
+
+        var oldSchedule = vehicle.getSchedule();
+        var oldScheduleRoute = getRouteForSchedule(startNode,
+                oldSchedule.stream()
+                        .map(ScheduleCheckpoint::getNode)
+                        .collect(Collectors.toList()));
+
+        var bestAugmentedScheduleWrapper = new Object() {
+            List<ScheduleCheckpoint> value = Collections.<ScheduleCheckpoint>emptyList();
+        };
+        var bestAugmentedScheduleRouteWrapper = new Object() {
+            Route value = new Route(Collections.emptyList(), Double.POSITIVE_INFINITY);
+        };
+
+        var scheduleGenerator = new LazyScheduleGenerator(oldSchedule, startCheckpoint, endCheckpoint);
+        scheduleGenerator.forEachSchedule(augmentedSchedule -> {
+            if (!checkCapacityViolation(vehicle.getCapacity(), augmentedSchedule)) {
+                return;
+            }
+
+            if (!checkDeadlineViolation(vehicle.getAverageVelocity(), startNode, startTime, augmentedSchedule)) {
+                return;
+            }
+
             Route augmentedScheduleRoute = this.getRouteForSchedule(startNode,
                     augmentedSchedule.stream()
                             .map(ScheduleCheckpoint::getNode)
@@ -161,11 +248,9 @@ public class VSKTSolver implements ORPSolver {
         var pickupCheckpoint = new ScheduleCheckpoint(request, request.getDepartureNode());
         var dropoffCheckpoint = new ScheduleCheckpoint(request, request.getArrivalNode());
 
-        if (vehicle.getSchedule().size() >= scheduleSizeThreshold) {
-            return Optional.empty();
-        }
-
-        var schedule = getAugmentedScheduleFullSearch(vehicle, pickupCheckpoint, dropoffCheckpoint);
+        var schedule = (vehicle.getSchedule().size() >= scheduleSizeThreshold)
+                ? getAugmentedScheduleLazy(vehicle, pickupCheckpoint, dropoffCheckpoint)
+                : getAugmentedScheduleFullSearch(vehicle, pickupCheckpoint, dropoffCheckpoint);
 
         if (schedule.isEmpty()) {
             return Optional.empty();

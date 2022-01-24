@@ -1,6 +1,7 @@
-package com.nocmok.orp.proto.solver;
+package com.nocmok.orp.proto.solver.common;
 
 import com.nocmok.orp.proto.graph.Graph;
+import com.nocmok.orp.proto.solver.Route;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

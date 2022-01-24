@@ -4,13 +4,14 @@ import com.nocmok.orp.proto.graph.Graph;
 import com.nocmok.orp.proto.pojo.GPS;
 import com.nocmok.orp.proto.simulator.Simulator;
 import com.nocmok.orp.proto.solver.Request;
-import com.nocmok.orp.proto.solver.ShortestPathSolver;
+import com.nocmok.orp.proto.solver.common.ShortestPathSolver;
 import com.nocmok.orp.proto.solver.Vehicle;
 import com.nocmok.orp.proto.solver.common.SimpleORPInstance;
 import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 import com.nocmok.orp.proto.solver.taxi.TaxiSolver;
 import com.nocmok.orp.proto.solver.vshs.VSHSSolver;
 import com.nocmok.orp.proto.solver.vskt.ScheduleTree;
+import com.nocmok.orp.proto.solver.vskt.VSHSKTSolver;
 import com.nocmok.orp.proto.solver.vskt.VSKTORPInstance;
 import com.nocmok.orp.proto.solver.vskt.VSKTSolver;
 import com.nocmok.orp.proto.solver.vskt.VSKTVehicle;
@@ -82,6 +83,8 @@ public class Benchmarking {
         System.out.println();
         runBenchmark(VSKTSolver.class.toString(), benchMarking.getVSKTBenchmark());
         System.out.println();
+        runBenchmark(VSHSKTSolver.class.toString(), benchMarking.getVSHSKTBenchmark());
+        System.out.println();
         runBenchmark(VSHSSolver.class.toString(), benchMarking.getVSHSBenchmark());
     }
 
@@ -146,6 +149,20 @@ public class Benchmarking {
             state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, (v) -> new ScheduleTree(v, state)));
         }
         var solver = new VSKTSolver(state);
+        var simulator = new Simulator(state, solver);
+        return Benchmark.builder()
+                .nIterations(nIterations)
+                .requestPlan(requestPlan)
+                .simulator(simulator)
+                .build();
+    }
+
+    private Benchmark getVSHSKTBenchmark() {
+        var state = new VSKTORPInstance(graph);
+        for (var gps : vehicleInitialGPS) {
+            state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, (v) -> new ScheduleTree(v, state)));
+        }
+        var solver = new VSHSKTSolver(state);
         var simulator = new Simulator(state, solver);
         return Benchmark.builder()
                 .nIterations(nIterations)

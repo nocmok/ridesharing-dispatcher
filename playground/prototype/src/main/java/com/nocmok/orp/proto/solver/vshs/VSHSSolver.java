@@ -7,18 +7,17 @@ import com.nocmok.orp.proto.solver.ORPSolver;
 import com.nocmok.orp.proto.solver.Request;
 import com.nocmok.orp.proto.solver.Route;
 import com.nocmok.orp.proto.solver.ScheduleCheckpoint;
-import com.nocmok.orp.proto.solver.ShortestPathSolver;
+import com.nocmok.orp.proto.solver.common.AllSchedulesGenerator;
+import com.nocmok.orp.proto.solver.common.LazyScheduleGenerator;
+import com.nocmok.orp.proto.solver.common.ShortestPathSolver;
 import com.nocmok.orp.proto.solver.common.SimpleORPInstance;
 import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -126,18 +125,22 @@ public class VSHSSolver implements ORPSolver {
                         .map(ScheduleCheckpoint::getNode)
                         .collect(Collectors.toList()));
 
-        var bestAugmentedSchedule = Collections.<ScheduleCheckpoint>emptyList();
-        var bestAugmentedScheduleRoute = new Route(Collections.emptyList(), Double.POSITIVE_INFINITY);
+        var bestAugmentedSchedule = new Object() {
+            List<ScheduleCheckpoint> value = Collections.<ScheduleCheckpoint>emptyList();
+        };
+        var bestAugmentedScheduleRoute = new Object() {
+            Route value = new Route(Collections.emptyList(), Double.POSITIVE_INFINITY);
+        };
 
         var scheduleGenerator = new LazyScheduleGenerator(oldSchedule, startCheckpoint, endCheckpoint);
-        while (scheduleGenerator.hasNext()) {
-            var augmentedSchedule = scheduleGenerator.next();
+        scheduleGenerator.forEachSchedule(augmentedSchedule -> {
+
             if (!checkCapacityViolation(vehicle.getCapacity(), augmentedSchedule)) {
-                continue;
+                return;
             }
 
             if (!checkDeadlineViolation(vehicle.getAverageVelocity(), startNode, startTime, augmentedSchedule)) {
-                continue;
+                return;
             }
 
             Route augmentedScheduleRoute = this.getRouteForSchedule(startNode,
@@ -147,13 +150,13 @@ public class VSHSSolver implements ORPSolver {
 
             // Если добавочное расстояние уменьшилось, то обновляем лучший план
             if (augmentedScheduleRoute.getDistance() - oldScheduleRoute.getDistance() <
-                    bestAugmentedScheduleRoute.getDistance() - oldScheduleRoute.getDistance()) {
-                bestAugmentedSchedule = augmentedSchedule;
-                bestAugmentedScheduleRoute = augmentedScheduleRoute;
+                    bestAugmentedScheduleRoute.value.getDistance() - oldScheduleRoute.getDistance()) {
+                bestAugmentedSchedule.value = new ArrayList<>(augmentedSchedule);
+                bestAugmentedScheduleRoute.value = augmentedScheduleRoute;
             }
-        }
+        });
 
-        return bestAugmentedSchedule;
+        return bestAugmentedSchedule.value;
     }
 
     // Возвращает пустой список, если невозможно составить план без нарушения ограничений
@@ -175,24 +178,25 @@ public class VSHSSolver implements ORPSolver {
                         .map(ScheduleCheckpoint::getNode)
                         .collect(Collectors.toList()));
 
-        var bestAugmentedSchedule = Collections.<ScheduleCheckpoint>emptyList();
-        var bestAugmentedScheduleRoute = new Route(Collections.emptyList(), Double.POSITIVE_INFINITY);
+        var bestAugmentedScheduleWrapper = new Object() {
+            List<ScheduleCheckpoint> value = Collections.<ScheduleCheckpoint>emptyList();
+        };
+        var bestAugmentedScheduleRouteWrapper = new Object() {
+            Route value = new Route(Collections.emptyList(), Double.POSITIVE_INFINITY);
+        };
 
-        var shuffler = new AllSchedulesGenerator(oldSchedule, startCheckpoint, endCheckpoint);
-
-        while (shuffler.hasNext()) {
-            var augmentedSchedule = shuffler.next();
-
+        var scheduleGenerator = new AllSchedulesGenerator(oldSchedule, startCheckpoint, endCheckpoint);
+        scheduleGenerator.forEachSchedule(augmentedSchedule -> {
             if (!checkScheduleOrderViolation(augmentedSchedule)) {
-                continue;
+                return;
             }
 
             if (!checkCapacityViolation(vehicle.getCapacity(), augmentedSchedule)) {
-                continue;
+                return;
             }
 
             if (!checkDeadlineViolation(vehicle.getAverageVelocity(), startNode, startTime, augmentedSchedule)) {
-                continue;
+                return;
             }
 
             Route augmentedScheduleRoute = this.getRouteForSchedule(startNode,
@@ -202,13 +206,13 @@ public class VSHSSolver implements ORPSolver {
 
             // Если добавочное расстояние уменьшилось, то обновляем лучший план
             if (augmentedScheduleRoute.getDistance() - oldScheduleRoute.getDistance() <
-                    bestAugmentedScheduleRoute.getDistance() - oldScheduleRoute.getDistance()) {
-                bestAugmentedSchedule = augmentedSchedule;
-                bestAugmentedScheduleRoute = augmentedScheduleRoute;
+                    bestAugmentedScheduleRouteWrapper.value.getDistance() - oldScheduleRoute.getDistance()) {
+                bestAugmentedScheduleWrapper.value = new ArrayList<>(augmentedSchedule);
+                bestAugmentedScheduleRouteWrapper.value = augmentedScheduleRoute;
             }
-        }
+        });
 
-        return bestAugmentedSchedule;
+        return bestAugmentedScheduleWrapper.value;
     }
 
     private double distance(GPS startPoint, GPS endPoint) {
@@ -343,115 +347,5 @@ public class VSHSSolver implements ORPSolver {
         }
 
         return bestMatching;
-    }
-
-    private static class AllSchedulesGenerator implements Iterator<List<ScheduleCheckpoint>> {
-
-        private List<ScheduleCheckpoint> schedule;
-        private PermutationGenerator shuffler;
-
-        AllSchedulesGenerator(List<ScheduleCheckpoint> schedule, ScheduleCheckpoint pickup, ScheduleCheckpoint dropoff) {
-            this.schedule = new ArrayList<>(schedule);
-            this.schedule.add(pickup);
-            this.schedule.add(dropoff);
-            this.shuffler = new PermutationGenerator(this.schedule.size());
-        }
-
-        @Override public boolean hasNext() {
-            return shuffler.hasNext();
-        }
-
-        private List<ScheduleCheckpoint> sample(List<Integer> positions) {
-            var permutation = new ArrayList<ScheduleCheckpoint>(schedule.size());
-            for (int i = 0; i < schedule.size(); ++i) {
-                permutation.add(schedule.get(positions.get(i)));
-            }
-            return permutation;
-        }
-
-        @Override public List<ScheduleCheckpoint> next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            return sample(shuffler.next());
-        }
-    }
-
-    private static class PermutationGenerator implements Iterator<List<Integer>> {
-
-        private Iterator<List<Integer>> it;
-
-        PermutationGenerator(int size) {
-            var allPermutations = new ArrayList<List<Integer>>();
-            getAllPermutations(0, size, new boolean[size], new Integer[size], allPermutations);
-            this.it = allPermutations.iterator();
-        }
-
-        void getAllPermutations(int start, int size, boolean[] used, Integer[] permutation, List<List<Integer>> permutations) {
-            if (start >= size) {
-                permutations.add(new ArrayList<>(Arrays.asList(permutation)));
-                return;
-            }
-            for (int i = 0; i < size; ++i) {
-                if (used[i]) {
-                    continue;
-                }
-                permutation[start] = i;
-                used[i] = true;
-                getAllPermutations(start + 1, size, used, permutation, permutations);
-                used[i] = false;
-            }
-        }
-
-
-        @Override public boolean hasNext() {
-            return it.hasNext();
-        }
-
-        @Override public List<Integer> next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            return it.next();
-        }
-    }
-
-    private static class LazyScheduleGenerator implements Iterator<List<ScheduleCheckpoint>> {
-
-        private int pickupPosition;
-        private int dropoffPosition;
-        private List<ScheduleCheckpoint> templateSchedule;
-        private ScheduleCheckpoint pickup;
-        private ScheduleCheckpoint dropoff;
-
-        LazyScheduleGenerator(List<ScheduleCheckpoint> templateSchedule, ScheduleCheckpoint pickup, ScheduleCheckpoint dropoff) {
-            this.templateSchedule = templateSchedule;
-            this.pickup = pickup;
-            this.dropoff = dropoff;
-            this.pickupPosition = 0;
-            this.dropoffPosition = 1;
-        }
-
-        @Override public boolean hasNext() {
-            return pickupPosition <= templateSchedule.size();
-        }
-
-        @Override public List<ScheduleCheckpoint> next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            var permutation = new ArrayList<>(templateSchedule);
-            permutation.add(pickupPosition, pickup);
-            permutation.add(dropoffPosition, dropoff);
-
-            if (dropoffPosition >= templateSchedule.size() + 1) {
-                ++pickupPosition;
-                dropoffPosition = pickupPosition + 1;
-            } else {
-                ++dropoffPosition;
-            }
-
-            return permutation;
-        }
     }
 }
