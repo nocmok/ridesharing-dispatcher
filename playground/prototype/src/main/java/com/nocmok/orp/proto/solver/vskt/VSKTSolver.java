@@ -1,7 +1,13 @@
-package com.nocmok.orp.proto.solver;
+package com.nocmok.orp.proto.solver.vskt;
 
 import com.nocmok.orp.proto.graph.Graph;
 import com.nocmok.orp.proto.pojo.GPS;
+import com.nocmok.orp.proto.solver.Matching;
+import com.nocmok.orp.proto.solver.ORPSolver;
+import com.nocmok.orp.proto.solver.Request;
+import com.nocmok.orp.proto.solver.Route;
+import com.nocmok.orp.proto.solver.ScheduleCheckpoint;
+import com.nocmok.orp.proto.solver.ShortestPathSolver;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,49 +18,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class TShareSolver implements ORPSolver {
+// VSKT - Vehicle Selection Kinetic Tree search
+// Полный перебор планов с помощью кинетического дерева
+public class VSKTSolver implements ORPSolver {
 
-    private ORPInstance state;
+    private VSKTORPInstance state;
     private ShortestPathSolver shortestPathSolver;
+    private int scheduleSizeThreshold = 8;
 
-    public TShareSolver(ORPInstance state) {
+    public VSKTSolver(VSKTORPInstance state) {
         this.state = state;
         this.shortestPathSolver = new ShortestPathSolver(state.getGraph());
-    }
-
-    // Проверяет валиден ли план с точки зрения соблюдения ограничений на вместимость тс
-    private boolean checkCapacityViolation(int initialCapacity,
-                                           List<ScheduleCheckpoint> schedule) {
-        int capacity = initialCapacity;
-        for (var checkpoint : schedule) {
-            if (checkpoint.isArrivalCheckpoint()) {
-                capacity += checkpoint.getRequest().getLoad();
-            } else {
-                capacity -= checkpoint.getRequest().getLoad();
-            }
-            if (capacity < 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // Проверяет валиден ли план с точки зрения соблюдения дедлайнов прибытия в контрольные точки
-    private boolean checkDeadlineViolation(double avgVelocity, int startNode, int startTime,
-                                           List<ScheduleCheckpoint> schedule) {
-        double time = startTime;
-        int prevNode = startNode;
-
-        for (var checkpoint : schedule) {
-            Route route = shortestPathSolver.dijkstra(prevNode, checkpoint.getNode());
-            time += route.getDistance() / avgVelocity;
-            if (time > checkpoint.getRequest().getArrivalTimeWindow()[1]) {
-                return false;
-            }
-            prevNode = checkpoint.getNode();
-        }
-
-        return true;
     }
 
     // Строит оптимальный маршрут для выполнения плана
@@ -78,19 +52,15 @@ public class TShareSolver implements ORPSolver {
     }
 
     // Возвращает пустой список, если невозможно составить план без нарушения ограничений
-    private List<ScheduleCheckpoint> computeBestAugmentedSchedule(Vehicle vehicle,
-                                                                  ScheduleCheckpoint startCheckpoint,
-                                                                  ScheduleCheckpoint endCheckpoint) {
+    private List<ScheduleCheckpoint> getAugmentedScheduleFullSearch(VSKTVehicle vehicle,
+                                                                    ScheduleCheckpoint startCheckpoint,
+                                                                    ScheduleCheckpoint endCheckpoint) {
         // Вершина с которой должны начинаться маршруты для планов.
         // В качестве начальной, берется ближайшая вершина к которой движется тс
         int startNode = vehicle.getNextNode()
-                .orElseGet(() -> vehicle.getRoute().get(vehicle.getNodesPassed() - 1));
+                .orElseGet(() -> closestNode(state.getGraph(), vehicle.getGps()));
 
-        // Ожидаемое время системы в момент когда тс окажется в начальной вершине
-        // Используется для того, чтобы проверять нарушает ли маршрут дедлайны чекпоинтов
-        int startTime = state.getTime() + (int) (distance(vehicle.getGPS().get(), state.getGraph().getGps(startNode)) / vehicle.getAvgVelocity());
-
-        var oldSchedule = vehicle.getCurrentSchedule();
+        var oldSchedule = vehicle.getSchedule();
         var oldScheduleRoute = getRouteForSchedule(startNode,
                 oldSchedule.stream()
                         .map(ScheduleCheckpoint::getNode)
@@ -99,31 +69,20 @@ public class TShareSolver implements ORPSolver {
         var bestAugmentedSchedule = Collections.<ScheduleCheckpoint>emptyList();
         var bestAugmentedScheduleRoute = new Route(Collections.emptyList(), Double.POSITIVE_INFINITY);
 
-        for (int start = 0; start <= oldSchedule.size(); ++start) {
-            for (int end = start + 1; end <= oldSchedule.size() + 1; ++end) {
-                var augmentedSchedule = new ArrayList<>(oldSchedule);
-                augmentedSchedule.add(start, startCheckpoint);
-                augmentedSchedule.add(end, endCheckpoint);
+        var scheduleTree = new ScheduleTree(vehicle.getScheduleTree());
+        scheduleTree.insert(startCheckpoint, endCheckpoint);
 
-                if (!checkCapacityViolation(vehicle.getCapacity(), augmentedSchedule)) {
-                    continue;
-                }
+        for (var augmentedSchedule : scheduleTree.getSchedules()) {
+            Route augmentedScheduleRoute = this.getRouteForSchedule(startNode,
+                    augmentedSchedule.stream()
+                            .map(ScheduleCheckpoint::getNode)
+                            .collect(Collectors.toList()));
 
-                if (!checkDeadlineViolation(vehicle.getAvgVelocity(), startNode, startTime, augmentedSchedule)) {
-                    continue;
-                }
-
-                Route augmentedScheduleRoute = this.getRouteForSchedule(startNode,
-                        augmentedSchedule.stream()
-                                .map(ScheduleCheckpoint::getNode)
-                                .collect(Collectors.toList()));
-
-                // Если добавочное расстояние уменьшилось, то обновляем лучший план
-                if (augmentedScheduleRoute.getDistance() - oldScheduleRoute.getDistance() <
-                        bestAugmentedScheduleRoute.getDistance() - oldScheduleRoute.getDistance()) {
-                    bestAugmentedSchedule = augmentedSchedule;
-                    bestAugmentedScheduleRoute = augmentedScheduleRoute;
-                }
+            // Если добавочное расстояние уменьшилось, то обновляем лучший план
+            if (augmentedScheduleRoute.getDistance() - oldScheduleRoute.getDistance() <
+                    bestAugmentedScheduleRoute.getDistance() - oldScheduleRoute.getDistance()) {
+                bestAugmentedSchedule = augmentedSchedule;
+                bestAugmentedScheduleRoute = augmentedScheduleRoute;
             }
         }
 
@@ -166,15 +125,15 @@ public class TShareSolver implements ORPSolver {
     }
 
     // Возвращает null если временные ограничения запроса не могут быть выполнены
-    private Optional<Matching> matchPendingVehicle(Request request, Vehicle vehicle) {
+    private Optional<Matching> matchPendingVehicle(Request request, VSKTVehicle vehicle) {
         if (request.getLoad() > vehicle.getCapacity()) {
             return Optional.empty();
         }
-        int nextVehicleNode = closestNode(state.getGraph(), vehicle.getGPS().get());
+        int nextVehicleNode = closestNode(state.getGraph(), vehicle.getGps());
 
         var routeToClient = shortestPathSolver.dijkstra(nextVehicleNode, request.getDepartureNode());
         int timeToClient =
-                (int) (distance(state.getGraph().getGps(nextVehicleNode), vehicle.getGPS().get()) + routeToClient.getDistance() / vehicle.getAvgVelocity());
+                (int) (distance(state.getGraph().getGps(nextVehicleNode), vehicle.getGps()) + routeToClient.getDistance() / vehicle.getAverageVelocity());
         if (!checkTimeFrame(state.getTime() + timeToClient, request.getEarliestDepartureTime(), request.getLatestDepartureTime())) {
             return Optional.empty();
         }
@@ -188,16 +147,21 @@ public class TShareSolver implements ORPSolver {
         return Optional.of(new Matching(vehicle, fullRoute, schedule));
     }
 
-    private Optional<Matching> matchServingVehicle(Request request, Vehicle vehicle) {
+    private Optional<Matching> matchServingVehicle(Request request, VSKTVehicle vehicle) {
         if (request.getLoad() > vehicle.getCapacity()) {
             return Optional.empty();
         }
 
         int nextVehicleNode = vehicle.getNextNode().get();
 
-        var schedule = computeBestAugmentedSchedule(vehicle,
-                new ScheduleCheckpoint(request, request.getDepartureNode()),
-                new ScheduleCheckpoint(request, request.getArrivalNode()));
+        var pickupCheckpoint = new ScheduleCheckpoint(request, request.getDepartureNode());
+        var dropoffCheckpoint = new ScheduleCheckpoint(request, request.getArrivalNode());
+
+        if (vehicle.getSchedule().size() >= scheduleSizeThreshold) {
+            return Optional.empty();
+        }
+
+        var schedule = getAugmentedScheduleFullSearch(vehicle, pickupCheckpoint, dropoffCheckpoint);
 
         if (schedule.isEmpty()) {
             return Optional.empty();
@@ -214,7 +178,7 @@ public class TShareSolver implements ORPSolver {
     @Override public Matching computeMatching(Request request) {
 
         var candidateVehicles = state.getVehicleList().stream()
-                .filter(vehicle -> vehicle.getState() != Vehicle.State.AFK)
+                .filter(vehicle -> vehicle.getState() != VSKTVehicle.State.AFK)
                 .collect(Collectors.toCollection(ArrayList::new));
 
         if (candidateVehicles.isEmpty()) {
@@ -226,7 +190,7 @@ public class TShareSolver implements ORPSolver {
 
         for (var vehicle : candidateVehicles) {
             // Тс в данный момент не выполняет план
-            if (vehicle.getState() == Vehicle.State.PENDING) {
+            if (vehicle.getState() == VSKTVehicle.State.PENDING) {
                 var matching = matchPendingVehicle(request, vehicle);
                 if (matching.isEmpty()) {
                     continue;
@@ -235,9 +199,9 @@ public class TShareSolver implements ORPSolver {
                     bestMatching = matching.get();
                     bestScheduleDistanceLag = matching.get().getRoute().getDistance();
                 }
-            } else if (vehicle.getState() == Vehicle.State.SERVING) {
+            } else if (vehicle.getState() == VSKTVehicle.State.SERVING) {
                 int nextVehicleNode = vehicle.getNextNode().get();
-                var oldSchedule = vehicle.getCurrentSchedule();
+                var oldSchedule = vehicle.getSchedule();
                 var oldScheduleRoute = getRouteForSchedule(nextVehicleNode,
                         oldSchedule.stream()
                                 .map(ScheduleCheckpoint::getNode)

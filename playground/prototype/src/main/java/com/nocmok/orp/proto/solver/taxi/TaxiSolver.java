@@ -1,7 +1,15 @@
-package com.nocmok.orp.proto.solver;
+package com.nocmok.orp.proto.solver.taxi;
 
 import com.nocmok.orp.proto.graph.Graph;
 import com.nocmok.orp.proto.pojo.GPS;
+import com.nocmok.orp.proto.solver.Matching;
+import com.nocmok.orp.proto.solver.common.SimpleORPInstance;
+import com.nocmok.orp.proto.solver.ORPSolver;
+import com.nocmok.orp.proto.solver.Request;
+import com.nocmok.orp.proto.solver.Route;
+import com.nocmok.orp.proto.solver.ScheduleCheckpoint;
+import com.nocmok.orp.proto.solver.ShortestPathSolver;
+import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,11 +24,11 @@ import java.util.stream.IntStream;
 // для вычисления сэкономленного расстояния
 public class TaxiSolver implements ORPSolver {
 
-    private ORPInstance state;
+    private SimpleORPInstance state;
 
     private ShortestPathSolver shortestPathSolver;
 
-    public TaxiSolver(ORPInstance state) {
+    public TaxiSolver(SimpleORPInstance state) {
         this.state = state;
         this.shortestPathSolver = new ShortestPathSolver(state.getGraph());
     }
@@ -68,11 +76,11 @@ public class TaxiSolver implements ORPSolver {
         return time >= earlyBound && time < lateBound;
     }
 
-    private Optional<Matching> matchPendingVehicle(Request request, Vehicle vehicle) {
-        int vehicleNode = closestNode(state.getGraph(), vehicle.getGpsLog().get(vehicle.getGpsLog().size() - 1));
+    private Optional<Matching> matchPendingVehicle(Request request, SimpleVehicle vehicle) {
+        int vehicleNode = closestNode(state.getGraph(), vehicle.getGps());
         Route routeToClient =
                 shortestPathSolver.dijkstra(vehicleNode, request.getDepartureNode());
-        int timeToClient = (int) (routeToClient.getDistance() / vehicle.getAvgVelocity());
+        int timeToClient = (int) (routeToClient.getDistance() / vehicle.getAverageVelocity());
 
         if (!checkTimeFrame(state.getTime() + timeToClient, request.getEarliestDepartureTime(), request.getLatestDepartureTime())) {
             return Optional.empty();
@@ -86,13 +94,13 @@ public class TaxiSolver implements ORPSolver {
         return Optional.of(new Matching(vehicle, fullRoute, schedule));
     }
 
-    private Optional<Matching> matchServingVehicle(Request request, Vehicle vehicle) {
+    private Optional<Matching> matchServingVehicle(Request request, SimpleVehicle vehicle) {
         // найти приблизительное время в конечной точке текущего плана
         int vehicleNextNode = vehicle.getNextNode().get();
         int vehicleLastNode = vehicle.getRoute().get(vehicle.getRoute().size() - 1);
-        var currentRoute = getRoute(vehicle.getCurrentRoute());
+        var currentRoute = getRoute(vehicle.getRoute());
         var routeToNewClient = shortestPathSolver.dijkstra(vehicleLastNode, request.getDepartureNode());
-        int timeToClient = (int) ((currentRoute.getDistance() + routeToNewClient.getDistance()) / vehicle.getAvgVelocity());
+        int timeToClient = (int) ((currentRoute.getDistance() + routeToNewClient.getDistance()) / vehicle.getAverageVelocity());
 
         if (!checkTimeFrame(state.getTime() + timeToClient, request.getEarliestDepartureTime(), request.getLatestDepartureTime())) {
             return Optional.empty();
@@ -100,7 +108,7 @@ public class TaxiSolver implements ORPSolver {
 
         var newClientRoute = shortestPathSolver.dijkstra(request.getDepartureNode(), request.getArrivalNode());
         var fullRoute = combineRoutes(List.of(currentRoute, routeToNewClient, newClientRoute));
-        var schedule = new ArrayList<>(vehicle.getCurrentSchedule());
+        var schedule = new ArrayList<>(vehicle.getSchedule());
         schedule.add(new ScheduleCheckpoint(request, request.getDepartureNode()));
         schedule.add(new ScheduleCheckpoint(request, request.getArrivalNode()));
 
@@ -114,7 +122,7 @@ public class TaxiSolver implements ORPSolver {
 
         // находим доступные мащины
         var candidateVehicles = state.getVehicleList().stream()
-                .filter(vehicle -> vehicle.getState() != Vehicle.State.AFK)
+                .filter(vehicle -> vehicle.getState() != SimpleVehicle.State.AFK)
                 .collect(Collectors.toList());
 
         if (candidateVehicles.isEmpty()) {
@@ -126,19 +134,19 @@ public class TaxiSolver implements ORPSolver {
         double bestRouteDistanceToClient = Double.POSITIVE_INFINITY;
 
         for (var vehicle : candidateVehicles) {
-            if (vehicle.getState() == Vehicle.State.PENDING) {
+            if (vehicle.getState() == SimpleVehicle.State.PENDING) {
                 var matching = matchPendingVehicle(request, vehicle);
                 if (matching.isEmpty()) {
                     continue;
                 }
-                int vehicleNode = closestNode(state.getGraph(), vehicle.getGpsLog().get(vehicle.getGpsLog().size() - 1));
+                int vehicleNode = closestNode(state.getGraph(), vehicle.getGps());
                 var routeToClient = shortestPathSolver.dijkstra(vehicleNode, request.getDepartureNode());
                 if (routeToClient.getDistance() >= bestRouteDistanceToClient) {
                     continue;
                 }
                 bestMatching = matching.get();
                 bestRouteDistanceToClient = routeToClient.getDistance();
-            } else if (vehicle.getState() == Vehicle.State.SERVING) {
+            } else if (vehicle.getState() == SimpleVehicle.State.SERVING) {
                 var matching = matchServingVehicle(request, vehicle);
                 if (matching.isEmpty()) {
                     continue;

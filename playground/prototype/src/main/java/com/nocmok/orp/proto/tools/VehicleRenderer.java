@@ -2,6 +2,7 @@ package com.nocmok.orp.proto.tools;
 
 import com.nocmok.orp.proto.pojo.GPS;
 import com.nocmok.orp.proto.solver.Vehicle;
+import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -34,7 +35,7 @@ public class VehicleRenderer {
     }
 
     public void render(Canvas canvas, Vehicle vehicle, Color color) {
-        GPS gps = vehicle.getGpsLog().get(vehicle.getGpsLog().size() - 1);
+        GPS gps = vehicle.getGps();
         var gc = canvas.getGraphicsContext2D();
         gc.setFill(color);
         drawRectangle(gc, transformation.translateX(gps.x), transformation.translateY(gps.y), vehicleSize);

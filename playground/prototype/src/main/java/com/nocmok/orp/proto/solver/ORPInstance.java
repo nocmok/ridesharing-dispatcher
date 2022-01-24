@@ -1,25 +1,18 @@
 package com.nocmok.orp.proto.solver;
 
 import com.nocmok.orp.proto.graph.Graph;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
-// Модуль отвечающий за хранение состояния задачи
-@Getter
-@Setter
-public class ORPInstance {
+public interface ORPInstance {
 
-    private Graph graph;
-    private int time = 0;
-    private List<Vehicle> vehicleList;
-    private List<Request> requestLog;
+    Graph getGraph();
 
-    public ORPInstance(Graph graph, List<Vehicle> vehicles) {
-        this.graph = graph;
-        this.vehicleList = new ArrayList<>(vehicles);
-        this.requestLog = new ArrayList<>();
-    }
+    int getTime();
+
+    void setTime(int time);
+
+    List<? extends Vehicle> getVehicleList();
+
+    List<Request> getRequestLog();
 }
