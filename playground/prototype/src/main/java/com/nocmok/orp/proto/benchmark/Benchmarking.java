@@ -120,7 +120,7 @@ public class Benchmarking {
 
     public Benchmark getTaxiBenchmark() {
         var state = new SimpleORPInstance(graph, vehicleInitialGPS.stream()
-                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity))
+                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity, vehicleCapacity))
                 .collect(Collectors.toList()));
         var solver = new TaxiSolver(state);
         var simulator = new Simulator(state, solver);
@@ -132,7 +132,7 @@ public class Benchmarking {
 
     public Benchmark getVSLSBenchmark() {
         var state = new SimpleORPInstance(graph, vehicleInitialGPS.stream()
-                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity))
+                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity, vehicleCapacity))
                 .collect(Collectors.toList()));
         var solver = new VSLSSolver(state);
         var simulator = new Simulator(state, solver);
@@ -144,7 +144,7 @@ public class Benchmarking {
 
     public Benchmark getVSHSBenchmark() {
         var state = new SimpleORPInstance(graph, vehicleInitialGPS.stream()
-                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity))
+                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity, vehicleCapacity))
                 .collect(Collectors.toList()));
         var solver = new VSHSSolver(state);
         var simulator = new Simulator(state, solver);
@@ -157,7 +157,7 @@ public class Benchmarking {
     public Benchmark getVSKTBenchmark() {
         var state = new VSKTORPInstance(graph);
         for (var gps : vehicleInitialGPS) {
-            state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, (v) -> new ScheduleTree(v, state)));
+            state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, vehicleCapacity, (v) -> new ScheduleTree(v, state)));
         }
         var solver = new VSKTSolver(state);
         var simulator = new Simulator(state, solver);
@@ -170,7 +170,7 @@ public class Benchmarking {
     public Benchmark getVSHSKTBenchmark() {
         var state = new VSKTORPInstance(graph);
         for (var gps : vehicleInitialGPS) {
-            state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, (v) -> new ScheduleTree(v, state)));
+            state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, vehicleCapacity, (v) -> new ScheduleTree(v, state)));
         }
         var solver = new VSHSKTSolver(state);
         var simulator = new Simulator(state, solver);

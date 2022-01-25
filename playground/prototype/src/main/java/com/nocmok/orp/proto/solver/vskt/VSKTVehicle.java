@@ -23,14 +23,19 @@ public class VSKTVehicle implements Vehicle {
 
     private int nodesPassed;
     private int checkpointsPassed;
-    private int capacity = 3;
+    private int capacity;
     private Vehicle.State state;
     private double avgVelocity;
 
     public VSKTVehicle(GPS gps, Vehicle.State state, double avgVelocity, ScheduleTreeFabric scheduleTreeFabric) {
+        this(gps, state, avgVelocity, 3, scheduleTreeFabric);
+    }
+
+    public VSKTVehicle(GPS gps, Vehicle.State state, double avgVelocity, int capacity, ScheduleTreeFabric scheduleTreeFabric) {
         this.gpsLog = new ArrayList<>(List.of(gps));
         this.state = state;
         this.avgVelocity = avgVelocity;
+        this.capacity = capacity;
         this.scheduleTree = scheduleTreeFabric.createScheduleTree(this);
     }
 
