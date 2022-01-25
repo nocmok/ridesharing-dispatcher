@@ -16,18 +16,19 @@ public class SimpleVehicle implements Vehicle {
 
     private int nodesPassed;
     private int checkpointsPassed;
-    private int capacity = 3;
+    private int capacity;
     private Vehicle.State state;
     private double avgVelocity;
 
     public SimpleVehicle(GPS gps, Vehicle.State state, double avgVelocity) {
+        this(gps, state, avgVelocity, 3);
+    }
+
+    public SimpleVehicle(GPS gps, Vehicle.State state, double avgVelocity, int capacity) {
         this.gpsLog = new ArrayList<>(List.of(gps));
         this.state = state;
         this.avgVelocity = avgVelocity;
-    }
-
-    public SimpleVehicle(GPS gps) {
-        this(gps, Vehicle.State.AFK, 0);
+        this.capacity = capacity;
     }
 
     @Override public List<Integer> getRoute() {

@@ -4,8 +4,8 @@ import com.nocmok.orp.proto.graph.Graph;
 import com.nocmok.orp.proto.pojo.GPS;
 import com.nocmok.orp.proto.simulator.Simulator;
 import com.nocmok.orp.proto.solver.Request;
-import com.nocmok.orp.proto.solver.common.ShortestPathSolver;
 import com.nocmok.orp.proto.solver.Vehicle;
+import com.nocmok.orp.proto.solver.common.ShortestPathSolver;
 import com.nocmok.orp.proto.solver.common.SimpleORPInstance;
 import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 import com.nocmok.orp.proto.solver.taxi.TaxiSolver;
@@ -16,36 +16,61 @@ import com.nocmok.orp.proto.solver.vskt.VSKTORPInstance;
 import com.nocmok.orp.proto.solver.vskt.VSKTSolver;
 import com.nocmok.orp.proto.solver.vskt.VSKTVehicle;
 import com.nocmok.orp.proto.solver.vsls.VSLSSolver;
-import com.nocmok.orp.proto.tools.DimacsGraphConverter;
-import com.nocmok.orp.proto.tools.DimacsParser;
+import lombok.Builder;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+@Builder
 public class Benchmarking {
 
-    private Random random = new Random(1);
-    private Graph graph;
     private ShortestPathSolver shortestPathSolver;
     private List<Integer> vehicleInitialNodes;
     private List<GPS> vehicleInitialGPS;
     private List<Benchmark.DelayedRequest> requestPlan;
+    private Graph graph;
+
+    @Builder.Default
+    private Random random = new Random();
+    @Builder.Default
     private int nIterations = 86_400;
+    @Builder.Default
     private int nRequests = 1000;
-    private int nVehicles = 10;
+    @Builder.Default
+    private int nVehicles = 200;
+    @Builder.Default
     private double avgVehicleVelocity = 40;
+    @Builder.Default
     private int maxRidesharingLagSeconds = 480;
+    @Builder.Default
     private int maxClientWaitingTimeSeconds = 480;
+    @Builder.Default
+    private int vehicleCapacity = 3;
 
-    public Benchmarking() {
-        this.graph = loadGraph();
+    public Benchmarking(ShortestPathSolver shortestPathSolver, List<Integer> vehicleInitialNodes, List<GPS> vehicleInitialGPS,
+                        List<Benchmark.DelayedRequest> requestPlan, Graph graph, Random random, int nIterations, int nRequests, int nVehicles,
+                        double avgVehicleVelocity, int maxRidesharingLagSeconds, int maxClientWaitingTimeSeconds, int vehicleCapacity) {
+        this.graph = graph;
+        this.random = random;
+        this.nIterations = nIterations;
+        this.nRequests = nRequests;
+        this.nVehicles = nVehicles;
+        this.avgVehicleVelocity = avgVehicleVelocity;
+        this.maxRidesharingLagSeconds = maxRidesharingLagSeconds;
+        this.maxClientWaitingTimeSeconds = maxClientWaitingTimeSeconds;
+        this.vehicleCapacity = vehicleCapacity;
+
         this.shortestPathSolver = new ShortestPathSolver(graph);
+        this.requestPlan = getRequestPlan(nRequests);
+        this.vehicleInitialNodes = getNodes(nVehicles);
+        this.vehicleInitialGPS = getGPSList(this.vehicleInitialNodes);
+    }
 
-        this.requestPlan = new ArrayList<>();
+    private List<Benchmark.DelayedRequest> getRequestPlan(int nRequests) {
+        var requestPlan = new ArrayList<Benchmark.DelayedRequest>();
         for (int i = 0; i < nRequests; ++i) {
             int time = random.nextInt(nIterations + 1);
             int startNode = random.nextInt(graph.nNodes());
@@ -55,37 +80,24 @@ public class Benchmarking {
             requestPlan.add(new Benchmark.DelayedRequest(createRequest(time, startNode, endNode), time));
         }
         requestPlan.sort(Comparator.comparingInt(Benchmark.DelayedRequest::getTimeToAccept));
+        return requestPlan;
+    }
 
-        this.vehicleInitialNodes = new ArrayList<>();
-        this.vehicleInitialGPS = new ArrayList<>();
-        for (int i = 0; i < nVehicles; ++i) {
+    private List<Integer> getNodes(int nNodes) {
+        var nodes = new ArrayList<Integer>();
+        for (int i = 0; i < nNodes; ++i) {
             int node = random.nextInt(graph.nNodes());
-            vehicleInitialNodes.add(node);
-            vehicleInitialGPS.add(graph.getGps(node));
+            nodes.add(node);
         }
+        return nodes;
     }
 
-    private static void runBenchmark(String solver, Benchmark benchmark) {
-        long start;
-        long stop;
-        System.out.println("orp solver=" + solver);
-        start = System.currentTimeMillis();
-        System.out.println(benchmark.runBenchmarking());
-        stop = System.currentTimeMillis();
-        System.out.println("elapsed=" + ((stop - start) / 1000) + " (s)");
-    }
-
-    public static void main(String[] args) {
-        var benchMarking = new Benchmarking();
-        runBenchmark(TaxiSolver.class.toString(), benchMarking.getTaxiBenchmark());
-        System.out.println();
-        runBenchmark(VSLSSolver.class.toString(), benchMarking.getVSLSBenchmark());
-        System.out.println();
-        runBenchmark(VSKTSolver.class.toString(), benchMarking.getVSKTBenchmark());
-        System.out.println();
-        runBenchmark(VSHSKTSolver.class.toString(), benchMarking.getVSHSKTBenchmark());
-        System.out.println();
-        runBenchmark(VSHSSolver.class.toString(), benchMarking.getVSHSBenchmark());
+    private List<GPS> getGPSList(List<Integer> nodes) {
+        var gpsList = new ArrayList<GPS>();
+        for (Integer node : nodes) {
+            gpsList.add(graph.getGps(node));
+        }
+        return gpsList;
     }
 
     private Request createRequest(int time, int startNode, int endNode) {
@@ -106,81 +118,69 @@ public class Benchmarking {
                 .build();
     }
 
-    private Graph loadGraph() {
-        try {
-            var dimacsParser = new DimacsParser();
-            var gr = dimacsParser.readGr(Benchmark.class.getClassLoader().getResourceAsStream("ny131.gr"));
-            var co = dimacsParser.readCo(Benchmark.class.getClassLoader().getResourceAsStream("ny131.co"));
-            return new DimacsGraphConverter().convert(gr, co);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Benchmark getVSLSBenchmark() {
-        var state = new SimpleORPInstance(graph, vehicleInitialGPS.stream()
-                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity))
-                .collect(Collectors.toList()));
-        var solver = new VSLSSolver(state);
-        var simulator = new Simulator(state, solver);
-        return Benchmark.builder()
-                .nIterations(nIterations)
-                .requestPlan(requestPlan)
-                .simulator(simulator)
-                .build();
-    }
-
-    private Benchmark getVSHSBenchmark() {
-        var state = new SimpleORPInstance(graph, vehicleInitialGPS.stream()
-                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity))
-                .collect(Collectors.toList()));
-        var solver = new VSHSSolver(state);
-        var simulator = new Simulator(state, solver);
-        return Benchmark.builder()
-                .nIterations(nIterations)
-                .requestPlan(requestPlan)
-                .simulator(simulator)
-                .build();
-    }
-
-    private Benchmark getVSKTBenchmark() {
-        var state = new VSKTORPInstance(graph);
-        for (var gps : vehicleInitialGPS) {
-            state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, (v) -> new ScheduleTree(v, state)));
-        }
-        var solver = new VSKTSolver(state);
-        var simulator = new Simulator(state, solver);
-        return Benchmark.builder()
-                .nIterations(nIterations)
-                .requestPlan(requestPlan)
-                .simulator(simulator)
-                .build();
-    }
-
-    private Benchmark getVSHSKTBenchmark() {
-        var state = new VSKTORPInstance(graph);
-        for (var gps : vehicleInitialGPS) {
-            state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, (v) -> new ScheduleTree(v, state)));
-        }
-        var solver = new VSHSKTSolver(state);
-        var simulator = new Simulator(state, solver);
-        return Benchmark.builder()
-                .nIterations(nIterations)
-                .requestPlan(requestPlan)
-                .simulator(simulator)
-                .build();
-    }
-
     public Benchmark getTaxiBenchmark() {
         var state = new SimpleORPInstance(graph, vehicleInitialGPS.stream()
-                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity))
+                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity, vehicleCapacity))
                 .collect(Collectors.toList()));
         var solver = new TaxiSolver(state);
         var simulator = new Simulator(state, solver);
         return Benchmark.builder()
-                .nIterations(nIterations)
                 .requestPlan(requestPlan)
                 .simulator(simulator)
                 .build();
+    }
+
+    public Benchmark getVSLSBenchmark() {
+        var state = new SimpleORPInstance(graph, vehicleInitialGPS.stream()
+                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity, vehicleCapacity))
+                .collect(Collectors.toList()));
+        var solver = new VSLSSolver(state);
+        var simulator = new Simulator(state, solver);
+        return Benchmark.builder()
+                .requestPlan(requestPlan)
+                .simulator(simulator)
+                .build();
+    }
+
+    public Benchmark getVSHSBenchmark() {
+        var state = new SimpleORPInstance(graph, vehicleInitialGPS.stream()
+                .map(gps -> new SimpleVehicle(gps, SimpleVehicle.State.PENDING, avgVehicleVelocity, vehicleCapacity))
+                .collect(Collectors.toList()));
+        var solver = new VSHSSolver(state);
+        var simulator = new Simulator(state, solver);
+        return Benchmark.builder()
+                .requestPlan(requestPlan)
+                .simulator(simulator)
+                .build();
+    }
+
+    public Benchmark getVSKTBenchmark() {
+        var state = new VSKTORPInstance(graph);
+        for (var gps : vehicleInitialGPS) {
+            state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, vehicleCapacity, (v) -> new ScheduleTree(v, state)));
+        }
+        var solver = new VSKTSolver(state);
+        var simulator = new Simulator(state, solver);
+        return Benchmark.builder()
+                .requestPlan(requestPlan)
+                .simulator(simulator)
+                .build();
+    }
+
+    public Benchmark getVSHSKTBenchmark() {
+        var state = new VSKTORPInstance(graph);
+        for (var gps : vehicleInitialGPS) {
+            state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, vehicleCapacity, (v) -> new ScheduleTree(v, state)));
+        }
+        var solver = new VSHSKTSolver(state);
+        var simulator = new Simulator(state, solver);
+        return Benchmark.builder()
+                .requestPlan(requestPlan)
+                .simulator(simulator)
+                .build();
+    }
+
+    public List<Benchmark> getBenchmarks() {
+        return List.of(getTaxiBenchmark(), getVSLSBenchmark(), getVSHSBenchmark(), getVSKTBenchmark(), getVSHSKTBenchmark());
     }
 }
