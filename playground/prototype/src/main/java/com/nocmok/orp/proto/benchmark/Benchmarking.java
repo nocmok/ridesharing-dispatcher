@@ -11,7 +11,6 @@ import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 import com.nocmok.orp.proto.solver.taxi.TaxiSolver;
 import com.nocmok.orp.proto.solver.vshs.VSHSSolver;
 import com.nocmok.orp.proto.solver.vskt.ScheduleTree;
-import com.nocmok.orp.proto.solver.vskt.VSHSKTSolver;
 import com.nocmok.orp.proto.solver.vskt.VSKTORPInstance;
 import com.nocmok.orp.proto.solver.vskt.VSKTSolver;
 import com.nocmok.orp.proto.solver.vskt.VSKTVehicle;
@@ -49,10 +48,13 @@ public class Benchmarking {
     private int maxClientWaitingTimeSeconds = 480;
     @Builder.Default
     private int vehicleCapacity = 3;
+    @Builder.Default
+    private int vsktMaxScheduleSize = 8;
 
     public Benchmarking(ShortestPathSolver shortestPathSolver, List<Integer> vehicleInitialNodes, List<GPS> vehicleInitialGPS,
                         List<Benchmark.DelayedRequest> requestPlan, Graph graph, Random random, int nIterations, int nRequests, int nVehicles,
-                        double avgVehicleVelocity, int maxRidesharingLagSeconds, int maxClientWaitingTimeSeconds, int vehicleCapacity) {
+                        double avgVehicleVelocity, int maxRidesharingLagSeconds, int maxClientWaitingTimeSeconds, int vehicleCapacity,
+                        int vsktMaxScheduleSize) {
         this.graph = graph;
         this.random = random;
         this.nIterations = nIterations;
@@ -62,6 +64,7 @@ public class Benchmarking {
         this.maxRidesharingLagSeconds = maxRidesharingLagSeconds;
         this.maxClientWaitingTimeSeconds = maxClientWaitingTimeSeconds;
         this.vehicleCapacity = vehicleCapacity;
+        this.vsktMaxScheduleSize = vsktMaxScheduleSize;
 
         this.shortestPathSolver = new ShortestPathSolver(graph);
         this.requestPlan = getRequestPlan(nRequests);
@@ -159,20 +162,7 @@ public class Benchmarking {
         for (var gps : vehicleInitialGPS) {
             state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, vehicleCapacity, (v) -> new ScheduleTree(v, state)));
         }
-        var solver = new VSKTSolver(state);
-        var simulator = new Simulator(state, solver);
-        return Benchmark.builder()
-                .requestPlan(requestPlan)
-                .simulator(simulator)
-                .build();
-    }
-
-    public Benchmark getVSHSKTBenchmark() {
-        var state = new VSKTORPInstance(graph);
-        for (var gps : vehicleInitialGPS) {
-            state.addVehicle(new VSKTVehicle(gps, Vehicle.State.PENDING, avgVehicleVelocity, vehicleCapacity, (v) -> new ScheduleTree(v, state)));
-        }
-        var solver = new VSHSKTSolver(state);
+        var solver = new VSKTSolver(state, vsktMaxScheduleSize);
         var simulator = new Simulator(state, solver);
         return Benchmark.builder()
                 .requestPlan(requestPlan)
@@ -181,6 +171,6 @@ public class Benchmarking {
     }
 
     public List<Benchmark> getBenchmarks() {
-        return List.of(getTaxiBenchmark(), getVSLSBenchmark(), getVSHSBenchmark(), getVSKTBenchmark(), getVSHSKTBenchmark());
+        return List.of(getTaxiBenchmark(), getVSLSBenchmark(), getVSHSBenchmark(), getVSKTBenchmark());
     }
 }

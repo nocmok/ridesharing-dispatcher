@@ -11,6 +11,7 @@ import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 @Getter
 public class Simulator {
@@ -141,7 +142,13 @@ public class Simulator {
             for (int i = 0; i < nextPosition.getNodesPassed(); ++i) {
                 int startNode = vehicle.getNextNode().get();
                 var scheduleBefore = vehicle.getSchedule();
-                vehicle.passNode(vehicle.getNextNode().get());
+
+                try {
+                    vehicle.passNode(vehicle.getNextNode().get());
+                }catch (NoSuchElementException e) {
+                    System.out.println(vehicle);
+                }
+
                 if (scheduleBefore.size() != vehicle.getSchedule().size()) {
                     if (scheduleBefore.get(0).isArrivalCheckpoint()) {
                         if (scheduleBefore.get(0).getRequest().getLatestArrivalTime() < state.getTime()) {

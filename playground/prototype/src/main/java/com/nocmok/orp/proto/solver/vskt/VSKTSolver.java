@@ -8,6 +8,7 @@ import com.nocmok.orp.proto.solver.Request;
 import com.nocmok.orp.proto.solver.Route;
 import com.nocmok.orp.proto.solver.ScheduleCheckpoint;
 import com.nocmok.orp.proto.solver.common.ShortestPathSolver;
+import lombok.Builder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,11 +25,12 @@ public class VSKTSolver implements ORPSolver {
 
     private VSKTORPInstance state;
     private ShortestPathSolver shortestPathSolver;
-    private int scheduleSizeThreshold = 8;
+    private int scheduleSizeThreshold;
 
-    public VSKTSolver(VSKTORPInstance state) {
+    public VSKTSolver(VSKTORPInstance state, int scheduleSizeThreshold) {
         this.state = state;
         this.shortestPathSolver = new ShortestPathSolver(state.getGraph());
+        this.scheduleSizeThreshold = scheduleSizeThreshold;
     }
 
     // Строит оптимальный маршрут для выполнения плана
