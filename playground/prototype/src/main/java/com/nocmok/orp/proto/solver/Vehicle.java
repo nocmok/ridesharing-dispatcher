@@ -41,6 +41,10 @@ public interface Vehicle {
 
     int getCapacity();
 
+    int getCurrentCapacity();
+
+    void setCurrentCapacity(int value);
+
     public enum State {
         PENDING,
         SERVING,
