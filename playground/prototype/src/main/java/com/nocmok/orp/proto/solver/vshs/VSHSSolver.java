@@ -7,6 +7,7 @@ import com.nocmok.orp.proto.solver.ORPSolver;
 import com.nocmok.orp.proto.solver.Request;
 import com.nocmok.orp.proto.solver.Route;
 import com.nocmok.orp.proto.solver.ScheduleCheckpoint;
+import com.nocmok.orp.proto.solver.Vehicle;
 import com.nocmok.orp.proto.solver.common.AllSchedulesGenerator;
 import com.nocmok.orp.proto.solver.common.LazyScheduleGenerator;
 import com.nocmok.orp.proto.solver.common.ShortestPathSolver;
@@ -29,7 +30,7 @@ public class VSHSSolver implements ORPSolver {
 
     private SimpleORPInstance state;
     private ShortestPathSolver shortestPathSolver;
-    private int scheduleSizeThreshold = 8;
+    private int scheduleSizeThreshold = 6;
 
     public VSHSSolver(SimpleORPInstance state) {
         this.state = state;
@@ -77,8 +78,14 @@ public class VSHSSolver implements ORPSolver {
         for (var checkpoint : schedule) {
             Route route = shortestPathSolver.dijkstra(prevNode, checkpoint.getNode());
             time += route.getDistance() / avgVelocity;
-            if (time > checkpoint.getRequest().getArrivalTimeWindow()[1]) {
-                return false;
+            if (checkpoint.isArrivalCheckpoint()) {
+                if (time > checkpoint.getRequest().getLatestArrivalTime()) {
+                    return false;
+                }
+            } else {
+                if (time > checkpoint.getRequest().getLatestDepartureTime()) {
+                    return false;
+                }
             }
             prevNode = checkpoint.getNode();
         }
@@ -135,7 +142,7 @@ public class VSHSSolver implements ORPSolver {
         var scheduleGenerator = new LazyScheduleGenerator(oldSchedule, startCheckpoint, endCheckpoint);
         scheduleGenerator.forEachSchedule(augmentedSchedule -> {
 
-            if (!checkCapacityViolation(vehicle.getCapacity(), augmentedSchedule)) {
+            if (!checkCapacityViolation(vehicle.getCurrentCapacity(), augmentedSchedule)) {
                 return;
             }
 
@@ -191,7 +198,7 @@ public class VSHSSolver implements ORPSolver {
                 return;
             }
 
-            if (!checkCapacityViolation(vehicle.getCapacity(), augmentedSchedule)) {
+            if (!checkCapacityViolation(vehicle.getCurrentCapacity(), augmentedSchedule)) {
                 return;
             }
 
@@ -299,11 +306,33 @@ public class VSHSSolver implements ORPSolver {
         return Optional.of(new Matching(vehicle, route, schedule));
     }
 
+    private List<SimpleVehicle> filterVehicleCandidates(Request request) {
+        var candidates = new ArrayList<SimpleVehicle>();
+        for (var vehicle : state.getVehicleList()) {
+            if (vehicle.getState() == Vehicle.State.AFK) {
+                continue;
+            }
+            double distanceToClient;
+            if (vehicle.getNextNode().isPresent()) {
+                distanceToClient = distance(vehicle.getGps(), state.getGraph().getGps(vehicle.getNextNode().get()))
+                        + shortestPathSolver.dijkstra(vehicle.getNextNode().get(), request.getDepartureNode()).getDistance();
+            } else {
+                int nextNode = closestNode(state.getGraph(), vehicle.getGps());
+                distanceToClient = distance(vehicle.getGps(), state.getGraph().getGps(nextNode))
+                        + shortestPathSolver.dijkstra(nextNode, request.getDepartureNode()).getDistance();
+
+            }
+            if (state.getTime() + distanceToClient / vehicle.getAverageVelocity() > request.getLatestDepartureTime()) {
+                continue;
+            }
+            candidates.add(vehicle);
+        }
+        return candidates;
+    }
+
     @Override public Matching computeMatching(Request request) {
 
-        var candidateVehicles = state.getVehicleList().stream()
-                .filter(vehicle -> vehicle.getState() != SimpleVehicle.State.AFK)
-                .collect(Collectors.toCollection(ArrayList::new));
+        var candidateVehicles = filterVehicleCandidates(request);
 
         if (candidateVehicles.isEmpty()) {
             return new Matching(Matching.DenialReason.NO_VEHICLE_NEARBY);

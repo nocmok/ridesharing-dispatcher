@@ -6,6 +6,7 @@ import com.nocmok.orp.proto.solver.Vehicle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class SimpleVehicle implements Vehicle {
@@ -17,6 +18,7 @@ public class SimpleVehicle implements Vehicle {
     private int nodesPassed;
     private int checkpointsPassed;
     private int capacity;
+    private int currentCapacity;
     private Vehicle.State state;
     private double avgVelocity;
 
@@ -29,6 +31,7 @@ public class SimpleVehicle implements Vehicle {
         this.state = state;
         this.avgVelocity = avgVelocity;
         this.capacity = capacity;
+        this.currentCapacity = capacity;
     }
 
     @Override public List<Integer> getRoute() {
@@ -48,8 +51,15 @@ public class SimpleVehicle implements Vehicle {
     }
 
     @Override public void passNode(int node) {
-        ++nodesPassed;
+        while(getNextNode().isPresent() && Objects.equals(getNextNode().get(), node)) {
+            ++nodesPassed;
+        }
         while (getNextCheckpoint().isPresent() && getNextCheckpoint().get().getNode() == node) {
+            if(getNextCheckpoint().get().isArrivalCheckpoint()) {
+                currentCapacity += getNextCheckpoint().get().getRequest().getLoad();
+            }else{
+                currentCapacity -= getNextCheckpoint().get().getRequest().getLoad();
+            }
             ++checkpointsPassed;
         }
     }
@@ -86,5 +96,13 @@ public class SimpleVehicle implements Vehicle {
 
     @Override public double getAverageVelocity() {
         return avgVelocity;
+    }
+
+    @Override public int getCurrentCapacity() {
+        return currentCapacity;
+    }
+
+    @Override public void setCurrentCapacity(int value) {
+        this.currentCapacity = value;
     }
 }

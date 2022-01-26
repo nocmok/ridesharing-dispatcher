@@ -3,12 +3,12 @@ package com.nocmok.orp.proto.solver.taxi;
 import com.nocmok.orp.proto.graph.Graph;
 import com.nocmok.orp.proto.pojo.GPS;
 import com.nocmok.orp.proto.solver.Matching;
-import com.nocmok.orp.proto.solver.common.SimpleORPInstance;
 import com.nocmok.orp.proto.solver.ORPSolver;
 import com.nocmok.orp.proto.solver.Request;
 import com.nocmok.orp.proto.solver.Route;
 import com.nocmok.orp.proto.solver.ScheduleCheckpoint;
 import com.nocmok.orp.proto.solver.common.ShortestPathSolver;
+import com.nocmok.orp.proto.solver.common.SimpleORPInstance;
 import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 
 import java.util.ArrayList;
@@ -100,7 +100,8 @@ public class TaxiSolver implements ORPSolver {
         int vehicleLastNode = vehicle.getRoute().get(vehicle.getRoute().size() - 1);
         var currentRoute = getRoute(vehicle.getRoute());
         var routeToNewClient = shortestPathSolver.dijkstra(vehicleLastNode, request.getDepartureNode());
-        int timeToClient = (int) ((currentRoute.getDistance() + routeToNewClient.getDistance()) / vehicle.getAverageVelocity());
+        int timeToClient = (int) ((distance(vehicle.getGps(), state.getGraph().getGps(vehicle.getNextNode().get())) + currentRoute.getDistance() +
+                routeToNewClient.getDistance()) / vehicle.getAverageVelocity());
 
         if (!checkTimeFrame(state.getTime() + timeToClient, request.getEarliestDepartureTime(), request.getLatestDepartureTime())) {
             return Optional.empty();

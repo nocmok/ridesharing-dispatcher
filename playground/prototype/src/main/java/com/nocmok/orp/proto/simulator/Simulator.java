@@ -11,6 +11,7 @@ import com.nocmok.orp.proto.solver.common.SimpleVehicle;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 @Getter
 public class Simulator {
@@ -93,6 +94,7 @@ public class Simulator {
         updateEffectiveDistance(requestShortestRouteDistance);
 
         if (matching.getDenialReason() != Matching.DenialReason.ACCEPTED) {
+            ++processedRequests;
             updateDeniedRequests();
             updateDeniedEffectiveDistance(requestShortestRouteDistance);
             request.setState(Request.State.DENIED);
@@ -139,7 +141,30 @@ public class Simulator {
 
             for (int i = 0; i < nextPosition.getNodesPassed(); ++i) {
                 int startNode = vehicle.getNextNode().get();
-                vehicle.passNode(vehicle.getNextNode().get());
+                var scheduleBefore = vehicle.getSchedule();
+
+                try {
+                    vehicle.passNode(vehicle.getNextNode().get());
+                }catch (NoSuchElementException e) {
+                    System.out.println(vehicle);
+                }
+
+                if (scheduleBefore.size() != vehicle.getSchedule().size()) {
+                    if (scheduleBefore.get(0).isArrivalCheckpoint()) {
+                        if (scheduleBefore.get(0).getRequest().getLatestArrivalTime() < state.getTime()) {
+                            System.out.println("[anomaly] dropoff deadline violation: actual=" + state.getTime() + ", expected=" +
+                                    scheduleBefore.get(0).getRequest().getLatestArrivalTime());
+                        }
+                    } else {
+                        if (scheduleBefore.get(0).getRequest().getLatestDepartureTime() < state.getTime()) {
+                            System.out.println("[anomaly] pickup deadline violation: actual=" + state.getTime() + ", expected=" +
+                                    scheduleBefore.get(0).getRequest().getLatestDepartureTime());
+                        }
+                    }
+                }
+                if (vehicle.getCurrentCapacity() < 0) {
+                    System.out.println("[anomaly] vehicle capacity < 0");
+                }
                 if (vehicle.getNextNode().isPresent()) {
                     updateTotalDistance(state.getGraph().getRoadCost(startNode, vehicle.getNextNode().get()));
                     if (vehicleTravelsWithPassenger(vehicle)) {

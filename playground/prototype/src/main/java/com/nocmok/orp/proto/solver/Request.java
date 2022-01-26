@@ -25,13 +25,6 @@ public class Request {
     @Builder.Default
     private State state = State.PENDING;
 
-    public enum State {
-        PENDING,
-        SERVING,
-        SERVED,
-        DENIED,
-    }
-
     public int getEarliestDepartureTime() {
         return departureTimeWindow[0];
     }
@@ -46,5 +39,12 @@ public class Request {
 
     public int getLatestArrivalTime() {
         return arrivalTimeWindow[1];
+    }
+
+    public enum State {
+        PENDING,
+        SERVING,
+        SERVED,
+        DENIED,
     }
 }

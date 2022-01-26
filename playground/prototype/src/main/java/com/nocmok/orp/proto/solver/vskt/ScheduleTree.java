@@ -27,15 +27,30 @@ public class ScheduleTree {
         this.kineticTree = new KineticTree<>(ScheduleNode::new,
                 new KineticTree.Validator<ScheduleCheckpoint, ScheduleNode>() {
                     @Override public boolean validate(ScheduleNode parent, ScheduleNode child) {
-                        return child.getBestTime() <= child.getValue().getRequest().getLatestArrivalTime();
+                        if (child.getValue().isDepartureCheckpoint()) {
+                            return child.getCapacity() >= child.getValue().getRequest().getLoad() &&
+                                    child.getBestTime() <= child.getValue().getRequest().getLatestDepartureTime();
+                        } else {
+                            return child.getBestTime() <= child.getValue().getRequest().getLatestArrivalTime();
+                        }
                     }
 
                     @Override public boolean validate(ScheduleNode tree) {
-                        return true;
+                        if (tree.getValue().isDepartureCheckpoint()) {
+                            return tree.getCapacity() >= tree.getValue().getRequest().getLoad() &&
+                                    tree.getBestTime() <= tree.getValue().getRequest().getLatestDepartureTime();
+                        } else {
+                            return tree.getBestTime() <= tree.getValue().getRequest().getLatestArrivalTime();
+                        }
                     }
                 },
                 new KineticTree.Aggregator<ScheduleCheckpoint, ScheduleNode>() {
                     @Override public void aggregate(ScheduleNode parent, ScheduleNode child) {
+                        if (parent.getValue().isDepartureCheckpoint()) {
+                            child.setCapacity(parent.getCapacity() - parent.getValue().getRequest().getLoad());
+                        } else {
+                            child.setCapacity(parent.getCapacity() + parent.getValue().getRequest().getLoad());
+                        }
                         child.setBestTime(parent.getBestTime() +
                                 (int) (shortestPathSolver.dijkstra(parent.getValue().getNode(), child.getValue().getNode()).getDistance() /
                                         vehicle.getAverageVelocity() +
@@ -48,6 +63,7 @@ public class ScheduleTree {
                                 instance.getTime() + (int) (distance(vehicle.getGps(), instance.getGraph().getGps(startNode)) / vehicle.getAverageVelocity());
                         tree.setBestTime(startTime +
                                 (int) (shortestPathSolver.dijkstra(startNode, tree.getValue().getNode()).getDistance() / vehicle.getAverageVelocity() + 0.5));
+                        tree.setCapacity(vehicle.getCurrentCapacity());
                     }
                 });
     }

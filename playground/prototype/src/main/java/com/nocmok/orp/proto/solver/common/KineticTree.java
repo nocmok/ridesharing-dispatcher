@@ -39,8 +39,11 @@ public class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
     // значение parent во всех перестановках должно идти перед значением child
     public void insert(T parent, T child) {
         insertPair(root, parent, child);
-        harvest(root);
         depth += 2;
+        harvest(root);
+        if (root.isEmpty()) {
+            depth = 0;
+        }
     }
 
     // Вставляет значение в дерево
@@ -48,6 +51,9 @@ public class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
         insertOne(root, value);
         harvest(root);
         depth += 1;
+        if (root.isEmpty()) {
+            depth = 0;
+        }
     }
 
     // Спускает корень дерева в поддерево с указанным префиксом

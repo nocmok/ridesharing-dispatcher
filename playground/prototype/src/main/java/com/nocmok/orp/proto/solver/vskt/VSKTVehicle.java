@@ -24,6 +24,7 @@ public class VSKTVehicle implements Vehicle {
     private int nodesPassed;
     private int checkpointsPassed;
     private int capacity;
+    private int currentCapacity;
     private Vehicle.State state;
     private double avgVelocity;
 
@@ -36,6 +37,7 @@ public class VSKTVehicle implements Vehicle {
         this.state = state;
         this.avgVelocity = avgVelocity;
         this.capacity = capacity;
+        this.currentCapacity = capacity;
         this.scheduleTree = scheduleTreeFabric.createScheduleTree(this);
     }
 
@@ -56,9 +58,16 @@ public class VSKTVehicle implements Vehicle {
     }
 
     @Override public void passNode(int node) {
-        ++nodesPassed;
+        while(getNextNode().isPresent() && Objects.equals(getNextNode().get(), node)) {
+            ++nodesPassed;
+        }
         while (getNextCheckpoint().isPresent() && Objects.equals(getNextCheckpoint().get().getNode(), node)) {
             scheduleTree.passCheckpoint(getNextCheckpoint().get());
+            if (getNextCheckpoint().get().isArrivalCheckpoint()) {
+                currentCapacity += getNextCheckpoint().get().getRequest().getLoad();
+            } else {
+                currentCapacity -= getNextCheckpoint().get().getRequest().getLoad();
+            }
             ++checkpointsPassed;
         }
     }
@@ -89,7 +98,7 @@ public class VSKTVehicle implements Vehicle {
     @Override public void updateSchedule(List<ScheduleCheckpoint> newSchedule) {
         var newScheduleSet = new HashSet<>(newSchedule);
         // Если в текущем плане есть ноды, которых нет в новом плане - перестраиваем дерево целиком
-        if (!newScheduleSet.containsAll(this.schedule)) {
+        if (!newScheduleSet.containsAll(getSchedule())) {
             scheduleTree.clear();
             for (var checkpointPair : getCoupledCheckpoints(newSchedule)) {
                 if (checkpointPair.length == 1) {
@@ -150,5 +159,13 @@ public class VSKTVehicle implements Vehicle {
 
     public ScheduleTree getScheduleTree() {
         return scheduleTree;
+    }
+
+    @Override public int getCurrentCapacity() {
+        return currentCapacity;
+    }
+
+    @Override public void setCurrentCapacity(int value) {
+        this.currentCapacity = value;
     }
 }

@@ -59,8 +59,14 @@ public class VSLSSolver implements ORPSolver {
         for (var checkpoint : schedule) {
             Route route = shortestPathSolver.dijkstra(prevNode, checkpoint.getNode());
             time += route.getDistance() / avgVelocity;
-            if (time > checkpoint.getRequest().getArrivalTimeWindow()[1]) {
-                return false;
+            if(checkpoint.isArrivalCheckpoint()) {
+                if(time > checkpoint.getRequest().getLatestArrivalTime()) {
+                    return false;
+                }
+            }else{
+                if(time > checkpoint.getRequest().getLatestDepartureTime()) {
+                    return false;
+                }
             }
             prevNode = checkpoint.getNode();
         }
@@ -117,7 +123,7 @@ public class VSLSSolver implements ORPSolver {
         var scheduleGenerator = new LazyScheduleGenerator(oldSchedule, startCheckpoint, endCheckpoint);
         scheduleGenerator.forEachSchedule(augmentedSchedule -> {
 
-            if (!checkCapacityViolation(vehicle.getCapacity(), augmentedSchedule)) {
+            if (!checkCapacityViolation(vehicle.getCurrentCapacity(), augmentedSchedule)) {
                 return;
             }
 
