@@ -6,8 +6,8 @@ import sys
 
 script_dir=sys.path[0]
 ds_name=sys.argv[1]
-csv_path=script_dir + "/" + ds_name + "/" + ds_name + "_metrics_per_n_vehicles.csv"
-png_plot_path=script_dir + "/" + ds_name + "/" + ds_name + "_metrics_per_n_vehicles.png"
+csv_path=script_dir + "/" + ds_name + "/" + ds_name + "_metrics_per_sample.csv"
+png_plot_path=script_dir + "/" + ds_name + "/" + ds_name + "_metrics_per_sample.png"
 dataset = read_csv(csv_path)
 
 # 1. service rate
@@ -23,7 +23,7 @@ axs[2].set_title("distance savings (%) relative to taxi")
 axs[3].set_title("request processing time average (ms)")
 
 for algo in np.unique(dataset["algo"].values):
-	samples = dataset[dataset["algo"] == algo]["n_vehicles"].values
+	samples = dataset[dataset["algo"] == algo]["sample"].values
 
 	service_rate = dataset[dataset["algo"] == algo]["service_rate"].values * 100
 	line, = axs[0].plot(samples, service_rate)

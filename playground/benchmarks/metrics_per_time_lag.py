@@ -2,8 +2,13 @@ import numpy as np
 import pandas
 from pandas import read_csv
 import matplotlib.pyplot as plt
+import sys
 
-dataset = read_csv("ny131_metrics_per_time_lag.csv")
+script_dir=sys.path[0]
+ds_name=sys.argv[1]
+csv_path=script_dir + "/" + ds_name + "/" + ds_name + "_metrics_per_time_lag.csv"
+png_plot_path=script_dir + "/" + ds_name + "/" + ds_name + "_metrics_per_time_lag.png"
+dataset = read_csv(csv_path)
 
 # 1. service rate
 # 2. distance savings relative to personal transport
@@ -36,4 +41,4 @@ for algo in np.unique(dataset["algo"].values):
 plt.subplots_adjust(hspace=0.4, top=1, right=0.8)
 handles, labels = axs[3].get_legend_handles_labels()
 fig.legend(handles, labels, loc='upper right')
-plt.savefig("ny131_metrics_per_time_lag.png", dpi=300, bbox_inches="tight", pad_inches=0.2)
+plt.savefig(png_plot_path, dpi=300, bbox_inches="tight", pad_inches=0.2)
