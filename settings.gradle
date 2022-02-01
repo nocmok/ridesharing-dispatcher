@@ -1,0 +1,3 @@
+rootProject.name="orp"
+include ":core_api"
+include ":orp_solver"
