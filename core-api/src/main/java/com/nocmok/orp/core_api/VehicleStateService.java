@@ -2,9 +2,9 @@ package com.nocmok.orp.core_api;
 
 import java.util.List;
 
-public interface VehicleService {
+public interface VehicleStateService<V extends Vehicle> {
 
-    List<Vehicle> getVehiclesByIds(List<String> ids);
+    List<V> getVehiclesByIds(List<String> ids);
 
-    void updateVehicleStateBatch(List<Vehicle> vehicle);
+    void updateVehiclesBatch(List<V> vehicle);
 }

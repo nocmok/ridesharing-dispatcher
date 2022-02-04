@@ -1,2 +1,6 @@
-package com.nocmok.orp.core_api;public enum ScheduleNodeKind {
+package com.nocmok.orp.core_api;
+
+public enum ScheduleNodeKind {
+    PICKUP,
+    DROPOFF
 }
