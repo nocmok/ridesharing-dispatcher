@@ -1,3 +1,4 @@
-rootProject.name="orp"
-include ":core_api"
-include ":orp_solver"
+rootProject.name = 'orp'
+include 'core-api'
+include 'orp-solver'
+include 'vehicle-state-service:postgres'
