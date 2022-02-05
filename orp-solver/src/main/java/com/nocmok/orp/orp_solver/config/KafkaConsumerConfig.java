@@ -23,8 +23,11 @@ public class KafkaConsumerConfig {
     @Value("${kafka.consumers.orp_solver.group_id}")
     private String kafkaOrpSolverConsumerGroupId;
 
+    @Value("${kafka.consumers.orp_solver.n_threads}")
+    private Integer nThreads;
+
     @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
+    public ConsumerFactory<String, String> orpInputConsumerFactory() {
         var props = new HashMap<String, Object>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getKafkaBootstrapAddress());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaOrpSolverConsumerGroupId);
@@ -34,9 +37,10 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, String> orpInputKafkaListenerContainerFactory() {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, String>();
-        factory.setConsumerFactory(consumerFactory());
+        factory.setConcurrency(nThreads);
+        factory.setConsumerFactory(orpInputConsumerFactory());
         return factory;
     }
 }
