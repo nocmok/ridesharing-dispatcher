@@ -7,42 +7,42 @@ public class Request {
     /**
      * Идентификатор запроса
      */
-    private String requestId;
+    private final String requestId;
 
     /**
      * Идентификатор вершины графа, привязанной к точке посадки
      */
-    private int pickupNodeId;
+    private final int pickupNodeId;
 
     /**
      * Широта координаты точки посадки
      */
-    private double pickupLat;
+    private final double pickupLat;
 
     /**
      * Долгота координаты точки посадки
      */
-    private double pickupLon;
+    private final double pickupLon;
 
     /**
      * Идентификатор вершины графа, привязанной к точке высадки
      */
-    private int dropoffNodeId;
+    private final int dropoffNodeId;
 
     /**
      * Широта координаты точки высадки
      */
-    private double dropoffLat;
+    private final double dropoffLat;
 
     /**
      * Долгота координаты точки высадки
      */
-    private double dropoffLon;
+    private final double dropoffLon;
 
     /**
      * Время создания запроса
      */
-    private Instant requestedAt;
+    private final Instant requestedAt;
 
     /**
      * Ограничение на задержку связанную с применением райдшеринга.
@@ -52,15 +52,20 @@ public class Request {
      * T = оценка времени построенного маршрута от точки посадки до точки высадки
      * то T <= detourConstraint * t
      */
-    private double detourConstraint;
+    private final double detourConstraint;
+
+    /**
+     * Максимальное допустимое время ожидания тс от момента формирования запроса
+     */
+    private final int maxPickupDelaySeconds;
 
     /**
      * Нагрузка оказываемая на тс при выполнении запроса, например количество человек
      */
-    private int load;
+    private final int load;
 
     public Request(String requestId, int pickupNodeId, double pickupLat, double pickupLon, int dropoffNodeId, double dropoffLat, double dropoffLon,
-                   Instant requestedAt, double detourConstraint, int load) {
+                   Instant requestedAt, double detourConstraint, int maxPickupDelaySeconds, int load) {
         this.requestId = requestId;
         this.pickupNodeId = pickupNodeId;
         this.pickupLat = pickupLat;
@@ -70,7 +75,12 @@ public class Request {
         this.dropoffLon = dropoffLon;
         this.requestedAt = requestedAt;
         this.detourConstraint = detourConstraint;
+        this.maxPickupDelaySeconds = maxPickupDelaySeconds;
         this.load = load;
+    }
+
+    public int getMaxPickupDelaySeconds() {
+        return maxPickupDelaySeconds;
     }
 
     public String getRequestId() {
@@ -111,5 +121,21 @@ public class Request {
 
     public int getLoad() {
         return load;
+    }
+
+    @Override public String toString() {
+        return "Request{" +
+                "requestId='" + requestId + '\'' +
+                ", pickupNodeId=" + pickupNodeId +
+                ", pickupLat=" + pickupLat +
+                ", pickupLon=" + pickupLon +
+                ", dropoffNodeId=" + dropoffNodeId +
+                ", dropoffLat=" + dropoffLat +
+                ", dropoffLon=" + dropoffLon +
+                ", requestedAt=" + requestedAt +
+                ", detourConstraint=" + detourConstraint +
+                ", maxPickupDelaySeconds=" + maxPickupDelaySeconds +
+                ", load=" + load +
+                '}';
     }
 }

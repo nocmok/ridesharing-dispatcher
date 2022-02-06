@@ -23,4 +23,11 @@ public class GCS {
     public double lon() {
         return lon;
     }
+
+    @Override public String toString() {
+        return "GCS{" +
+                "lat=" + lat +
+                ", lon=" + lon +
+                '}';
+    }
 }

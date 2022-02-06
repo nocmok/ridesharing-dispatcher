@@ -70,4 +70,16 @@ public class ScheduleNode {
     public String getOrderId() {
         return orderId;
     }
+
+    @Override public String toString() {
+        return "ScheduleNode{" +
+                "deadline=" + deadline +
+                ", load=" + load +
+                ", nodeId=" + nodeId +
+                ", lat=" + lat +
+                ", lon=" + lon +
+                ", kind=" + kind +
+                ", orderId='" + orderId + '\'' +
+                '}';
+    }
 }
