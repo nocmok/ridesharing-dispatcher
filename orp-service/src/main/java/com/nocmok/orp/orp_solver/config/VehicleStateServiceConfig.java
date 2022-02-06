@@ -1,7 +1,6 @@
 package com.nocmok.orp.orp_solver.config;
 
-import com.nocmok.orp.core_api.Vehicle;
-import com.nocmok.orp.core_api.VehicleStateService;
+import com.nocmok.orp.vss.pg.VehicleStateService;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +30,7 @@ public class VehicleStateServiceConfig {
     }
 
     @Bean
-    public VehicleStateService<com.nocmok.orp.vss.pg.Vehicle> vehicleVehicleStateService() {
-        return new com.nocmok.orp.vss.pg.VehicleStateService(vehicleStateDatasource());
+    public VehicleStateService vehicleVehicleStateService() {
+        return new VehicleStateService(vehicleStateDatasource());
     }
 }

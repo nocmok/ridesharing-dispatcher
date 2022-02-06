@@ -1,15 +1,63 @@
 package com.nocmok.orp.core_api;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface Vehicle {
+
+    /**
+     * Идентификатор тс
+     */
     String getId();
+
+    /**
+     * Текущий статус тс
+     */
     VehicleStatus getStatus();
-    GCS getGCS();
+
+    /**
+     * Для обновления статуса тс
+     */
+    void setStatus(VehicleStatus status);
+
+    /**
+     * Текущий план тс
+     */
     List<ScheduleNode> getSchedule();
-    Optional<ScheduleNode> getNextScheduleNode();
+
+    /**
+     * Для обновления плана тс
+     */
+    void setSchedule(List<ScheduleNode> schedule);
+
+    /**
+     * Суммарная емкость тс
+     */
     int getCapacity();
+
+    /**
+     * Свободная емкость тс
+     */
     int getResidualCapacity();
+
+    /**
+     * Для обновления свободной емкости тс
+     */
     void setResidualCapacity(int capacity);
+
+    /**
+     * Текущие координаты тс
+     */
+    GCS getGCS();
+
+    /**
+     * Возвращает привязку тс к графу
+     */
+    RoadBinding getRoadBinding();
+
+    /**
+     * Возвращает расстояние запланированного маршрута.
+     * Если тс находится в состоянии PENDING, то это значение = 0.
+     * Если тс выполняет план, то это значение равно сумме весов оставшихся в маршруте ребер, кроме текущего
+     */
+    double getDistanceScheduled();
 }

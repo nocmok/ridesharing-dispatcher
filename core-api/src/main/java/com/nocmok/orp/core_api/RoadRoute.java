@@ -21,4 +21,11 @@ public class RoadRoute {
     public double getCost() {
         return cost;
     }
+
+    @Override public String toString() {
+        return "RoadRoute{" +
+                "route=" + route +
+                ", cost=" + cost +
+                '}';
+    }
 }

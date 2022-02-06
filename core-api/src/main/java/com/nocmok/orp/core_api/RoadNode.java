@@ -18,4 +18,11 @@ public class RoadNode {
     public GCS getCoordinates() {
         return coordinates;
     }
+
+    @Override public String toString() {
+        return "RoadNode{" +
+                "nodeId=" + nodeId +
+                ", coordinates=" + coordinates +
+                '}';
+    }
 }
