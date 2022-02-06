@@ -2,9 +2,9 @@ package com.nocmok.orp.road_index.mem_stub;
 
 import com.nocmok.orp.core_api.GCS;
 import com.nocmok.orp.core_api.RoadIndex;
+import com.nocmok.orp.core_api.RoadIndexEntity;
 import com.nocmok.orp.core_api.RoadNode;
 import com.nocmok.orp.core_api.RoadRoute;
-import com.nocmok.orp.core_api.Vehicle;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 public class DijkstraIndex implements RoadIndex {
 
     private DimacsParser dimacsParser = new DimacsParser();
-    private HashMap<Long, RoadRoute> cache = new HashMap<>();
+    private HashMap<Long, RoadRoute> routesCache = new HashMap<>();
     private List<List<Edge>> gr;
     private List<double[]> co;
     private List<GCS> coGCS;
-    private List<Vehicle> vehicles = new ArrayList<>();
+    private List<RoadIndexEntity> objects = new ArrayList<>();
 
     public DijkstraIndex(InputStream grIn, InputStream coIn) {
         try {
@@ -121,24 +121,29 @@ public class DijkstraIndex implements RoadIndex {
     }
 
     private RoadRoute dijkstra(int startNode, int endNode) {
-        return cache.computeIfAbsent(hash(startNode, endNode), (h) -> _dijkstra(startNode, endNode));
+        return routesCache.computeIfAbsent(hash(startNode, endNode), (h) -> _dijkstra(startNode, endNode));
     }
 
-    @Override public RoadRoute shortestRoute(RoadNode a, RoadNode b) {
-        return dijkstra(a.getNodeId(), b.getNodeId());
+    @Override public RoadRoute shortestRoute(int startNodeId, int endNodeId) {
+        return dijkstra(startNodeId, endNodeId);
     }
 
-    @Override public List<Vehicle> getNeighbors(GCS center, double radius) {
-        var neighbors = new ArrayList<Vehicle>();
-        var closestToCenterNode = closestNode(center);
-        for (var vehicle : vehicles) {
-            var closestToVehicleNode = closestNode(vehicle.getGCS());
-            var routeToVehicle = shortestRoute(closestToVehicleNode, closestToCenterNode);
-            double correction = distance(closestToCenterNode.getCoordinates(), center) + distance(closestToVehicleNode.getCoordinates(), vehicle.getGCS());
+
+    private RoadNode mapObjectToNode(RoadIndexEntity object) {
+        return getClosestNode(object.getGcs());
+    }
+
+    @Override public List<RoadIndexEntity> getNeighborhood(GCS center, double radius) {
+        var neighbors = new ArrayList<RoadIndexEntity>();
+        var closestToCenterNode = getClosestNode(center);
+        for (var object : objects) {
+            var closestToVehicleNode = mapObjectToNode(object);
+            var routeToVehicle = shortestRoute(closestToVehicleNode.getNodeId(), closestToCenterNode.getNodeId());
+            double correction = distance(closestToCenterNode.getCoordinates(), center) + distance(closestToVehicleNode.getCoordinates(), object.getGcs());
             if (routeToVehicle.getCost() + correction > radius) {
                 continue;
             }
-            neighbors.add(vehicle);
+            neighbors.add(object);
         }
         return neighbors;
     }
@@ -147,7 +152,7 @@ public class DijkstraIndex implements RoadIndex {
         return Math.hypot(a.lat() - b.lat(), a.lon() - b.lon());
     }
 
-    private RoadNode closestNode(GCS gcs) {
+    private RoadNode getClosestNode(GCS gcs) {
         double bestDistance = Double.POSITIVE_INFINITY;
         int closestNode = -1;
         for (int i = 0; i < gr.size(); ++i) {
@@ -160,7 +165,11 @@ public class DijkstraIndex implements RoadIndex {
         return new RoadNode(closestNode, coGCS.get(closestNode));
     }
 
-    public void addVehicle(Vehicle vehicle) {
-        vehicles.add(vehicle);
+    public void addObject(RoadIndexEntity object) {
+        objects.add(object);
+    }
+
+    public GCS getGCSByNodeId(int nodeId) {
+        return coGCS.get(nodeId);
     }
 }
