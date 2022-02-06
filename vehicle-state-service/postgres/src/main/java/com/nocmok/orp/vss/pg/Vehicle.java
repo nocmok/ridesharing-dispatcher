@@ -1,14 +1,16 @@
 package com.nocmok.orp.vss.pg;
 
 import com.nocmok.orp.core_api.GCS;
+import com.nocmok.orp.core_api.RoadBinding;
 import com.nocmok.orp.core_api.ScheduleNode;
 import com.nocmok.orp.core_api.VehicleStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import java.util.List;
-import java.util.Optional;
 
 @Builder
+@AllArgsConstructor
 public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
 
     private String id;
@@ -17,6 +19,11 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
     private List<ScheduleNode> schedule;
     private int capacity;
     private int residualCapacity;
+    private RoadBinding roadBinding;
+    private double distanceScheduled;
+
+    public Vehicle() {
+    }
 
     @Override public String getId() {
         return id;
@@ -30,7 +37,7 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
         return status;
     }
 
-    void setStatus(VehicleStatus status) {
+    @Override public void setStatus(VehicleStatus status) {
         this.status = status;
     }
 
@@ -42,12 +49,8 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
         return schedule;
     }
 
-    void setSchedule(List<ScheduleNode> schedule) {
+    @Override public void setSchedule(List<ScheduleNode> schedule) {
         this.schedule = schedule;
-    }
-
-    @Override public Optional<ScheduleNode> getNextScheduleNode() {
-        return schedule.isEmpty() ? Optional.empty() : Optional.of(schedule.get(0));
     }
 
     @Override public int getCapacity() {
@@ -70,5 +73,24 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
         this.gcs = gcs;
     }
 
+    @Override public String toString() {
+        return "Vehicle{" +
+                "id='" + id + '\'' +
+                ", status=" + status +
+                ", gcs=" + gcs +
+                ", schedule=" + schedule +
+                ", capacity=" + capacity +
+                ", residualCapacity=" + residualCapacity +
+                ", roadBinding=" + roadBinding +
+                ", distanceScheduled=" + distanceScheduled +
+                '}';
+    }
 
+    @Override public RoadBinding getRoadBinding() {
+        return roadBinding;
+    }
+
+    @Override public double getDistanceScheduled() {
+        return distanceScheduled;
+    }
 }
