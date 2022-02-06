@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class RoadIndexConfig {
 
     @Bean
-    public RoadIndex roadIndex() {
+    public DijkstraIndex dijkstraIndex() {
         var classLoader = getClass().getClassLoader();
         return new DijkstraIndex(classLoader.getResourceAsStream("ny131.gr"), classLoader.getResourceAsStream("ny131.co"));
     }

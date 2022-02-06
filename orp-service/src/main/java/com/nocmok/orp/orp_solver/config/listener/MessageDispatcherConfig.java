@@ -1,6 +1,7 @@
 package com.nocmok.orp.orp_solver.config.listener;
 
 import com.nocmok.orp.orp_solver.config.JacksonConfig;
+import com.nocmok.orp.orp_solver.config.solver.LSSolverConfig;
 import com.nocmok.orp.orp_solver.kafka.orp_input.MessageDispatcher;
 import com.nocmok.orp.orp_solver.kafka.orp_input.OrpInputRequestHandlers;
 import com.nocmok.orp.orp_solver.kafka.orp_input.RequestHandler;
@@ -14,10 +15,12 @@ public class MessageDispatcherConfig {
 
     @Autowired
     private JacksonConfig jacksonConfig;
+    @Autowired
+    private LSSolverConfig lsSolverConfig;
 
     @Bean
     public OrpInputRequestHandlers orpInputRequestHandlers(@Autowired MessageDispatcher messageDispatcher) {
-        var handler = new OrpInputRequestHandlers();
+        var handler = new OrpInputRequestHandlers(lsSolverConfig.lsSolver());
         messageDispatcher.registerRequestHandler(MatchVehiclesRequest.class, new RequestHandler<>() {
             @Override public void handle(MatchVehiclesRequest requestDto) {
                 handler.handleMatchVehicleRequest(requestDto);

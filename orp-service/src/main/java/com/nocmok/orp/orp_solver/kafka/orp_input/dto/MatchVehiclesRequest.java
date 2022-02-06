@@ -33,11 +33,65 @@ public class MatchVehiclesRequest {
     @JsonProperty("detourConstraint")
     private double detourConstraint;
 
+    @JsonProperty("maxPickupDelaySeconds")
+    private int maxPickupDelaySeconds;
+
     @JsonProperty("load")
     private int load;
 
+    @JsonProperty("topK")
+    private int topK;
+
     public MatchVehiclesRequest() {
 
+    }
+
+    public int getTopK() {
+        return topK;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public int getPickupNodeId() {
+        return pickupNodeId;
+    }
+
+    public double getPickupLat() {
+        return pickupLat;
+    }
+
+    public double getPickupLon() {
+        return pickupLon;
+    }
+
+    public int getDropoffNodeId() {
+        return dropoffNodeId;
+    }
+
+    public double getDropoffLat() {
+        return dropoffLat;
+    }
+
+    public double getDropoffLon() {
+        return dropoffLon;
+    }
+
+    public Instant getRequestedAt() {
+        return requestedAt;
+    }
+
+    public double getDetourConstraint() {
+        return detourConstraint;
+    }
+
+    public int getMaxPickupDelaySeconds() {
+        return maxPickupDelaySeconds;
+    }
+
+    public int getLoad() {
+        return load;
     }
 
     @Override public String toString() {

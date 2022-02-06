@@ -26,6 +26,7 @@ dependencies {
 	implementation project(':core-api')
 	implementation project(':vehicle-state-service:postgres')
 	implementation project(':road-index:mem-stub')
+	implementation project(':orp-solver:lazy-search-solver')
 
 	implementation 'org.postgresql:postgresql:42.3.2'
 
