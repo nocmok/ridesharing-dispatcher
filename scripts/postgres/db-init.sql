@@ -44,12 +44,31 @@ create table vehicle_session
     session_id bigint primary key default nextval('session_id_seq'),
 	vehicle_id bigint,
 	driver_id bigint,
+
 	created_at timestamp with time zone,
 	completed_at timestamp with time zone,
+
 	status vehicle_status default 'PENDING',
 	total_capacity bigint,
 	residual_capacity bigint,
+
     schedule_json text,
+
+    road_start_node_id bigint,
+    road_start_node_lat float8,
+    road_start_node_lon float8,
+
+    road_end_node_id bigint,
+    road_end_node_lat float8,
+    road_end_node_lon float8,
+
+    road_cost float8,
+    road_progress float8,
+
+    distance_scheduled float8,
+
+    lat float8,
+    lon float8,
 
 	constraint fk_acve_veid__vein_veid foreign key (vehicle_id) references vehicle_info(vehicle_id),
 	constraint fk_acve_drid__usin_drid foreign key (driver_id) references user_info(user_id)
