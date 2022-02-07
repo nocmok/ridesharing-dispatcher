@@ -1,33 +1,33 @@
 package com.nocmok.orp.core_api;
 
-public class Road {
+public class GraphRoad {
 
     /**
      * Начальная точка ребра
      */
-    private final RoadNode startNode;
+    private final GraphNode startNode;
 
     /**
      * Конечная точка ребра
      */
-    private final RoadNode endNode;
+    private final GraphNode endNode;
 
     /**
      * Стоимость прохождения по ребру
      */
     private final double cost;
 
-    public Road(RoadNode startNode, RoadNode endNode, double cost) {
+    public GraphRoad(GraphNode startNode, GraphNode endNode, double cost) {
         this.startNode = startNode;
         this.endNode = endNode;
         this.cost = cost;
     }
 
-    public RoadNode getStartNode() {
+    public GraphNode getStartNode() {
         return startNode;
     }
 
-    public RoadNode getEndNode() {
+    public GraphNode getEndNode() {
         return endNode;
     }
 

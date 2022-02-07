@@ -25,8 +25,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
 	implementation project(':core-api')
-	implementation project(':vehicle-state-service:postgres')
-	implementation project(':road-index:mem-stub')
+	implementation project(':state-keeper:postgres')
+	implementation project(':graph-index:mem-stub')
 	implementation project(':orp-solver:lazy-search-solver')
 
 	implementation 'org.postgresql:postgresql:42.3.2'

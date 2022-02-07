@@ -3,12 +3,12 @@ package com.nocmok.orp.core_api;
 /**
  * Для привязывания тс к дорожному графу
  */
-public class RoadBinding {
+public class GraphBinding {
 
     /**
      * Привязка к ребру графа
      */
-    private final Road road;
+    private final GraphRoad road;
 
     /**
      * Положение внутри ребра.
@@ -17,12 +17,12 @@ public class RoadBinding {
      */
     private final double progress;
 
-    public RoadBinding(Road road, double progress) {
+    public GraphBinding(GraphRoad road, double progress) {
         this.road = road;
         this.progress = progress;
     }
 
-    public Road getRoad() {
+    public GraphRoad getRoad() {
         return road;
     }
 

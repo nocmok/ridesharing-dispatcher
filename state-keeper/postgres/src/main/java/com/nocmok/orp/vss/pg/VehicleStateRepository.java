@@ -1,9 +1,9 @@
 package com.nocmok.orp.vss.pg;
 
 import com.nocmok.orp.core_api.GCS;
-import com.nocmok.orp.core_api.Road;
-import com.nocmok.orp.core_api.RoadBinding;
-import com.nocmok.orp.core_api.RoadNode;
+import com.nocmok.orp.core_api.GraphRoad;
+import com.nocmok.orp.core_api.GraphBinding;
+import com.nocmok.orp.core_api.GraphNode;
 import com.nocmok.orp.core_api.VehicleStatus;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -42,12 +42,12 @@ public class VehicleStateRepository {
                 .capacity(rs.getInt("total_capacity"))
                 .residualCapacity(rs.getInt("residual_capacity"))
                 .schedule(scheduleJsonMapper.decodeSchedule(rs.getString("schedule_json")))
-                .roadBinding(new RoadBinding(
-                        new Road(
-                                new RoadNode(
+                .roadBinding(new GraphBinding(
+                        new GraphRoad(
+                                new GraphNode(
                                         rs.getInt("road_start_node_id"),
                                         new GCS(rs.getDouble("road_start_node_lat"), rs.getDouble("road_start_node_lon"))),
-                                new RoadNode(
+                                new GraphNode(
                                         rs.getInt("road_end_node_id"),
                                         new GCS(rs.getDouble("road_end_node_lat"), rs.getDouble("road_end_node_lon"))),
                                 rs.getDouble("road_cost")

@@ -52,7 +52,7 @@ public interface Vehicle {
     /**
      * Возвращает привязку тс к графу
      */
-    RoadBinding getRoadBinding();
+    GraphBinding getRoadBinding();
 
     /**
      * Возвращает расстояние запланированного маршрута.

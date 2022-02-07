@@ -4,10 +4,10 @@ import com.google.common.collect.MinMaxPriorityQueue;
 import com.nocmok.orp.core_api.GCS;
 import com.nocmok.orp.core_api.OrpSolver;
 import com.nocmok.orp.core_api.Request;
-import com.nocmok.orp.core_api.RoadIndex;
-import com.nocmok.orp.core_api.RoadIndexEntity;
-import com.nocmok.orp.core_api.RoadNode;
-import com.nocmok.orp.core_api.RoadRoute;
+import com.nocmok.orp.core_api.GraphIndex;
+import com.nocmok.orp.core_api.GraphIndexEntity;
+import com.nocmok.orp.core_api.GraphNode;
+import com.nocmok.orp.core_api.GraphRoute;
 import com.nocmok.orp.core_api.ScheduleNode;
 import com.nocmok.orp.core_api.ScheduleNodeKind;
 import com.nocmok.orp.core_api.Vehicle;
@@ -27,10 +27,10 @@ import java.util.stream.Collectors;
 public class LSSolver implements OrpSolver {
 
     private static Logger log = LoggerFactory.getLogger(LSSolver.class);
-    private RoadIndex roadIndex;
+    private GraphIndex roadIndex;
     private VehicleStateService<? extends Vehicle> vehicleStateService;
 
-    public LSSolver(RoadIndex roadIndex, VehicleStateService<? extends Vehicle> vehicleStateService) {
+    public LSSolver(GraphIndex roadIndex, VehicleStateService<? extends Vehicle> vehicleStateService) {
         this.roadIndex = roadIndex;
         this.vehicleStateService = vehicleStateService;
     }
@@ -44,7 +44,7 @@ public class LSSolver implements OrpSolver {
         List<String> filteredVehiclesId = roadIndex
                 .getNeighborhood(new GCS(request.getPickupLat(), request.getPickupLon()), timeReserveSeconds)
                 .stream()
-                .map(RoadIndexEntity::getId)
+                .map(GraphIndexEntity::getId)
                 .collect(Collectors.toList());
         return vehicleStateService.getVehiclesByIds(filteredVehiclesId);
     }
@@ -81,8 +81,8 @@ public class LSSolver implements OrpSolver {
     /**
      * Объединяет цепочку смежных по вершине маршрутов в один маршрут
      */
-    private RoadRoute combineRoutes(List<RoadRoute> routes) {
-        var combinedRoute = new ArrayList<RoadNode>();
+    private GraphRoute combineRoutes(List<GraphRoute> routes) {
+        var combinedRoute = new ArrayList<GraphNode>();
         double combinedCost = 0;
         for (var route : routes) {
             if (!combinedRoute.isEmpty()) {
@@ -91,15 +91,15 @@ public class LSSolver implements OrpSolver {
             combinedRoute.addAll(route.getRoute());
             combinedCost += route.getCost();
         }
-        return new RoadRoute(combinedRoute, combinedCost);
+        return new GraphRoute(combinedRoute, combinedCost);
     }
 
     /**
      * Принимает список идентификаторов вершин привязанных к контрольным точкам.
      * Возвращает маршрут, который обходит переданные точки в заданном порядке
      */
-    private RoadRoute getRouteToCompleteSchedule(List<Integer> schedule) {
-        var partialRoutes = new ArrayList<RoadRoute>();
+    private GraphRoute getRouteToCompleteSchedule(List<Integer> schedule) {
+        var partialRoutes = new ArrayList<GraphRoute>();
         for (int i = 1; i < schedule.size(); ++i) {
             partialRoutes.add(roadIndex.shortestRoute(
                     schedule.get(i - 1),
@@ -155,8 +155,8 @@ public class LSSolver implements OrpSolver {
      * Если план не нарушает дедлайны то, возвращается наилучший маршрут для выполнения плана.
      * Если план нарушает дедлайны, то возвращается пустой Optional
      */
-    private Optional<RoadRoute> checkDeadlineViolation(Vehicle vehicle, List<ScheduleNode> schedule) {
-        var partialRoutes = new ArrayList<RoadRoute>();
+    private Optional<GraphRoute> checkDeadlineViolation(Vehicle vehicle, List<ScheduleNode> schedule) {
+        var partialRoutes = new ArrayList<GraphRoute>();
         long time = Instant.now()
                 .plusSeconds((long) ((1 - vehicle.getRoadBinding().getProgress()) * vehicle.getRoadBinding().getRoad().getCost()))
                 .getEpochSecond();
@@ -260,13 +260,13 @@ public class LSSolver implements OrpSolver {
     }
 
     private static class Matching implements Comparable<Matching> {
-        private List<RoadNode> bestRoute;
+        private List<GraphNode> bestRoute;
         private double bestRouteCost;
         private double additionalCost;
         private List<ScheduleNode> bestSchedule;
         private Vehicle vehicle;
 
-        public Matching(List<RoadNode> bestRoute, double bestRouteCost, double additionalCost, List<ScheduleNode> bestSchedule, Vehicle vehicle) {
+        public Matching(List<GraphNode> bestRoute, double bestRouteCost, double additionalCost, List<ScheduleNode> bestSchedule, Vehicle vehicle) {
             this.bestRoute = bestRoute;
             this.bestRouteCost = bestRouteCost;
             this.additionalCost = additionalCost;
@@ -278,7 +278,7 @@ public class LSSolver implements OrpSolver {
             return additionalCost;
         }
 
-        public List<RoadNode> getBestRoute() {
+        public List<GraphNode> getBestRoute() {
             return bestRoute;
         }
 

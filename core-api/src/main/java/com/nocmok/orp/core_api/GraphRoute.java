@@ -3,18 +3,18 @@ package com.nocmok.orp.core_api;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoadRoute {
+public class GraphRoute {
 
-    private List<RoadNode> route;
+    private List<GraphNode> route;
 
     private double cost;
 
-    public RoadRoute(List<RoadNode> route, double cost) {
+    public GraphRoute(List<GraphNode> route, double cost) {
         this.route = new ArrayList<>(route);
         this.cost = cost;
     }
 
-    public List<RoadNode> getRoute() {
+    public List<GraphNode> getRoute() {
         return route;
     }
 

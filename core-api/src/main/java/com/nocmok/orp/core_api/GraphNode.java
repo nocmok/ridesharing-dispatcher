@@ -1,12 +1,12 @@
 package com.nocmok.orp.core_api;
 
-public class RoadNode {
+public class GraphNode {
 
     private int nodeId;
 
     private GCS coordinates;
 
-    public RoadNode(int nodeId, GCS coordinates) {
+    public GraphNode(int nodeId, GCS coordinates) {
         this.nodeId = nodeId;
         this.coordinates = coordinates;
     }
