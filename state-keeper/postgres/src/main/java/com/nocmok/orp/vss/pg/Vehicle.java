@@ -1,7 +1,7 @@
 package com.nocmok.orp.vss.pg;
 
 import com.nocmok.orp.core_api.GCS;
-import com.nocmok.orp.core_api.RoadBinding;
+import com.nocmok.orp.core_api.GraphBinding;
 import com.nocmok.orp.core_api.ScheduleNode;
 import com.nocmok.orp.core_api.VehicleStatus;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
     private List<ScheduleNode> schedule;
     private int capacity;
     private int residualCapacity;
-    private RoadBinding roadBinding;
+    private GraphBinding roadBinding;
     private double distanceScheduled;
 
     public Vehicle() {
@@ -86,7 +86,7 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
                 '}';
     }
 
-    @Override public RoadBinding getRoadBinding() {
+    @Override public GraphBinding getRoadBinding() {
         return roadBinding;
     }
 

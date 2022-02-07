@@ -6,7 +6,7 @@ import java.util.Objects;
  * Абстракция объекта на дорожном графе с которой работает дорожный индекс.
  * Сейчас используется только для хранения тс в индексе.
  */
-public class RoadIndexEntity {
+public class GraphIndexEntity {
 
     /**
      * Идентификатор объекта в дорожном индексе.
@@ -19,7 +19,7 @@ public class RoadIndexEntity {
      */
     private final GCS gcs;
 
-    public RoadIndexEntity(String id, GCS gcs) {
+    public GraphIndexEntity(String id, GCS gcs) {
         this.id = id;
         this.gcs = gcs;
     }
@@ -39,7 +39,7 @@ public class RoadIndexEntity {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        RoadIndexEntity that = (RoadIndexEntity) o;
+        GraphIndexEntity that = (GraphIndexEntity) o;
         return id.equals(that.id);
     }
 

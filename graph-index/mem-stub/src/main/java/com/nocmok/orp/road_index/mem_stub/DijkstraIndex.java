@@ -1,10 +1,10 @@
 package com.nocmok.orp.road_index.mem_stub;
 
 import com.nocmok.orp.core_api.GCS;
-import com.nocmok.orp.core_api.RoadIndex;
-import com.nocmok.orp.core_api.RoadIndexEntity;
-import com.nocmok.orp.core_api.RoadNode;
-import com.nocmok.orp.core_api.RoadRoute;
+import com.nocmok.orp.core_api.GraphIndex;
+import com.nocmok.orp.core_api.GraphIndexEntity;
+import com.nocmok.orp.core_api.GraphNode;
+import com.nocmok.orp.core_api.GraphRoute;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,14 +17,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DijkstraIndex implements RoadIndex {
+public class DijkstraIndex implements GraphIndex {
 
     private DimacsParser dimacsParser = new DimacsParser();
-    private HashMap<Long, RoadRoute> routesCache = new HashMap<>();
+    private HashMap<Long, GraphRoute> routesCache = new HashMap<>();
     private List<List<Edge>> gr;
     private List<double[]> co;
     private List<GCS> coGCS;
-    private List<RoadIndexEntity> objects = new ArrayList<>();
+    private List<GraphIndexEntity> objects = new ArrayList<>();
 
     public DijkstraIndex(InputStream grIn, InputStream coIn) {
         try {
@@ -38,7 +38,7 @@ public class DijkstraIndex implements RoadIndex {
         }
     }
 
-    private RoadRoute _dijkstra(int startNode, int endNode) {
+    private GraphRoute _dijkstra(int startNode, int endNode) {
         double[] bestDistances = new double[gr.size()];
         Arrays.fill(bestDistances, Double.POSITIVE_INFINITY);
 
@@ -97,7 +97,7 @@ public class DijkstraIndex implements RoadIndex {
         }
 
         if (bestDistances[endNode] == Double.POSITIVE_INFINITY) {
-            return new RoadRoute(Collections.emptyList(), Double.POSITIVE_INFINITY);
+            return new GraphRoute(Collections.emptyList(), Double.POSITIVE_INFINITY);
         }
 
         var route = new ArrayDeque<Integer>();
@@ -110,8 +110,8 @@ public class DijkstraIndex implements RoadIndex {
             node = prevNode[node];
         }
 
-        return new RoadRoute(route.stream()
-                .map(n -> new RoadNode(n, new GCS(co.get(n)[0], co.get(n)[1])))
+        return new GraphRoute(route.stream()
+                .map(n -> new GraphNode(n, new GCS(co.get(n)[0], co.get(n)[1])))
                 .collect(Collectors.toList()),
                 bestDistances[endNode]);
     }
@@ -120,21 +120,21 @@ public class DijkstraIndex implements RoadIndex {
         return ((long) startNode << 32) | endNode;
     }
 
-    private RoadRoute dijkstra(int startNode, int endNode) {
+    private GraphRoute dijkstra(int startNode, int endNode) {
         return routesCache.computeIfAbsent(hash(startNode, endNode), (h) -> _dijkstra(startNode, endNode));
     }
 
-    @Override public RoadRoute shortestRoute(int startNodeId, int endNodeId) {
+    @Override public GraphRoute shortestRoute(int startNodeId, int endNodeId) {
         return dijkstra(startNodeId, endNodeId);
     }
 
 
-    private RoadNode mapObjectToNode(RoadIndexEntity object) {
+    private GraphNode mapObjectToNode(GraphIndexEntity object) {
         return getClosestNode(object.getGcs());
     }
 
-    @Override public List<RoadIndexEntity> getNeighborhood(GCS center, double radius) {
-        var neighbors = new ArrayList<RoadIndexEntity>();
+    @Override public List<GraphIndexEntity> getNeighborhood(GCS center, double radius) {
+        var neighbors = new ArrayList<GraphIndexEntity>();
         var closestToCenterNode = getClosestNode(center);
         for (var object : objects) {
             var closestToVehicleNode = mapObjectToNode(object);
@@ -152,7 +152,7 @@ public class DijkstraIndex implements RoadIndex {
         return Math.hypot(a.lat() - b.lat(), a.lon() - b.lon());
     }
 
-    private RoadNode getClosestNode(GCS gcs) {
+    private GraphNode getClosestNode(GCS gcs) {
         double bestDistance = Double.POSITIVE_INFINITY;
         int closestNode = -1;
         for (int i = 0; i < gr.size(); ++i) {
@@ -162,10 +162,10 @@ public class DijkstraIndex implements RoadIndex {
                 bestDistance = distance;
             }
         }
-        return new RoadNode(closestNode, coGCS.get(closestNode));
+        return new GraphNode(closestNode, coGCS.get(closestNode));
     }
 
-    public void addObject(RoadIndexEntity object) {
+    public void addObject(GraphIndexEntity object) {
         objects.add(object);
     }
 

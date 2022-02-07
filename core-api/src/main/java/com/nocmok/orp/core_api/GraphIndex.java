@@ -6,12 +6,12 @@ import java.util.List;
 /**
  * Фасад дорожного индекса для использования реализациями интерфейса OrpSolver
  */
-public interface RoadIndex {
+public interface GraphIndex {
 
     /**
      * Для вычисления кратчайшего маршрута в графе
      */
-    RoadRoute shortestRoute(int startNodeId, int endNodeId);
+    GraphRoute shortestRoute(int startNodeId, int endNodeId);
 
     /**
      * Для получения всех объектов в индексе в окрестности точки.
@@ -20,5 +20,5 @@ public interface RoadIndex {
      * В окрестность входят такие объекты, что от объекта до заданной точки существует маршрут
      * стоимостью не превышающей указанную
      */
-    List<RoadIndexEntity> getNeighborhood(GCS center, double radius);
+    List<GraphIndexEntity> getNeighborhood(GCS center, double radius);
 }
