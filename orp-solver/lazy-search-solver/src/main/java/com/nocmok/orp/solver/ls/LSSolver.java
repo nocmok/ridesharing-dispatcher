@@ -30,9 +30,6 @@ public class LSSolver implements OrpSolver {
     private RoadIndex roadIndex;
     private VehicleStateService<? extends Vehicle> vehicleStateService;
 
-    // TODO Удалить!!
-    private double avgVelocity = 10;
-
     public LSSolver(RoadIndex roadIndex, VehicleStateService<? extends Vehicle> vehicleStateService) {
         this.roadIndex = roadIndex;
         this.vehicleStateService = vehicleStateService;
@@ -44,9 +41,8 @@ public class LSSolver implements OrpSolver {
     private List<? extends Vehicle> filterVehicles(Request request) {
         // TODO добавить двустороннюю фильтрацию
         long timeReserveSeconds = request.getRequestedAt().getEpochSecond() + request.getMaxPickupDelaySeconds() - Instant.now().getEpochSecond();
-        // TODO Расстояние -> Время
         List<String> filteredVehiclesId = roadIndex
-                .getNeighborhood(new GCS(request.getPickupLat(), request.getPickupLon()), timeReserveSeconds * avgVelocity)
+                .getNeighborhood(new GCS(request.getPickupLat(), request.getPickupLon()), timeReserveSeconds)
                 .stream()
                 .map(RoadIndexEntity::getId)
                 .collect(Collectors.toList());
@@ -66,12 +62,11 @@ public class LSSolver implements OrpSolver {
     }
 
     private ScheduleNode createDropoffScheduleNode(Request request) {
-        // TODO Растояние -> Время
         Instant deadline = request.getRequestedAt()
                 .plusSeconds(request.getMaxPickupDelaySeconds())
                 .plusSeconds((long) (roadIndex.shortestRoute(
                         request.getPickupNodeId(),
-                        request.getDropoffNodeId()).getCost() * request.getDetourConstraint() / avgVelocity));
+                        request.getDropoffNodeId()).getCost() * request.getDetourConstraint()));
         return new ScheduleNode(
                 deadline,
                 request.getLoad(),
@@ -161,16 +156,15 @@ public class LSSolver implements OrpSolver {
      * Если план нарушает дедлайны, то возвращается пустой Optional
      */
     private Optional<RoadRoute> checkDeadlineViolation(Vehicle vehicle, List<ScheduleNode> schedule) {
-        // TODO Расстояние -> Время
         var partialRoutes = new ArrayList<RoadRoute>();
         long time = Instant.now()
-                .plusSeconds((long) ((1 - vehicle.getRoadBinding().getProgress()) * vehicle.getRoadBinding().getRoad().getCost() / avgVelocity))
+                .plusSeconds((long) ((1 - vehicle.getRoadBinding().getProgress()) * vehicle.getRoadBinding().getRoad().getCost()))
                 .getEpochSecond();
 
         int lastNode = vehicle.getRoadBinding().getRoad().getEndNode().getNodeId();
         for (var node : schedule) {
             var route = roadIndex.shortestRoute(lastNode, node.getNodeId());
-            time += (long) (route.getCost() / avgVelocity);
+            time += (long) (route.getCost());
             if (time > node.getDeadline().getEpochSecond()) {
                 return Optional.empty();
             }
