@@ -1,4 +1,4 @@
-package com.nocmok.orp.vss.pg;
+package com.nocmok.orp.state_keeper.pg;
 
 import com.nocmok.orp.core_api.GCS;
 import com.nocmok.orp.core_api.GraphBinding;

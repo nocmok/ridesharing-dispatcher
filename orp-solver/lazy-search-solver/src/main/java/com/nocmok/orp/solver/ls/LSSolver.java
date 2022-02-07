@@ -11,7 +11,7 @@ import com.nocmok.orp.core_api.GraphRoute;
 import com.nocmok.orp.core_api.ScheduleNode;
 import com.nocmok.orp.core_api.ScheduleNodeKind;
 import com.nocmok.orp.core_api.Vehicle;
-import com.nocmok.orp.core_api.VehicleStateService;
+import com.nocmok.orp.core_api.StateKeeper;
 import com.nocmok.orp.core_api.VehicleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +28,9 @@ public class LSSolver implements OrpSolver {
 
     private static Logger log = LoggerFactory.getLogger(LSSolver.class);
     private GraphIndex roadIndex;
-    private VehicleStateService<? extends Vehicle> vehicleStateService;
+    private StateKeeper<? extends Vehicle> vehicleStateService;
 
-    public LSSolver(GraphIndex roadIndex, VehicleStateService<? extends Vehicle> vehicleStateService) {
+    public LSSolver(GraphIndex roadIndex, StateKeeper<? extends Vehicle> vehicleStateService) {
         this.roadIndex = roadIndex;
         this.vehicleStateService = vehicleStateService;
     }

@@ -1,14 +1,16 @@
-package com.nocmok.orp.vss.pg;
+package com.nocmok.orp.state_keeper.pg;
+
+import com.nocmok.orp.core_api.StateKeeper;
 
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class VehicleStateService implements com.nocmok.orp.core_api.VehicleStateService<Vehicle> {
+public class StateKeeperPostgres implements StateKeeper<Vehicle> {
 
     private final VehicleStateRepository vehicleStateRepository;
 
-    public VehicleStateService(DataSource dataSource) {
+    public StateKeeperPostgres(DataSource dataSource) {
         this.vehicleStateRepository = new VehicleStateRepository(dataSource);
     }
 

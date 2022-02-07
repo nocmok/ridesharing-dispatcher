@@ -1,6 +1,6 @@
 package com.nocmok.orp.orp_solver.config;
 
-import com.nocmok.orp.vss.pg.VehicleStateService;
+import com.nocmok.orp.state_keeper.pg.StateKeeperPostgres;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +30,7 @@ public class VehicleStateServiceConfig {
     }
 
     @Bean
-    public VehicleStateService vehicleVehicleStateService() {
-        return new VehicleStateService(vehicleStateDatasource());
+    public StateKeeperPostgres vehicleVehicleStateService() {
+        return new StateKeeperPostgres(vehicleStateDatasource());
     }
 }

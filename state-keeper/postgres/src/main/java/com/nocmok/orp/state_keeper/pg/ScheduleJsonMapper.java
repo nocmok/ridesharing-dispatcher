@@ -1,4 +1,4 @@
-package com.nocmok.orp.vss.pg;
+package com.nocmok.orp.state_keeper.pg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JacksonException;
