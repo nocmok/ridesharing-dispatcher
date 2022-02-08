@@ -6,5 +6,5 @@ public interface StateKeeper<V extends Vehicle> {
 
     List<V> getVehiclesByIds(List<String> ids);
 
-    void updateVehiclesBatch(List<V> vehicle);
+    void updateVehiclesBatch(List<? extends Vehicle> vehicle);
 }

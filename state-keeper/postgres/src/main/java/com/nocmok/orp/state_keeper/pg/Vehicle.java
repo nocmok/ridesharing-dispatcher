@@ -53,7 +53,7 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
         this.schedule = schedule;
     }
 
-    @Override public int getCapacity() {
+    @Override public Integer getCapacity() {
         return capacity;
     }
 
@@ -61,7 +61,7 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
         this.capacity = capacity;
     }
 
-    @Override public int getResidualCapacity() {
+    @Override public Integer getResidualCapacity() {
         return residualCapacity;
     }
 
@@ -90,7 +90,7 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
         return roadBinding;
     }
 
-    @Override public double getDistanceScheduled() {
+    @Override public Double getDistanceScheduled() {
         return distanceScheduled;
     }
 }

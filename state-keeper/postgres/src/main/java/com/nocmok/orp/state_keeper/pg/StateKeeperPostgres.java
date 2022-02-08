@@ -20,7 +20,7 @@ public class StateKeeperPostgres implements StateKeeper<Vehicle> {
                 .collect(Collectors.toList()));
     }
 
-    @Override public void updateVehiclesBatch(List<Vehicle> vehicle) {
+    @Override public void updateVehiclesBatch(List<? extends com.nocmok.orp.core_api.Vehicle> vehicle) {
         vehicleStateRepository.updateVehiclesBatch(vehicle);
     }
 }
