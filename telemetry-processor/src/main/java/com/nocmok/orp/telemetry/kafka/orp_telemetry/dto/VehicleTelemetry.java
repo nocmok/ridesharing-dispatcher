@@ -1,13 +1,25 @@
-package com.nocmok.orp.telemetry.dto;
+package com.nocmok.orp.telemetry.kafka.orp_telemetry.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 
 public class VehicleTelemetry {
-    private final String sessionId;
-    private final double lat;
-    private final double lon;
-    private final double accuracy;
-    private final Instant recordedAt;
+
+    @JsonProperty("sessionId")
+    private String sessionId;
+
+    @JsonProperty("lat")
+    private double lat;
+
+    @JsonProperty("lon")
+    private double lon;
+
+    @JsonProperty("accuracy")
+    private double accuracy;
+
+    @JsonProperty("recordedAt")
+    private Instant recordedAt;
 
     public VehicleTelemetry(String sessionId, double lat, double lon, double accuracy, Instant recordedAt) {
         this.sessionId = sessionId;
@@ -15,6 +27,10 @@ public class VehicleTelemetry {
         this.lon = lon;
         this.accuracy = accuracy;
         this.recordedAt = recordedAt;
+    }
+
+    public VehicleTelemetry() {
+
     }
 
     public String getSessionId() {
