@@ -27,7 +27,8 @@ javafx {
 }
 
 application {
-    mainClass = 'com.nocmok.orp.proto.Main'
+//    mainClass = 'com.nocmok.orp.proto.Main'
+    mainClass = 'com.nocmok.orp.proto.TrackGenerator'
 }
 
 test {

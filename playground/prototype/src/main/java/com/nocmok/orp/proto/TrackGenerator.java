@@ -9,10 +9,14 @@ import com.nocmok.orp.proto.tools.DimacsGraphConverter;
 import com.nocmok.orp.proto.tools.DimacsParser;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class TrackGenerator {
+
+    private static final Random random = new Random(0);
 
     private static Graph loadGraph() {
         try {
@@ -26,30 +30,53 @@ public class TrackGenerator {
     }
 
     private static String gpsToJson(GPS gps) {
-        
+        return "{\\\"sessionId\\\":\\\"" + 1 + "\\\"," +
+                "\\\"lat\\\":\\\"" + gps.x + "\\\"," +
+                "\\\"lon\\\":\\\"" + gps.y + "\\\"," +
+                "\\\"accuracy\\\":\\\"" + 10 + "\\\"," +
+                "\\\"recordedAt\\\":\\\"" + Instant.now().toString() + "\\\"} \\";
+
+    }
+
+    private static String gpsToGcs(GPS gps) {
+        return "track.add(new GCS(" + gps.x + "," + gps.y + "));";
+    }
+
+    private static GPS addNoise(GPS gps, double radius) {
+        // сгенерировать угол
+        // сгенерировать длину
+
+        double noiseDirection = 2 * Math.PI * random.nextDouble();
+        double noiseShift = random.nextDouble() * radius;
+
+        double xShift = Math.cos(noiseDirection) * noiseShift;
+        double yShift = Math.sin(noiseDirection) * noiseShift;
+
+        return new GPS(gps.x + xShift, gps.y + yShift);
     }
 
     public static void main(String[] args) {
         var gpsGenerator = new VehicleGPSGenerator();
         var graph = loadGraph();
-        List<Integer> route = List.of(1, 0, 4, 14);
-        var vehicle = new SimpleVehicle(graph.getGps(1), Vehicle.State.PENDING, 10);
+        List<Integer> route = List.of(31, 48, 74, 72);
+        var vehicle = new SimpleVehicle(graph.getGps(31), Vehicle.State.PENDING, 10);
         vehicle.updateRoute(route);
 
+        System.out.println(gpsToJson(graph.getGps(1)));
         GPS prevGps = null;
-        for (;;) {
+        for (; ; ) {
             var position = gpsGenerator.getNextVehicleGPS(graph, vehicle, 10);
             for (int j = 0; j < position.getNodesPassed(); ++j) {
                 vehicle.passNode(vehicle.getRoute().get(0));
             }
             vehicle.updateGps(position.getGps());
 
-            if(Objects.equals(prevGps, position.getGps())) {
+            if (Objects.equals(prevGps, position.getGps())) {
                 break;
             }
             prevGps = position.getGps();
 
-            System.out.println(position.getGps());
+            System.out.println(gpsToJson(position.getGps()));
         }
     }
 }
