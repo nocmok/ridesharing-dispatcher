@@ -1,5 +1,6 @@
 package com.nocmok.orp.state_keeper.pg;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nocmok.orp.core_api.GCS;
 import com.nocmok.orp.core_api.GraphBinding;
 import com.nocmok.orp.core_api.GraphNode;
@@ -23,18 +24,21 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class VehicleStateRepository {
+class VehicleStateRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final PlatformTransactionManager transactionManager;
     private final TransactionTemplate transactionTemplate;
-    private final ScheduleJsonMapper scheduleJsonMapper = new ScheduleJsonMapper();
+    private final ScheduleJsonMapper scheduleJsonMapper;
+    private final RouteJsonMapper routeJsonMapper;
 
-    public VehicleStateRepository(DataSource dataSource) {
+    public VehicleStateRepository(DataSource dataSource, ObjectMapper objectMapper) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.transactionManager = new DataSourceTransactionManager(dataSource);
         this.transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.setTimeout(-1);
+        this.scheduleJsonMapper = new ScheduleJsonMapper(objectMapper);
+        this.routeJsonMapper = new RouteJsonMapper(objectMapper);
     }
 
     private static <T, R> R ifNotNull(T value, Supplier<R> alternative) {
@@ -48,6 +52,7 @@ public class VehicleStateRepository {
                 .capacity(rs.getInt("total_capacity"))
                 .residualCapacity(rs.getInt("residual_capacity"))
                 .schedule(scheduleJsonMapper.decodeSchedule(rs.getString("schedule_json")))
+                .routeScheduled(routeJsonMapper.decodeRoute(rs.getString("route_json")))
                 .roadBinding(new GraphBinding(
                         new GraphRoad(
                                 new GraphNode(
@@ -61,7 +66,6 @@ public class VehicleStateRepository {
                         rs.getDouble("road_progress")
                 ))
                 .gcs(new GCS(rs.getDouble("lat"), rs.getDouble("lon")))
-                .distanceScheduled(rs.getDouble("distance_scheduled"))
                 .build();
     }
 
@@ -74,11 +78,11 @@ public class VehicleStateRepository {
         var vehicles = jdbcTemplate.query(
                 " select " +
                         " session_id, " +
-                        " driver_id, " +
                         " status, " +
                         " total_capacity," +
                         " residual_capacity, " +
                         " schedule_json, " +
+                        " route_json, " +
                         " road_start_node_id, " +
                         " road_start_node_lat, " +
                         " road_start_node_lon, " +
@@ -87,7 +91,6 @@ public class VehicleStateRepository {
                         " road_end_node_lon, " +
                         " road_cost, " +
                         " road_progress, " +
-                        " distance_scheduled, " +
                         " lat, " +
                         " lon " +
                         " from vehicle_session " +
@@ -109,6 +112,7 @@ public class VehicleStateRepository {
                         " total_capacity = coalesce(?, total_capacity), " +
                         " residual_capacity = coalesce(?, residual_capacity), " +
                         " schedule_json = coalesce(?, schedule_json), " +
+                        " route_json = coalesce(?, route_json), " +
                         " road_start_node_id = coalesce(?, road_start_node_id), " +
                         " road_start_node_lat = coalesce(?, road_start_node_lat), " +
                         " road_start_node_lon = coalesce(?, road_start_node_lon), " +
@@ -117,7 +121,6 @@ public class VehicleStateRepository {
                         " road_end_node_lon = coalesce(?, road_end_node_lon), " +
                         " road_cost = coalesce(?, road_cost), " +
                         " road_progress = coalesce(?, road_progress), " +
-                        " distance_scheduled = coalesce(?, distance_scheduled), " +
                         " lat = coalesce(?, lat), " +
                         " lon = coalesce(?, lon) " +
                         " where session_id = ? ",
@@ -128,21 +131,21 @@ public class VehicleStateRepository {
                         ps.setObject(2, vehicle.getCapacity(), Types.BIGINT);
                         ps.setObject(3, vehicle.getResidualCapacity(), Types.BIGINT);
                         ps.setString(4, ifNotNull(vehicle.getSchedule(), () -> scheduleJsonMapper.encodeSchedule(vehicle.getSchedule())));
-                        ps.setObject(5,
+                        ps.setString(5, ifNotNull(vehicle.getRouteScheduled(), () -> routeJsonMapper.encodeRoute(vehicle.getRouteScheduled())));
+                        ps.setObject(6,
                                 ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getStartNode().getNodeId()), Types.BIGINT);
-                        ps.setObject(6, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getStartNode().getCoordinates().lat()),
+                        ps.setObject(7, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getStartNode().getCoordinates().lat()),
                                 Types.DOUBLE);
-                        ps.setObject(7, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getStartNode().getCoordinates().lon()),
+                        ps.setObject(8, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getStartNode().getCoordinates().lon()),
                                 Types.DOUBLE);
-                        ps.setObject(8,
+                        ps.setObject(9,
                                 ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getEndNode().getNodeId()), Types.BIGINT);
-                        ps.setObject(9, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getEndNode().getCoordinates().lat()),
+                        ps.setObject(10, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getEndNode().getCoordinates().lat()),
                                 Types.DOUBLE);
-                        ps.setObject(10, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getEndNode().getCoordinates().lon()),
+                        ps.setObject(11, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getEndNode().getCoordinates().lon()),
                                 Types.DOUBLE);
-                        ps.setObject(11, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getCost()), Types.DOUBLE);
-                        ps.setObject(12, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getProgress()), Types.DOUBLE);
-                        ps.setObject(13, vehicle.getDistanceScheduled(), Types.DOUBLE);
+                        ps.setObject(12, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getCost()), Types.DOUBLE);
+                        ps.setObject(13, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getProgress()), Types.DOUBLE);
                         ps.setObject(14, ifNotNull(vehicle.getGCS(), () -> vehicle.getGCS().lat()), Types.DOUBLE);
                         ps.setObject(15, ifNotNull(vehicle.getGCS(), () -> vehicle.getGCS().lon()), Types.DOUBLE);
                         ps.setLong(16, Long.parseLong(vehicle.getId()));
@@ -163,11 +166,11 @@ public class VehicleStateRepository {
         var vehicles = jdbcTemplate.query(
                 " select " +
                         " session_id, " +
-                        " driver_id, " +
                         " status, " +
                         " total_capacity," +
                         " residual_capacity, " +
                         " schedule_json, " +
+                        " route_json, " +
                         " road_start_node_id, " +
                         " road_start_node_lat, " +
                         " road_start_node_lon, " +

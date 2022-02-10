@@ -2,16 +2,16 @@ package com.nocmok.orp.solver.ls;
 
 import com.google.common.collect.MinMaxPriorityQueue;
 import com.nocmok.orp.core_api.GCS;
-import com.nocmok.orp.core_api.OrpSolver;
-import com.nocmok.orp.core_api.Request;
 import com.nocmok.orp.core_api.GraphIndex;
 import com.nocmok.orp.core_api.GraphIndexEntity;
 import com.nocmok.orp.core_api.GraphNode;
 import com.nocmok.orp.core_api.GraphRoute;
+import com.nocmok.orp.core_api.OrpSolver;
+import com.nocmok.orp.core_api.Request;
 import com.nocmok.orp.core_api.ScheduleNode;
 import com.nocmok.orp.core_api.ScheduleNodeKind;
-import com.nocmok.orp.core_api.Vehicle;
 import com.nocmok.orp.core_api.StateKeeper;
+import com.nocmok.orp.core_api.Vehicle;
 import com.nocmok.orp.core_api.VehicleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,6 +180,12 @@ public class LSSolver implements OrpSolver {
             return Optional.empty();
         }
 
+        // Запланированный маршрут тс без текущего ребра
+        var scheduledRoute = new GraphRoute(
+                vehicle.getRouteScheduled().subList(1, vehicle.getRouteScheduled().size()),
+                roadIndex.getRouteCost(vehicle.getRouteScheduled().subList(1, vehicle.getRouteScheduled().size()))
+        );
+
         var pickupNode = createPickupScheduleNode(request);
         var dropoffNode = createDropoffScheduleNode(request);
 
@@ -200,11 +206,11 @@ public class LSSolver implements OrpSolver {
             if (route.isEmpty()) {
                 continue;
             }
-            if (route.get().getCost() - vehicle.getDistanceScheduled() < bestMatching.additionalCost) {
+            if (route.get().getCost() - scheduledRoute.getCost() < bestMatching.additionalCost) {
                 bestMatching = new Matching(
                         route.get().getRoute(),
                         route.get().getCost(),
-                        route.get().getCost() - vehicle.getDistanceScheduled(),
+                        route.get().getCost() - scheduledRoute.getCost(),
                         schedule,
                         vehicle
                 );

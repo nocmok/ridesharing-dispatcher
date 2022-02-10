@@ -1,5 +1,6 @@
 package com.nocmok.orp.state_keeper.pg;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nocmok.orp.core_api.StateKeeper;
 
 import javax.sql.DataSource;
@@ -8,11 +9,10 @@ import java.util.stream.Collectors;
 
 public class StateKeeperPostgres implements StateKeeper<Vehicle> {
 
-
     private final VehicleStateRepository vehicleStateRepository;
 
-    public StateKeeperPostgres(DataSource dataSource) {
-        this.vehicleStateRepository = new VehicleStateRepository(dataSource);
+    public StateKeeperPostgres(DataSource dataSource, ObjectMapper objectMapper) {
+        this.vehicleStateRepository = new VehicleStateRepository(dataSource, objectMapper);
     }
 
     @Override public List<String> getActiveVehiclesIds() {

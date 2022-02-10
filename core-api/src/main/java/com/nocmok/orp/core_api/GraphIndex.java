@@ -21,4 +21,9 @@ public interface GraphIndex {
      * стоимостью не превышающей указанную
      */
     List<GraphIndexEntity> getNeighborhood(GCS center, double radius);
+
+    /**
+     * Для вычисления стоимости маршрута
+     */
+    double getRouteCost(List<GraphNode> route);
 }

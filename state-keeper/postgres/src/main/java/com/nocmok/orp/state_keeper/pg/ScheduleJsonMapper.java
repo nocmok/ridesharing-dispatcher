@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -12,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.nocmok.orp.core_api.ScheduleNode;
 import com.nocmok.orp.core_api.ScheduleNodeKind;
 
@@ -25,13 +23,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ScheduleJsonMapper {
+class ScheduleJsonMapper {
 
     private final ObjectMapper objectMapper;
 
-    public ScheduleJsonMapper() {
-        this.objectMapper = JsonMapper.builder()
-                .build();
+    public ScheduleJsonMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     private ScheduleNode mapDtoToScheduleNode(ScheduleNodeJsonDto dto) {
