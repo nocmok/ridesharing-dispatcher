@@ -8,10 +8,19 @@ import java.util.stream.Collectors;
 
 public class StateKeeperPostgres implements StateKeeper<Vehicle> {
 
+
     private final VehicleStateRepository vehicleStateRepository;
 
     public StateKeeperPostgres(DataSource dataSource) {
         this.vehicleStateRepository = new VehicleStateRepository(dataSource);
+    }
+
+    @Override public List<String> getActiveVehiclesIds() {
+        return vehicleStateRepository.getActiveVehiclesIds();
+    }
+
+    @Override public List<Vehicle> getActiveVehicles() {
+        return vehicleStateRepository.getActiveVehicles();
     }
 
     @Override public List<Vehicle> getVehiclesByIds(List<String> ids) {

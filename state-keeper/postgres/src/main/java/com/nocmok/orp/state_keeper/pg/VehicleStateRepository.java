@@ -154,4 +154,34 @@ public class VehicleStateRepository {
                 });
     }
 
+    public List<String> getActiveVehiclesIds() {
+        return jdbcTemplate.query("select session_id from vehicle_session where completed_at is null",
+                (rs, rowNum) -> Objects.toString(rs.getLong("session_ids")));
+    }
+
+    public List<Vehicle> getActiveVehicles() {
+        var vehicles = jdbcTemplate.query(
+                " select " +
+                        " session_id, " +
+                        " driver_id, " +
+                        " status, " +
+                        " total_capacity," +
+                        " residual_capacity, " +
+                        " schedule_json, " +
+                        " road_start_node_id, " +
+                        " road_start_node_lat, " +
+                        " road_start_node_lon, " +
+                        " road_end_node_id, " +
+                        " road_end_node_lat, " +
+                        " road_end_node_lon, " +
+                        " road_cost, " +
+                        " road_progress, " +
+                        " distance_scheduled, " +
+                        " lat, " +
+                        " lon " +
+                        " from vehicle_session " +
+                        " where completed_at is null",
+                this::parseVehicleFromResultSet);
+        return vehicles;
+    }
 }
