@@ -32,12 +32,12 @@ public interface Vehicle {
     /**
      * Суммарная емкость тс
      */
-    int getCapacity();
+    Integer getCapacity();
 
     /**
      * Свободная емкость тс
      */
-    int getResidualCapacity();
+    Integer getResidualCapacity();
 
     /**
      * Для обновления свободной емкости тс
@@ -59,5 +59,5 @@ public interface Vehicle {
      * Если тс находится в состоянии PENDING, то это значение = 0.
      * Если тс выполняет план, то это значение равно сумме весов оставшихся в маршруте ребер, кроме текущего
      */
-    double getDistanceScheduled();
+    Double getDistanceScheduled();
 }

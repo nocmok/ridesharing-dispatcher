@@ -103,4 +103,19 @@ public class DimacsParser {
             }
         }
     }
+
+    public InmemoryGraph readGraph(InputStream gr, InputStream co) throws IOException {
+        return new InmemoryGraph() {
+            private final List<List<Edge>> adjacencyList = readGr(gr);
+            private final List<double[]> coordinates = readCo(co);
+
+            @Override public List<List<Edge>> adjacencyList() {
+                return adjacencyList;
+            }
+
+            @Override public List<double[]> coordinates() {
+                return coordinates;
+            }
+        };
+    }
 }

@@ -1,6 +1,6 @@
 package com.nocmok.orp.road_index.mem_stub;
 
-public class Edge {
+class Edge {
 
     public int node;
     public double distance;

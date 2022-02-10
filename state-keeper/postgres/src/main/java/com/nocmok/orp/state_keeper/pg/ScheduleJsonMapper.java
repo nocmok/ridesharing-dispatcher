@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -58,16 +59,16 @@ public class ScheduleJsonMapper {
         try {
             ScheduleNodeJsonDto[] scheduleArray = objectMapper.readValue(json, ScheduleNodeJsonDto[].class);
             return new ArrayList<>(Arrays.asList(scheduleArray));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            return Collections.emptyList();
         }
     }
 
     private String _encodeSchedule(List<ScheduleNodeJsonDto> schedule) {
         try {
             return objectMapper.writeValueAsString(schedule);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            return "[]";
         }
     }
 

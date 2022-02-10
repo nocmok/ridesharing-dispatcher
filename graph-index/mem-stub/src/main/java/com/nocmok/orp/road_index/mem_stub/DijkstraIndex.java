@@ -6,8 +6,6 @@ import com.nocmok.orp.core_api.GraphIndexEntity;
 import com.nocmok.orp.core_api.GraphNode;
 import com.nocmok.orp.core_api.GraphRoute;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,23 +17,17 @@ import java.util.stream.Collectors;
 
 public class DijkstraIndex implements GraphIndex {
 
-    private DimacsParser dimacsParser = new DimacsParser();
     private HashMap<Long, GraphRoute> routesCache = new HashMap<>();
     private List<List<Edge>> gr;
     private List<double[]> co;
     private List<GCS> coGCS;
     private List<GraphIndexEntity> objects = new ArrayList<>();
 
-    public DijkstraIndex(InputStream grIn, InputStream coIn) {
-        try {
-            this.gr = dimacsParser.readGr(grIn);
-            this.co = dimacsParser.readCo(coIn);
-            this.coGCS = co.stream()
-                    .map(c -> new GCS(c[0], c[1]))
-                    .collect(Collectors.toCollection(ArrayList::new));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public DijkstraIndex(InmemoryGraph inmemoryGraph) {
+        var graph = new InmemoryGraphOrpWrapper(inmemoryGraph);
+        this.gr = graph.getAdjacencyList();
+        this.co = graph.getCoordinates();
+        this.coGCS = graph.getGCS();
     }
 
     private GraphRoute _dijkstra(int startNode, int endNode) {
@@ -172,4 +164,5 @@ public class DijkstraIndex implements GraphIndex {
     public GCS getGCSByNodeId(int nodeId) {
         return coGCS.get(nodeId);
     }
+
 }

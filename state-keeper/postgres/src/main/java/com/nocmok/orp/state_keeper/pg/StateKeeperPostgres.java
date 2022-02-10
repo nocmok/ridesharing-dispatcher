@@ -8,10 +8,19 @@ import java.util.stream.Collectors;
 
 public class StateKeeperPostgres implements StateKeeper<Vehicle> {
 
+
     private final VehicleStateRepository vehicleStateRepository;
 
     public StateKeeperPostgres(DataSource dataSource) {
         this.vehicleStateRepository = new VehicleStateRepository(dataSource);
+    }
+
+    @Override public List<String> getActiveVehiclesIds() {
+        return vehicleStateRepository.getActiveVehiclesIds();
+    }
+
+    @Override public List<Vehicle> getActiveVehicles() {
+        return vehicleStateRepository.getActiveVehicles();
     }
 
     @Override public List<Vehicle> getVehiclesByIds(List<String> ids) {
@@ -20,7 +29,7 @@ public class StateKeeperPostgres implements StateKeeper<Vehicle> {
                 .collect(Collectors.toList()));
     }
 
-    @Override public void updateVehiclesBatch(List<Vehicle> vehicle) {
+    @Override public void updateVehiclesBatch(List<? extends com.nocmok.orp.core_api.Vehicle> vehicle) {
         vehicleStateRepository.updateVehiclesBatch(vehicle);
     }
 }
