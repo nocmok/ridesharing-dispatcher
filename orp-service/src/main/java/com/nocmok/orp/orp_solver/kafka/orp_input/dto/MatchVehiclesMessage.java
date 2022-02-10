@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 
-public class MatchVehiclesRequest {
+public class MatchVehiclesMessage {
 
     @JsonProperty("requestId")
     private String requestId;
@@ -42,7 +42,7 @@ public class MatchVehiclesRequest {
     @JsonProperty("topK")
     private int topK;
 
-    public MatchVehiclesRequest() {
+    public MatchVehiclesMessage() {
 
     }
 

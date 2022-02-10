@@ -1,5 +1,6 @@
 package com.nocmok.orp.orp_solver.config;
 
+import com.nocmok.orp.orp_solver.kafka.orp_input.dto.MatchVehiclesMessage;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
 
@@ -27,18 +30,23 @@ public class KafkaConsumerConfig {
     private Integer nThreads;
 
     @Bean
-    public ConsumerFactory<String, String> orpInputConsumerFactory() {
+    public ConsumerFactory<String, MatchVehiclesMessage> orpInputConsumerFactory() {
         var props = new HashMap<String, Object>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getKafkaBootstrapAddress());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaOrpSolverConsumerGroupId);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        return new DefaultKafkaConsumerFactory<>(props);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
+        props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class);
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        return new DefaultKafkaConsumerFactory<>(props,
+                new ErrorHandlingDeserializer<>(new StringDeserializer()),
+                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(MatchVehiclesMessage.class)));
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> orpInputKafkaListenerContainerFactory() {
-        var factory = new ConcurrentKafkaListenerContainerFactory<String, String>();
+    public ConcurrentKafkaListenerContainerFactory<String, MatchVehiclesMessage> orpInputKafkaListenerContainerFactory() {
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, MatchVehiclesMessage>();
         factory.setConcurrency(nThreads);
         factory.setConsumerFactory(orpInputConsumerFactory());
         return factory;

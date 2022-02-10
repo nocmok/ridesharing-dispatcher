@@ -1,31 +1,38 @@
 package com.nocmok.orp.orp_solver.kafka.orp_input;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.nocmok.orp.orp_solver.kafka.orp_input.dto.MatchVehiclesMessage;
+import com.nocmok.orp.orp_solver.kafka.orp_input.mapper.MatchVehiclesMessageMapper;
+import com.nocmok.orp.orp_solver.service.RequestProcessingService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Component
+@KafkaListener(
+        topics = {"orp.input"},
+        containerFactory = "orpInputKafkaListenerContainerFactory"
+)
+@Slf4j
 public class OrpInputListener {
 
-    private static final Logger log = LoggerFactory.getLogger(OrpInputListener.class);
-    private MessageDispatcher dispatcher;
+    private final MatchVehiclesMessageMapper matchVehiclesMessageMapper = new MatchVehiclesMessageMapper();
+    private final RequestProcessingService requestProcessingService;
 
     @Autowired
-    public OrpInputListener(MessageDispatcher dispatcher) {
-        this.dispatcher = dispatcher;
+    public OrpInputListener(RequestProcessingService requestProcessingService) {
+        this.requestProcessingService = requestProcessingService;
     }
 
-    @KafkaListener(topics = {"orp.input"},
-            containerFactory = "orpInputKafkaListenerContainerFactory")
-    public void listen(@Header(OrpInputHeaders.REQUEST_TYPE) String requestType, @Payload String payload) {
-        try {
-            dispatcher.dispatch(requestType, payload);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
+    @KafkaHandler
+    public void receiveMatchVehiclesMessage(@Payload MatchVehiclesMessage message) {
+        requestProcessingService.processRequest(matchVehiclesMessageMapper.mapMessageToRequest(message));
+    }
+
+    @KafkaHandler(isDefault = true)
+    public void fallback(@Payload Object unknownMessage) {
+        log.warn("malformed message received\n" + unknownMessage);
     }
 }

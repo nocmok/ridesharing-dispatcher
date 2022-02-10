@@ -10,7 +10,7 @@ public interface OrpSolver {
      * В возвращаемом списке содержатся только те тс, которые могут обработать запрос без нарушения ограничений.
      * Поэтому длина списка может быть меньше чем запрошенная или список может вообще быть пустым.
      */
-    List<Vehicle> getTopKCandidateVehicles(Request request, int kCandidates);
+    List<RequestMatching> getTopKCandidateVehicles(Request request, int kCandidates);
 
     /**
      * Добавляет запрос в план тс.
