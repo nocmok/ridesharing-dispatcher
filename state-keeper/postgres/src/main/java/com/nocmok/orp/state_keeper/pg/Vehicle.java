@@ -2,6 +2,7 @@ package com.nocmok.orp.state_keeper.pg;
 
 import com.nocmok.orp.core_api.GCS;
 import com.nocmok.orp.core_api.GraphBinding;
+import com.nocmok.orp.core_api.GraphNode;
 import com.nocmok.orp.core_api.ScheduleNode;
 import com.nocmok.orp.core_api.VehicleStatus;
 import lombok.AllArgsConstructor;
@@ -17,10 +18,10 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
     private VehicleStatus status;
     private GCS gcs;
     private List<ScheduleNode> schedule;
+    private List<GraphNode> routeScheduled;
     private int capacity;
     private int residualCapacity;
     private GraphBinding roadBinding;
-    private double distanceScheduled;
 
     public Vehicle() {
     }
@@ -79,10 +80,10 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
                 ", status=" + status +
                 ", gcs=" + gcs +
                 ", schedule=" + schedule +
+                ", routeScheduled=" + routeScheduled +
                 ", capacity=" + capacity +
                 ", residualCapacity=" + residualCapacity +
                 ", roadBinding=" + roadBinding +
-                ", distanceScheduled=" + distanceScheduled +
                 '}';
     }
 
@@ -90,7 +91,15 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
         return roadBinding;
     }
 
-    @Override public Double getDistanceScheduled() {
-        return distanceScheduled;
+    public void setRoadBinding(GraphBinding roadBinding) {
+        this.roadBinding = roadBinding;
+    }
+
+    @Override public List<GraphNode> getRouteScheduled() {
+        return routeScheduled;
+    }
+
+    public void setRouteScheduled(List<GraphNode> routeScheduled) {
+        this.routeScheduled = routeScheduled;
     }
 }

@@ -2,6 +2,7 @@ package com.nocmok.orp.telemetry.service;
 
 import com.nocmok.orp.core_api.GCS;
 import com.nocmok.orp.core_api.GraphBinding;
+import com.nocmok.orp.core_api.GraphNode;
 import com.nocmok.orp.core_api.ScheduleNode;
 import com.nocmok.orp.core_api.StateKeeper;
 import com.nocmok.orp.core_api.Vehicle;
@@ -74,7 +75,6 @@ public class VehiclePositionBatchUpdater {
     private static class VehicleProjection implements Vehicle {
         private String sessionId;
         private GraphBinding graphBinding;
-        private double distanceScheduled;
         private GCS gcs;
 
         public VehicleProjection() {
@@ -83,7 +83,6 @@ public class VehiclePositionBatchUpdater {
         public VehicleProjection(Vehicle vehicle) {
             this.sessionId = vehicle.getId();
             this.graphBinding = vehicle.getRoadBinding();
-            this.distanceScheduled = vehicle.getDistanceScheduled();
             this.gcs = vehicle.getGCS();
         }
 
@@ -127,12 +126,8 @@ public class VehiclePositionBatchUpdater {
             return graphBinding;
         }
 
-        @Override public Double getDistanceScheduled() {
-            return distanceScheduled;
-        }
-
-        public void setDistanceScheduled(double distanceScheduled) {
-            this.distanceScheduled = distanceScheduled;
+        @Override public List<GraphNode> getRouteScheduled() {
+            return null;
         }
 
         public void setSessionId(String sessionId) {

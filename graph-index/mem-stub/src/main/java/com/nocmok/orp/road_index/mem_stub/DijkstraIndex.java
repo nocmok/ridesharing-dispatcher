@@ -165,4 +165,20 @@ public class DijkstraIndex implements GraphIndex {
         return coGCS.get(nodeId);
     }
 
+    private double getRoadCost(int startNodeId, int endNodeId) {
+        for (var edge : gr.get(startNodeId)) {
+            if (edge.node == endNodeId) {
+                return edge.distance;
+            }
+        }
+        return Double.POSITIVE_INFINITY;
+    }
+
+    @Override public double getRouteCost(List<GraphNode> route) {
+        double cost = 0;
+        for (int i = 1; i < route.size(); ++i) {
+            cost += getRoadCost(route.get(i - 1).getNodeId(), route.get(i).getNodeId());
+        }
+        return cost;
+    }
 }
