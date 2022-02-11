@@ -8,6 +8,7 @@ import com.nocmok.orp.core_api.GraphNode;
 import com.nocmok.orp.core_api.GraphRoute;
 import com.nocmok.orp.core_api.OrpSolver;
 import com.nocmok.orp.core_api.Request;
+import com.nocmok.orp.core_api.RequestMatching;
 import com.nocmok.orp.core_api.ScheduleNode;
 import com.nocmok.orp.core_api.ScheduleNodeKind;
 import com.nocmok.orp.core_api.StateKeeper;
@@ -124,6 +125,7 @@ public class LSSolver implements OrpSolver {
         schedule.add(createDropoffScheduleNode(request));
 
         return Optional.of(new Matching(
+                request,
                 bestRoute.getRoute(),
                 bestRoute.getCost(),
                 bestRoute.getCost() + (1 - vehicle.getRoadBinding().getProgress()) * vehicle.getRoadBinding().getRoad().getCost(),
@@ -192,6 +194,7 @@ public class LSSolver implements OrpSolver {
         var augmentedSchedules = new LazyScheduleGenerator(vehicle.getSchedule(), pickupNode, dropoffNode).getAllSchedules();
 
         Matching bestMatching = new Matching(
+                request,
                 Collections.emptyList(),
                 Double.POSITIVE_INFINITY,
                 Double.POSITIVE_INFINITY,
@@ -208,6 +211,7 @@ public class LSSolver implements OrpSolver {
             }
             if (route.get().getCost() - scheduledRoute.getCost() < bestMatching.additionalCost) {
                 bestMatching = new Matching(
+                        request,
                         route.get().getRoute(),
                         route.get().getCost(),
                         route.get().getCost() - scheduledRoute.getCost(),
@@ -224,7 +228,17 @@ public class LSSolver implements OrpSolver {
         return Optional.of(bestMatching);
     }
 
-    @Override public List<Vehicle> getTopKCandidateVehicles(Request request, int kCandidates) {
+    private RequestMatching mapInternalMatchingToRequestMatching(Matching matching) {
+        return new RequestMatching(
+                matching.getRequest(),
+                matching.getVehicle(),
+                matching.getAdditionalCost(),
+                matching.getBestRoute(),
+                matching.getBestSchedule()
+        );
+    }
+
+    @Override public List<RequestMatching> getTopKCandidateVehicles(Request request, int kCandidates) {
         // Валидации
 
         var candidateVehicles = filterVehicles(request);
@@ -253,7 +267,7 @@ public class LSSolver implements OrpSolver {
 
         return topKCandidates.stream()
                 .sorted(Comparator.naturalOrder())
-                .map(Matching::getVehicle)
+                .map(this::mapInternalMatchingToRequestMatching)
                 .collect(Collectors.toUnmodifiableList());
     }
 
@@ -266,18 +280,25 @@ public class LSSolver implements OrpSolver {
     }
 
     private static class Matching implements Comparable<Matching> {
+        private Request request;
         private List<GraphNode> bestRoute;
         private double bestRouteCost;
         private double additionalCost;
         private List<ScheduleNode> bestSchedule;
         private Vehicle vehicle;
 
-        public Matching(List<GraphNode> bestRoute, double bestRouteCost, double additionalCost, List<ScheduleNode> bestSchedule, Vehicle vehicle) {
+        public Matching(Request request, List<GraphNode> bestRoute, double bestRouteCost, double additionalCost,
+                        List<ScheduleNode> bestSchedule, Vehicle vehicle) {
+            this.request = request;
             this.bestRoute = bestRoute;
             this.bestRouteCost = bestRouteCost;
             this.additionalCost = additionalCost;
             this.bestSchedule = bestSchedule;
             this.vehicle = vehicle;
+        }
+
+        public Request getRequest() {
+            return request;
         }
 
         public double getAdditionalCost() {
@@ -309,8 +330,10 @@ public class LSSolver implements OrpSolver {
 
         @Override public String toString() {
             return "Matching{" +
-                    "bestRoute=" + bestRoute +
-                    ", bestRoadCost=" + bestRouteCost +
+                    "request=" + request +
+                    ", bestRoute=" + bestRoute +
+                    ", bestRouteCost=" + bestRouteCost +
+                    ", additionalCost=" + additionalCost +
                     ", bestSchedule=" + bestSchedule +
                     ", vehicle=" + vehicle +
                     '}';
