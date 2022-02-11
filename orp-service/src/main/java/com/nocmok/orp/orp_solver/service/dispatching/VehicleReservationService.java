@@ -1,14 +1,18 @@
 package com.nocmok.orp.orp_solver.service.dispatching;
 
 import com.nocmok.orp.orp_solver.storage.dispatching.ReservationTicketSequence;
+import com.nocmok.orp.orp_solver.storage.dispatching.VehicleReservationEntry;
+import com.nocmok.orp.orp_solver.storage.dispatching.VehicleReservationStorage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,65 +22,46 @@ import java.util.stream.Collectors;
 public class VehicleReservationService {
 
     private TransactionTemplate transactionTemplate;
-    private NamedParameterJdbcTemplate jdbcTemplate;
     private ReservationTicketSequence reservationTicketSequence;
+    private VehicleReservationStorage vehicleReservationStorage;
 
-    public VehicleReservationService(TransactionTemplate transactionTemplate, NamedParameterJdbcTemplate jdbcTemplate,
+    public VehicleReservationService(TransactionTemplate transactionTemplate,
                                      ReservationTicketSequence reservationTicketSequence) {
         this.transactionTemplate = transactionTemplate;
-        this.jdbcTemplate = jdbcTemplate;
         this.reservationTicketSequence = reservationTicketSequence;
     }
 
-    private VehicleReservationTicketDto mapReservationToTicket(VehicleReservationDto reservation) {
-        return new VehicleReservationTicketDto(reservationTicketSequence.nextValue(),
-                reservation.getVehicleId(),
-                reservation.getRequestId());
+    private VehicleReservationEntry mapReservationToStorageEntry(VehicleReservation reservation) {
+        return VehicleReservationEntry.builder()
+                .reservationId(reservation.getReservationId())
+                .vehicleId(reservation.getVehicleId())
+                .requestId(reservation.getRequestId())
+                .createdAt(Instant.now())
+                .expiredAt(null)
+                .build();
     }
 
-    public List<VehicleReservationTicketDto> tryReserveVehicles(ReservationCallback callback) {
+    public List<VehicleReservation> tryReserveVehicles(ReservationCallback callback) {
         return transactionTemplate.execute(status -> {
             var idsToCheckReservation = callback.getVehicleIdsToCheckReservation();
+            var reservedIds =
+                    vehicleReservationStorage.getNotExpiredReservationsByVehicleIdsForUpdate(idsToCheckReservation).stream()
+                            .map(VehicleReservationEntry::getVehicleId)
+                            .collect(Collectors.toList());
+            var feasibleIds = new ArrayList<>(idsToCheckReservation);
+            feasibleIds.removeAll(reservedIds);
 
-            var params = new HashMap<String, Object>();
-            params.put("ids", idsToCheckReservation.stream()
-                    .map(Long::parseLong)
+
+            var reservations = callback.reserveVehicles(feasibleIds);
+            reservations.forEach(reservation -> reservation.setReservationId(reservationTicketSequence.nextValue()));
+
+            vehicleReservationStorage.insertVehicleReservationBatch(reservations.stream()
+                    .map(this::mapReservationToStorageEntry)
                     .collect(Collectors.toList()));
 
-            var reservedIds = jdbcTemplate.query(
-                    " select " +
-                            " session_id " +
-                            " from vehicle_reservation " +
-                            " where expired_at is null and session_id in (:ids) " +
-                            " for update ", params, (rs, nRow) -> rs.getLong("session_id"));
+            callback.handleReservations(reservations);
 
-            var feasibleIds = new ArrayList<>(idsToCheckReservation);
-            feasibleIds.removeAll(reservedIds.stream()
-                    .map(Object::toString)
-                    .collect(Collectors.toUnmodifiableList()));
-
-            var reservationTickets = callback.reserveVehicles(feasibleIds).stream()
-                    .map(this::mapReservationToTicket)
-                    .collect(Collectors.toUnmodifiableList());
-
-            jdbcTemplate.getJdbcTemplate().batchUpdate(
-                    " insert into vehicle_reservation values(?,?,?,null) ",
-                    new BatchPreparedStatementSetter() {
-                        @Override public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            var ticket = reservationTickets.get(i);
-                            ps.setLong(1, Long.parseLong(ticket.getReservationId()));
-                            ps.setLong(2, Long.parseLong(ticket.getVehicleId()));
-                            ps.setLong(3, Long.parseLong(ticket.getRequestId()));
-                        }
-
-                        @Override public int getBatchSize() {
-                            return reservationTickets.size();
-                        }
-                    });
-
-            callback.handleReservationTickets(reservationTickets);
-
-            return reservationTickets;
+            return reservations;
         });
     }
 
@@ -91,11 +76,11 @@ public class VehicleReservationService {
          * Принимает список доступных для резервирования тс.
          * Возвращает список тс которых нужно зарезервировать в виде специального объекта-тикета
          */
-        List<VehicleReservationDto> reserveVehicles(List<String> feasibleVehicleIds);
+        List<VehicleReservation> reserveVehicles(List<String> feasibleVehicleIds);
 
         /**
          * Принимает тикеты возвращенные из reserveVehicles(), обогащенные идентификаторами резервации
          */
-        void handleReservationTickets(List<VehicleReservationTicketDto> tickets);
+        void handleReservations(List<VehicleReservation> tickets);
     }
 }

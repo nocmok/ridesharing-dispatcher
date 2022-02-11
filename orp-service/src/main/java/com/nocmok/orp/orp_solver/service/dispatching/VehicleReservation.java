@@ -1,23 +1,26 @@
 package com.nocmok.orp.orp_solver.service.dispatching;
 
-public class VehicleReservationTicketDto {
+import lombok.Builder;
+
+@Builder
+public class VehicleReservation {
 
     /**
      * Идентификатор резервирования
      */
-    private final String reservationId;
+    private String reservationId;
 
     /**
      * Идентификатор тс для резервирования
      */
-    private final String vehicleId;
+    private String vehicleId;
 
     /**
      * Идентификатор запроса для которого резервируется тс
      */
-    private final String requestId;
+    private String requestId;
 
-    public VehicleReservationTicketDto(String reservationId, String vehicleId, String requestId) {
+    public VehicleReservation(String reservationId, String vehicleId, String requestId) {
         this.reservationId = reservationId;
         this.vehicleId = vehicleId;
         this.requestId = requestId;
@@ -27,12 +30,24 @@ public class VehicleReservationTicketDto {
         return reservationId;
     }
 
+    public void setReservationId(String reservationId) {
+        this.reservationId = reservationId;
+    }
+
     public String getVehicleId() {
         return vehicleId;
     }
 
+    public void setVehicleId(String vehicleId) {
+        this.vehicleId = vehicleId;
+    }
+
     public String getRequestId() {
         return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     @Override public String toString() {

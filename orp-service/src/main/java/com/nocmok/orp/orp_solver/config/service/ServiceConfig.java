@@ -25,8 +25,7 @@ public class ServiceConfig {
 
     @Bean
     public VehicleReservationService vehicleReservationService() {
-        return new VehicleReservationService(postgressConfig.transactionTemplate(), postgressConfig.namedParameterJdbcTemplate(),
-                storageConfig.reservationTicketSequence());
+        return new VehicleReservationService(postgressConfig.transactionTemplate(), storageConfig.reservationTicketSequence());
     }
 
     public ServiceRequestNotificationService serviceRequestNotificationService() {
