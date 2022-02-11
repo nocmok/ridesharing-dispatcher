@@ -74,7 +74,7 @@ public class ServiceRequestDispatchingService {
                 return candidateVehicleIds;
             }
 
-            @Override public List<VehicleReservationDto> reserveVehicles(List<String> feasibleVehicleIds) {
+            @Override public List<VehicleReservation> reserveVehicles(List<String> feasibleVehicleIds) {
                 if (feasibleVehicleIds.isEmpty()) {
                     return Collections.emptyList();
                 }
@@ -83,10 +83,13 @@ public class ServiceRequestDispatchingService {
                         .filter(matching -> feasibleVehicleIds.contains(matching.getServingVehicle().getId()))
                         .findFirst().get();
 
-                return List.of(new VehicleReservationDto(matchingToSatisfy.getServingVehicle().getId(), request.getRequestId()));
+                return List.of(VehicleReservation.builder()
+                        .vehicleId(matchingToSatisfy.getServingVehicle().getId())
+                        .requestId(request.getRequestId())
+                        .build());
             }
 
-            @Override public void handleReservationTickets(List<VehicleReservationTicketDto> tickets) {
+            @Override public void handleReservations(List<VehicleReservation> tickets) {
                 if (tickets.isEmpty()) {
                     return;
                 }
@@ -107,7 +110,7 @@ public class ServiceRequestDispatchingService {
         });
 
         return reservations.stream()
-                .map(VehicleReservationTicketDto::getVehicleId)
+                .map(VehicleReservation::getVehicleId)
                 .findFirst();
     }
 
