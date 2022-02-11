@@ -1,4 +1,4 @@
-package com.nocmok.orp.orp_solver.config;
+package com.nocmok.orp.orp_solver.config.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;

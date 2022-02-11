@@ -1,4 +1,4 @@
-package com.nocmok.orp.orp_solver.config;
+package com.nocmok.orp.orp_solver.config.kafka;
 
 import lombok.Getter;
 import org.apache.kafka.clients.admin.AdminClientConfig;

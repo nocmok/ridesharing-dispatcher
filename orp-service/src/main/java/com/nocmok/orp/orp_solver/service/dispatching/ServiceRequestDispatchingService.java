@@ -8,6 +8,9 @@ import com.nocmok.orp.core_api.Vehicle;
 import com.nocmok.orp.orp_solver.service.notification.ServiceRequestNotificationDto;
 import com.nocmok.orp.orp_solver.service.notification.ServiceRequestNotificationService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Collections;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
  * Класс-стратегия для обработки запроса на обслуживание
  */
 @Slf4j
+@Service
 public class ServiceRequestDispatchingService {
 
     private OrpSolver solver;
@@ -27,17 +31,19 @@ public class ServiceRequestDispatchingService {
     private VehicleReservationService vehicleReservationService;
     private StateKeeper<?> stateKeeper;
     private ServiceRequestNotificationService serviceRequestNotificationService;
+
+    @Value("${orp.orp_dispatcher.service.ServiceRequestDispatchingService.candidatesToFetch:5}")
     private Integer candidatesToFetch;
 
+    @Autowired
     public ServiceRequestDispatchingService(OrpSolver solver, TransactionTemplate transactionTemplate,
                                             VehicleReservationService vehicleReservationService, StateKeeper<?> stateKeeper,
-                                            ServiceRequestNotificationService serviceRequestNotificationService, Integer candidatesToFetch) {
+                                            ServiceRequestNotificationService serviceRequestNotificationService) {
         this.solver = solver;
         this.transactionTemplate = transactionTemplate;
         this.vehicleReservationService = vehicleReservationService;
         this.stateKeeper = stateKeeper;
         this.serviceRequestNotificationService = serviceRequestNotificationService;
-        this.candidatesToFetch = candidatesToFetch;
     }
 
     public void dispatchServiceRequest(Request request) {

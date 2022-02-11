@@ -1,4 +1,4 @@
-package com.nocmok.orp.orp_solver.config;
+package com.nocmok.orp.orp_solver.config.road_index;
 
 import com.nocmok.orp.road_index.mem_stub.DijkstraIndex;
 import com.nocmok.orp.road_index.mem_stub.DimacsParser;
