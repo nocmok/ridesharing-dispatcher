@@ -2,18 +2,15 @@ package com.nocmok.orp.orp_solver.storage.notification;
 
 import lombok.Builder;
 
+import java.time.Instant;
+
 @Builder
 public class ServiceRequestOutboxEntry {
 
-    private final String vehicleId;
-    private final String requestId;
-    private final String reservationId;
-
-    public ServiceRequestOutboxEntry(String vehicleId, String requestId, String reservationId) {
-        this.vehicleId = vehicleId;
-        this.requestId = requestId;
-        this.reservationId = reservationId;
-    }
+    private String vehicleId;
+    private String requestId;
+    private String reservationId;
+    private Instant sentAt;
 
     public String getVehicleId() {
         return vehicleId;
@@ -25,6 +22,26 @@ public class ServiceRequestOutboxEntry {
 
     public String getReservationId() {
         return reservationId;
+    }
+
+    public Instant getSentAt() {
+        return sentAt;
+    }
+
+    public void setVehicleId(String vehicleId) {
+        this.vehicleId = vehicleId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public void setReservationId(String reservationId) {
+        this.reservationId = reservationId;
+    }
+
+    public void setSentAt(Instant sentAt) {
+        this.sentAt = sentAt;
     }
 
     @Override public String toString() {
