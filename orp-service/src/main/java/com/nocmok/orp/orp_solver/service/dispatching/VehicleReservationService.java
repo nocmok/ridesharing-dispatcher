@@ -19,16 +19,20 @@ import java.util.stream.Collectors;
 /**
  *
  */
+@Service
 public class VehicleReservationService {
 
     private TransactionTemplate transactionTemplate;
     private ReservationTicketSequence reservationTicketSequence;
     private VehicleReservationStorage vehicleReservationStorage;
 
+    @Autowired
     public VehicleReservationService(TransactionTemplate transactionTemplate,
-                                     ReservationTicketSequence reservationTicketSequence) {
+                                     ReservationTicketSequence reservationTicketSequence,
+                                     VehicleReservationStorage vehicleReservationStorage) {
         this.transactionTemplate = transactionTemplate;
         this.reservationTicketSequence = reservationTicketSequence;
+        this.vehicleReservationStorage = vehicleReservationStorage;
     }
 
     private VehicleReservationEntry mapReservationToStorageEntry(VehicleReservation reservation) {

@@ -1,10 +1,11 @@
 package com.nocmok.orp.orp_solver.config;
 
-import com.nocmok.orp.orp_solver.config.jobs.JobsConfig;
+import com.nocmok.orp.orp_solver.config.jackson.JacksonConfig;
+import com.nocmok.orp.orp_solver.config.kafka.KafkaConfig;
 import com.nocmok.orp.orp_solver.config.postgres.PostgressConfig;
+import com.nocmok.orp.orp_solver.config.road_index.RoadIndexConfig;
 import com.nocmok.orp.orp_solver.config.schedule.ScheduleConfig;
-import com.nocmok.orp.orp_solver.config.service.ServiceConfig;
-import com.nocmok.orp.orp_solver.config.storage.StorageConfig;
+import com.nocmok.orp.orp_solver.config.state_keeper.StateKeeperConfig;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -15,10 +16,7 @@ import org.springframework.context.annotation.Import;
         RoadIndexConfig.class,
         JacksonConfig.class,
         PostgressConfig.class,
-        ServiceConfig.class,
-        StorageConfig.class,
         ScheduleConfig.class,
-        JobsConfig.class
 })
 public class ApplicationConfig {
 }

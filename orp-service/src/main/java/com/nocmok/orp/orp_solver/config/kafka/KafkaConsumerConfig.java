@@ -1,4 +1,4 @@
-package com.nocmok.orp.orp_solver.config;
+package com.nocmok.orp.orp_solver.config.kafka;
 
 import com.nocmok.orp.orp_solver.kafka.orp_input.dto.MatchVehiclesMessage;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

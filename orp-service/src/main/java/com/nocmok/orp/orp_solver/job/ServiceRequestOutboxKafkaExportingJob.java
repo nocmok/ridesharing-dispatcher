@@ -3,8 +3,11 @@ package com.nocmok.orp.orp_solver.job;
 import com.nocmok.orp.orp_solver.storage.notification.ServiceRequestOutboxEntry;
 import com.nocmok.orp.orp_solver.storage.notification.ServiceRequestOutboxStorage;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
@@ -19,23 +22,26 @@ import java.util.stream.Collectors;
  * преобразует их в сообщения и отправляет в кафку в топик orp.output
  */
 @Slf4j
+@Component
 public class ServiceRequestOutboxKafkaExportingJob {
 
     private TransactionTemplate transactionTemplate;
     private ServiceRequestOutboxStorage serviceRequestOutboxStorage;
-    private Integer maxBatchSize;
     private KafkaTemplate<String, Object> kafkaTemplate;
 
+    @Value("${orp.orp_solver.job.ServiceRequestOutboxKafkaExportingJob.maxBatchSize:1000}")
+    private Integer maxBatchSize;
+
+    @Autowired
     public ServiceRequestOutboxKafkaExportingJob(TransactionTemplate transactionTemplate,
-                                                 ServiceRequestOutboxStorage serviceRequestOutboxStorage, Integer maxBatchSize,
+                                                 ServiceRequestOutboxStorage serviceRequestOutboxStorage,
                                                  KafkaTemplate<String, Object> kafkaTemplate) {
         this.transactionTemplate = transactionTemplate;
         this.serviceRequestOutboxStorage = serviceRequestOutboxStorage;
-        this.maxBatchSize = maxBatchSize;
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelayString = "${orp.orp_solver.job.ServiceRequestOutboxKafkaExportingJob.exportIntervalSeconds:5000}")
     public void exportOutboxEntriesToKafkaBatch() {
         transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
         var batchSent = transactionTemplate.execute(transactionStatus -> {

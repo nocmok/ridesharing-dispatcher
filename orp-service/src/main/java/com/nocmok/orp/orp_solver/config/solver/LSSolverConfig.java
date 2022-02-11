@@ -1,7 +1,7 @@
 package com.nocmok.orp.orp_solver.config.solver;
 
-import com.nocmok.orp.orp_solver.config.RoadIndexConfig;
-import com.nocmok.orp.orp_solver.config.StateKeeperConfig;
+import com.nocmok.orp.orp_solver.config.road_index.RoadIndexConfig;
+import com.nocmok.orp.orp_solver.config.state_keeper.StateKeeperConfig;
 import com.nocmok.orp.solver.ls.LSSolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +12,7 @@ public class LSSolverConfig {
 
     @Autowired
     private RoadIndexConfig roadIndexConfig;
+
     @Autowired
     private StateKeeperConfig vehicleStateServiceConfig;
 

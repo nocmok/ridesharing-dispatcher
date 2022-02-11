@@ -1,5 +1,6 @@
-package com.nocmok.orp.orp_solver.config;
+package com.nocmok.orp.orp_solver.config.state_keeper;
 
+import com.nocmok.orp.orp_solver.config.jackson.JacksonConfig;
 import com.nocmok.orp.orp_solver.config.postgres.PostgressConfig;
 import com.nocmok.orp.state_keeper.pg.StateKeeperPostgres;
 import org.springframework.beans.factory.annotation.Autowired;
