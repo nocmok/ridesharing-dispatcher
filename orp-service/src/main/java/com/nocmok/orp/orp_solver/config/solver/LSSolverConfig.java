@@ -17,6 +17,6 @@ public class LSSolverConfig {
 
     @Bean
     public LSSolver lsSolver() {
-        return new LSSolver(roadIndexConfig.dijkstraIndex(), vehicleStateServiceConfig.vehicleVehicleStateService());
+        return new LSSolver(roadIndexConfig.dijkstraIndex(), vehicleStateServiceConfig.stateKeeper());
     }
 }

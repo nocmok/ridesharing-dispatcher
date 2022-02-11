@@ -15,7 +15,7 @@ public class StateKeeperConfig {
     private PostgressConfig postgressConfig;
 
     @Bean
-    public StateKeeperPostgres vehicleVehicleStateService() {
+    public StateKeeperPostgres stateKeeper() {
         return new StateKeeperPostgres(postgressConfig.datasource(), jacksonConfig.objectMapper());
     }
 }

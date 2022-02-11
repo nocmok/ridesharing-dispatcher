@@ -2,7 +2,7 @@ package com.nocmok.orp.orp_solver.kafka.orp_input;
 
 import com.nocmok.orp.orp_solver.kafka.orp_input.dto.MatchVehiclesMessage;
 import com.nocmok.orp.orp_solver.kafka.orp_input.mapper.MatchVehiclesMessageMapper;
-import com.nocmok.orp.orp_solver.service.RequestProcessingService;
+import com.nocmok.orp.orp_solver.service.dispatching.ServiceRequestDispatchingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;
@@ -19,16 +19,16 @@ import org.springframework.stereotype.Component;
 public class OrpInputListener {
 
     private final MatchVehiclesMessageMapper matchVehiclesMessageMapper = new MatchVehiclesMessageMapper();
-    private final RequestProcessingService requestProcessingService;
+    private final ServiceRequestDispatchingService requestProcessingService;
 
     @Autowired
-    public OrpInputListener(RequestProcessingService requestProcessingService) {
+    public OrpInputListener(ServiceRequestDispatchingService requestProcessingService) {
         this.requestProcessingService = requestProcessingService;
     }
 
     @KafkaHandler
     public void receiveMatchVehiclesMessage(@Payload MatchVehiclesMessage message) {
-        requestProcessingService.processRequest(matchVehiclesMessageMapper.mapMessageToRequest(message));
+        requestProcessingService.dispatchServiceRequest(matchVehiclesMessageMapper.mapMessageToRequest(message));
     }
 
     @KafkaHandler(isDefault = true)
