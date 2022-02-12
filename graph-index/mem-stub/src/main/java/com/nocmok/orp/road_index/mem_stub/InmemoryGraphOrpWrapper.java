@@ -29,8 +29,7 @@ class InmemoryGraphOrpWrapper {
             for (Edge road : inmemoryGraph.adjacencyList().get(startNode)) {
                 roads.add(new GraphRoad(
                         graphNodes.get(startNode),
-                        graphNodes.get(road.node),
-                        road.distance
+                        graphNodes.get(road.node)
                 ));
             }
         }

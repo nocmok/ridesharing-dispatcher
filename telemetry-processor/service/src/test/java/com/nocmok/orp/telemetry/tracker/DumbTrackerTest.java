@@ -22,8 +22,7 @@ public class DumbTrackerTest {
     public void testGetBinding() {
         var road = new GraphRoad(
                 new GraphNode(0, new GCS(-7.4145588E7, 4.0768E7)),
-                new GraphNode(1, new GCS(-7.4146388E7, 4.07683E7)),
-                1878
+                new GraphNode(1, new GCS(-7.4146388E7, 4.07683E7))
         );
         assertEquals(0d, dumbTracker.getBinding(road, new GCS(-7.4145588E7, 4.0768E7)).getProgress(), 1e-5);
         assertEquals(0.5, dumbTracker.getBinding(road, new GCS((-7.4145588E7 + -7.4146388E7) / 2, (4.0768E7 + 4.07683E7) / 2)).getProgress(), 1e-5);
@@ -63,9 +62,9 @@ public class DumbTrackerTest {
 
         var roadLog = dumbTracker.matchTrackToGraph(track);
         var expectedLog = List.of(
-                new GraphRoad(new GraphNode(1, null), new GraphNode(0, null), 0),
-                new GraphRoad(new GraphNode(0, null), new GraphNode(4, null), 0),
-                new GraphRoad(new GraphNode(4, null), new GraphNode(14, null), 0)
+                new GraphRoad(new GraphNode(1, null), new GraphNode(0, null)),
+                new GraphRoad(new GraphNode(0, null), new GraphNode(4, null)),
+                new GraphRoad(new GraphNode(4, null), new GraphNode(14, null))
         );
 
         assertEquals(expectedLog, roadLog);
@@ -82,9 +81,9 @@ public class DumbTrackerTest {
 
         var roadLog = dumbTracker.matchTrackToGraph(track);
         var expectedLog = List.of(
-                new GraphRoad(new GraphNode(1, null), new GraphNode(0, null), 0),
-                new GraphRoad(new GraphNode(0, null), new GraphNode(4, null), 0),
-                new GraphRoad(new GraphNode(4, null), new GraphNode(14, null), 0)
+                new GraphRoad(new GraphNode(1, null), new GraphNode(0, null)),
+                new GraphRoad(new GraphNode(0, null), new GraphNode(4, null)),
+                new GraphRoad(new GraphNode(4, null), new GraphNode(14, null))
         );
 
         assertEquals(expectedLog, roadLog);
@@ -152,9 +151,9 @@ public class DumbTrackerTest {
 
         var roadLog = dumbTracker.matchTrackToGraph(track);
         var expectedLog = List.of(
-                new GraphRoad(new GraphNode(31, null), new GraphNode(48, null), 0),
-                new GraphRoad(new GraphNode(48, null), new GraphNode(74, null), 0),
-                new GraphRoad(new GraphNode(74, null), new GraphNode(72, null), 0)
+                new GraphRoad(new GraphNode(31, null), new GraphNode(48, null)),
+                new GraphRoad(new GraphNode(48, null), new GraphNode(74, null)),
+                new GraphRoad(new GraphNode(74, null), new GraphNode(72, null))
 
         );
 
@@ -223,9 +222,9 @@ public class DumbTrackerTest {
 
         var roadLog = dumbTracker.matchTrackToGraph(track);
         var expectedLog = List.of(
-                new GraphRoad(new GraphNode(31, null), new GraphNode(48, null), 0),
-                new GraphRoad(new GraphNode(48, null), new GraphNode(74, null), 0),
-                new GraphRoad(new GraphNode(74, null), new GraphNode(72, null), 0)
+                new GraphRoad(new GraphNode(31, null), new GraphNode(48, null)),
+                new GraphRoad(new GraphNode(48, null), new GraphNode(74, null)),
+                new GraphRoad(new GraphNode(74, null), new GraphNode(72, null))
 
         );
 

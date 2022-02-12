@@ -1,10 +1,6 @@
 package com.nocmok.orp.state_keeper.pg;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nocmok.orp.core_api.GCS;
-import com.nocmok.orp.core_api.GraphBinding;
-import com.nocmok.orp.core_api.GraphNode;
-import com.nocmok.orp.core_api.GraphRoad;
 import com.nocmok.orp.core_api.VehicleStatus;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -22,7 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.Optional;
 
 class VehicleStateRepository {
 
@@ -31,6 +27,7 @@ class VehicleStateRepository {
     private final TransactionTemplate transactionTemplate;
     private final ScheduleJsonMapper scheduleJsonMapper;
     private final RouteJsonMapper routeJsonMapper;
+    private final GeotagJsonMapper geotagJsonMapper;
 
     public VehicleStateRepository(DataSource dataSource, ObjectMapper objectMapper) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -39,33 +36,22 @@ class VehicleStateRepository {
         transactionTemplate.setTimeout(-1);
         this.scheduleJsonMapper = new ScheduleJsonMapper(objectMapper);
         this.routeJsonMapper = new RouteJsonMapper(objectMapper);
-    }
-
-    private static <T, R> R ifNotNull(T value, Supplier<R> alternative) {
-        return value == null ? null : alternative.get();
+        this.geotagJsonMapper = new GeotagJsonMapper(objectMapper);
     }
 
     private Vehicle parseVehicleFromResultSet(ResultSet rs, int nRow) throws SQLException {
+        var schedule = scheduleJsonMapper.decodeSchedule(rs.getString("schedule_json"));
+        var routeScheduled = routeJsonMapper.decodeRoute(rs.getString("route_json"));
+        var geotag = geotagJsonMapper.decodeGeotag(rs.getString("geotag_json"));
         return Vehicle.builder()
                 .id(Objects.toString(rs.getLong("session_id")))
                 .status(VehicleStatus.valueOf(rs.getString("status")))
                 .capacity(rs.getInt("total_capacity"))
                 .residualCapacity(rs.getInt("residual_capacity"))
-                .schedule(scheduleJsonMapper.decodeSchedule(rs.getString("schedule_json")))
-                .routeScheduled(routeJsonMapper.decodeRoute(rs.getString("route_json")))
-                .roadBinding(new GraphBinding(
-                        new GraphRoad(
-                                new GraphNode(
-                                        rs.getInt("road_start_node_id"),
-                                        new GCS(rs.getDouble("road_start_node_lat"), rs.getDouble("road_start_node_lon"))),
-                                new GraphNode(
-                                        rs.getInt("road_end_node_id"),
-                                        new GCS(rs.getDouble("road_end_node_lat"), rs.getDouble("road_end_node_lon"))),
-                                rs.getDouble("road_cost")
-                        ),
-                        rs.getDouble("road_progress")
-                ))
-                .gcs(new GCS(rs.getDouble("lat"), rs.getDouble("lon")))
+                .schedule(schedule)
+                .routeScheduled(routeScheduled)
+                .roadBinding(Optional.ofNullable(geotag).map(Geotag::getGraphBinding).orElse(null))
+                .gcs(Optional.ofNullable(geotag).map(Geotag::getGcs).orElse(null))
                 .build();
     }
 
@@ -83,16 +69,7 @@ class VehicleStateRepository {
                         " residual_capacity, " +
                         " schedule_json, " +
                         " route_json, " +
-                        " road_start_node_id, " +
-                        " road_start_node_lat, " +
-                        " road_start_node_lon, " +
-                        " road_end_node_id, " +
-                        " road_end_node_lat, " +
-                        " road_end_node_lon, " +
-                        " road_cost, " +
-                        " road_progress, " +
-                        " lat, " +
-                        " lon " +
+                        " geotag_json " +
                         " from vehicle_session " +
                         " where session_id in (:ids)",
                 params,
@@ -113,42 +90,18 @@ class VehicleStateRepository {
                         " residual_capacity = coalesce(?, residual_capacity), " +
                         " schedule_json = coalesce(?, schedule_json), " +
                         " route_json = coalesce(?, route_json), " +
-                        " road_start_node_id = coalesce(?, road_start_node_id), " +
-                        " road_start_node_lat = coalesce(?, road_start_node_lat), " +
-                        " road_start_node_lon = coalesce(?, road_start_node_lon), " +
-                        " road_end_node_id = coalesce(?, road_end_node_id), " +
-                        " road_end_node_lat = coalesce(?, road_end_node_lat), " +
-                        " road_end_node_lon = coalesce(?, road_end_node_lon), " +
-                        " road_cost = coalesce(?, road_cost), " +
-                        " road_progress = coalesce(?, road_progress), " +
-                        " lat = coalesce(?, lat), " +
-                        " lon = coalesce(?, lon) " +
+                        " geotag_json = coalesce(?, geotag_json) " +
                         " where session_id = ? ",
                 new BatchPreparedStatementSetter() {
                     @Override public void setValues(PreparedStatement ps, int i) throws SQLException {
                         var vehicle = vehiclesList.get(i);
-                        ps.setString(1, ifNotNull(vehicle.getStatus(), () -> Objects.toString(vehicle.getStatus())));
+                        ps.setString(1, Optional.ofNullable(vehicle.getStatus()).map(Objects::toString).orElse(null));
                         ps.setObject(2, vehicle.getCapacity(), Types.BIGINT);
                         ps.setObject(3, vehicle.getResidualCapacity(), Types.BIGINT);
-                        ps.setString(4, ifNotNull(vehicle.getSchedule(), () -> scheduleJsonMapper.encodeSchedule(vehicle.getSchedule())));
-                        ps.setString(5, ifNotNull(vehicle.getRouteScheduled(), () -> routeJsonMapper.encodeRoute(vehicle.getRouteScheduled())));
-                        ps.setObject(6,
-                                ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getStartNode().getNodeId()), Types.BIGINT);
-                        ps.setObject(7, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getStartNode().getCoordinates().lat()),
-                                Types.DOUBLE);
-                        ps.setObject(8, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getStartNode().getCoordinates().lon()),
-                                Types.DOUBLE);
-                        ps.setObject(9,
-                                ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getEndNode().getNodeId()), Types.BIGINT);
-                        ps.setObject(10, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getEndNode().getCoordinates().lat()),
-                                Types.DOUBLE);
-                        ps.setObject(11, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getEndNode().getCoordinates().lon()),
-                                Types.DOUBLE);
-                        ps.setObject(12, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getRoad().getCost()), Types.DOUBLE);
-                        ps.setObject(13, ifNotNull(vehicle.getRoadBinding(), () -> vehicle.getRoadBinding().getProgress()), Types.DOUBLE);
-                        ps.setObject(14, ifNotNull(vehicle.getGCS(), () -> vehicle.getGCS().lat()), Types.DOUBLE);
-                        ps.setObject(15, ifNotNull(vehicle.getGCS(), () -> vehicle.getGCS().lon()), Types.DOUBLE);
-                        ps.setLong(16, Long.parseLong(vehicle.getId()));
+                        ps.setString(4, Optional.ofNullable(vehicle.getSchedule()).map(scheduleJsonMapper::encodeSchedule).orElse(null));
+                        ps.setString(5, Optional.ofNullable(vehicle.getRouteScheduled()).map(routeJsonMapper::encodeRoute).orElse(null));
+                        ps.setString(6, geotagJsonMapper.encodeGeotag(new Geotag(vehicle.getRoadBinding(), vehicle.getGCS())));
+                        ps.setLong(7, Long.parseLong(vehicle.getId()));
                     }
 
                     @Override public int getBatchSize() {
@@ -171,17 +124,7 @@ class VehicleStateRepository {
                         " residual_capacity, " +
                         " schedule_json, " +
                         " route_json, " +
-                        " road_start_node_id, " +
-                        " road_start_node_lat, " +
-                        " road_start_node_lon, " +
-                        " road_end_node_id, " +
-                        " road_end_node_lat, " +
-                        " road_end_node_lon, " +
-                        " road_cost, " +
-                        " road_progress, " +
-                        " distance_scheduled, " +
-                        " lat, " +
-                        " lon " +
+                        " geotag_json " +
                         " from vehicle_session " +
                         " where completed_at is null",
                 this::parseVehicleFromResultSet);
