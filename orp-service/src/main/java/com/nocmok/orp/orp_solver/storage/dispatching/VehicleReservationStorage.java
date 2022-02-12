@@ -43,11 +43,11 @@ public class VehicleReservationStorage {
                 .collect(Collectors.toList()));
         return jdbcTemplate.query(
                 " select " +
-                        " reservation_id " +
-                        " session_id " +
-                        " request_id " +
-                        " created_at " +
-                        " expired_at " +
+                        " reservation_id, " +
+                        " session_id, " +
+                        " request_id, " +
+                        " created_at, " +
+                        " expired_at  " +
                         " from vehicle_reservation " +
                         " where expired_at is null and session_id in (:ids) " +
                         " for update ", params, this::parseVehicleReservationEntryFromResultSet);
@@ -56,7 +56,7 @@ public class VehicleReservationStorage {
     public void insertVehicleReservationBatch(List<VehicleReservationEntry> batch) {
         var batchArray = new ArrayList<>(batch);
         jdbcTemplate.getJdbcTemplate().batchUpdate(
-                " insert into vehicle_reservation (reservation_id, vehicle_id, request_id, created_at, expired_at) values(?,?,?,?,?) ",
+                " insert into vehicle_reservation (reservation_id, session_id, request_id, created_at, expired_at) values(?,?,?,?,?) ",
                 new BatchPreparedStatementSetter() {
                     @Override public void setValues(PreparedStatement ps, int i) throws SQLException {
                         var reservation = batchArray.get(i);
