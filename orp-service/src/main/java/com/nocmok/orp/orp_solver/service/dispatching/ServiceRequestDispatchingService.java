@@ -11,10 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,7 +28,6 @@ import java.util.stream.Collectors;
 public class ServiceRequestDispatchingService {
 
     private OrpSolver solver;
-    private TransactionTemplate transactionTemplate;
     private VehicleReservationService vehicleReservationService;
     private StateKeeper<?> stateKeeper;
     private ServiceRequestNotificationService serviceRequestNotificationService;
@@ -36,11 +36,10 @@ public class ServiceRequestDispatchingService {
     private Integer candidatesToFetch;
 
     @Autowired
-    public ServiceRequestDispatchingService(OrpSolver solver, TransactionTemplate transactionTemplate,
+    public ServiceRequestDispatchingService(OrpSolver solver,
                                             VehicleReservationService vehicleReservationService, StateKeeper<?> stateKeeper,
                                             ServiceRequestNotificationService serviceRequestNotificationService) {
         this.solver = solver;
-        this.transactionTemplate = transactionTemplate;
         this.vehicleReservationService = vehicleReservationService;
         this.stateKeeper = stateKeeper;
         this.serviceRequestNotificationService = serviceRequestNotificationService;
@@ -67,17 +66,12 @@ public class ServiceRequestDispatchingService {
             return Optional.empty();
         }
 
-        var request = sortedMatchings.get(0).getRequest();
-
         var reservations = vehicleReservationService.tryReserveVehicles(new VehicleReservationService.ReservationCallback() {
             @Override public List<String> getVehicleIdsToCheckReservation() {
-                var candidateVehicleIds = sortedMatchings.stream()
-                        .map(matching -> matching.getServingVehicle().getId())
-                        .collect(Collectors.toUnmodifiableList());
-
-                // TODO проверять хеш сумму
-
-                return candidateVehicleIds;
+                return sortedMatchings.stream()
+                        .map(RequestMatching::getServingVehicle)
+                        .map(Vehicle::getId)
+                        .collect(Collectors.toList());
             }
 
             @Override public List<VehicleReservation> reserveVehicles(List<String> feasibleVehicleIds) {
@@ -85,14 +79,27 @@ public class ServiceRequestDispatchingService {
                     return Collections.emptyList();
                 }
 
-                var matchingToSatisfy = sortedMatchings.stream()
-                        .filter(matching -> feasibleVehicleIds.contains(matching.getServingVehicle().getId()))
-                        .findFirst().get();
+                var oldChecksums = sortedMatchings.stream()
+                        .map(RequestMatching::getServingVehicle)
+                        .collect(Collectors.toMap(Vehicle::getId, ServiceRequestDispatchingService.this::getVehicleStateChecksum));
 
-                return List.of(VehicleReservation.builder()
-                        .vehicleId(matchingToSatisfy.getServingVehicle().getId())
-                        .requestId(request.getRequestId())
-                        .build());
+                var newChecksums = stateKeeper.getVehiclesByIds(feasibleVehicleIds).stream()
+                        .collect(Collectors.toMap(Vehicle::getId, ServiceRequestDispatchingService.this::getVehicleStateChecksum));
+
+                // финальный список идентификаторов тс, которым можно отправлять запрос
+                var suitableVehicleIds = newChecksums.entrySet().stream()
+                        .filter(entry -> oldChecksums.get(entry.getKey()).equals(entry.getValue()))
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(HashSet::new));
+
+                var matchingToSatisfy = sortedMatchings.stream()
+                        .filter(matching -> suitableVehicleIds.contains(matching.getServingVehicle().getId()))
+                        .findFirst();
+
+                return matchingToSatisfy
+                        .map(ServiceRequestDispatchingService.this::mapRequestMatchingToVehicleReservation)
+                        .map(List::of)
+                        .orElse(Collections.emptyList());
             }
 
             @Override public void handleReservations(List<VehicleReservation> tickets) {
@@ -120,9 +127,15 @@ public class ServiceRequestDispatchingService {
                 .findFirst();
     }
 
-    private String getVehicleStateHashSum(Vehicle vehicle) {
-        // TODO
-        return vehicle.getSchedule().toString();
+    private VehicleReservation mapRequestMatchingToVehicleReservation(RequestMatching matching) {
+        return VehicleReservation.builder()
+                .vehicleId(matching.getServingVehicle().getId())
+                .requestId(matching.getRequest().getRequestId())
+                .build();
+    }
+
+    private String getVehicleStateChecksum(Vehicle vehicle) {
+        return Integer.toString(Objects.hash(vehicle.getSchedule()));
     }
 
     private void initiateRetry(Request request) {
