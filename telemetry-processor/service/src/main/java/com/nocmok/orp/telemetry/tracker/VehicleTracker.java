@@ -11,13 +11,16 @@ import java.util.List;
  */
 public interface VehicleTracker {
 
-    /**
-     * Преобразует историю координат тс в историю перемещений по графу
-     */
     List<GraphRoad> matchTrackToGraph(List<GCS> track);
 
     /**
      * Привязывает координату к дороге из предположения, что координата принадлежит ей
      */
     GraphBinding getBinding(GraphRoad roadToBind, GCS gcs);
+
+    /**
+     * @param hint - ожидаемая последовательность ребер. Этим ребрам будет отдаваться предпочтение при вычислении матчинга.
+     *             Если hint == null или hint - пустой список, то подсказки не учитываются
+     */
+    List<GraphRoad> matchTrackToGraph(List<GCS> track, List<GraphRoad> hint);
 }

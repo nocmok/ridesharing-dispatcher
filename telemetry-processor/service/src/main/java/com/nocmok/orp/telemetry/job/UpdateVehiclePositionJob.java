@@ -14,6 +14,7 @@ import com.nocmok.orp.telemetry.tracker.VehicleTracker;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +34,12 @@ public class UpdateVehiclePositionJob {
     private VehicleTracker vehicleTracker;
     private StateKeeper<?> stateKeeper;
 
+    /**
+     * Длина интервала за который берется батч последней телеметрия
+     */
+    @Value("${com.nocmok.orp.telemetry.job.timeIntervalToFetchLatestTelemetrySeconds:60}")
+    private Integer timeIntervalToFetchLatestTelemetrySeconds;
+
     @Autowired
     public UpdateVehiclePositionJob(TelemetryStorageService telemetryStorageService, VehicleTracker vehicleTracker,
                                     StateKeeper<?> stateKeeper) {
@@ -41,12 +48,14 @@ public class UpdateVehiclePositionJob {
         this.stateKeeper = stateKeeper;
     }
 
-    @Scheduled(fixedDelayString = "5000")
+    @Scheduled(fixedDelayString = "${com.nocmok.orp.telemetry.job.UpdateVehiclePositionJob.updateIntervalSeconds:5000}")
     public void updateVehiclePositions() {
         log.info("start processing telemetry ...");
 
-        var telemetryBySessionId = telemetryStorageService.getLatestTelemetryForEachVehiclesAfterTimestamp(Instant.now().minusSeconds(60)).stream()
-                .collect(Collectors.groupingBy(VehicleTelemetry::getSessionId));
+        var telemetryBySessionId =
+                telemetryStorageService.getLatestTelemetryForEachVehiclesAfterTimestamp(Instant.now().minusSeconds(timeIntervalToFetchLatestTelemetrySeconds))
+                        .stream()
+                        .collect(Collectors.groupingBy(VehicleTelemetry::getSessionId));
 
         if (telemetryBySessionId.isEmpty()) {
             log.info("no telemetry to process, skip ...");
@@ -56,10 +65,6 @@ public class UpdateVehiclePositionJob {
         var vehicles = stateKeeper.getVehiclesByIds(new ArrayList<>(telemetryBySessionId.keySet())).stream()
                 .collect(Collectors.toMap(Vehicle::getId, Function.identity()));
 
-        if(vehicles.isEmpty()) {
-            log.warn("telemetry received, but no vehicles in state keeper to apply telemetry, skip ...");
-        }
-
         var vehiclesToUpdate = new ArrayList<Vehicle>();
 
         for (var id : telemetryBySessionId.keySet()) {
@@ -68,9 +73,16 @@ public class UpdateVehiclePositionJob {
                 continue;
             }
             var vehicle = vehicles.get(id);
+            if (vehicle == null) {
+                log.warn("telemetry received for vehicle with id=" + id +
+                        ", but no vehicles in state keeper to apply telemetry. Skip telemetry for vehicle with id=" + id);
+                continue;
+            }
+
             var matchedTrack = vehicleTracker.matchTrackToGraph(telemetry.stream()
-                    .map(t -> new GCS(t.getLat(), t.getLon()))
-                    .collect(Collectors.toList()));
+                            .map(t -> new GCS(t.getLat(), t.getLon()))
+                            .collect(Collectors.toList()),
+                    getRouteRoadsByNodeSequence(vehicle.getRouteScheduled()));
 
             var currentRoad = matchedTrack.isEmpty()
                     ? Optional.ofNullable(vehicle.getRoadBinding()).map(GraphBinding::getRoad)
@@ -126,11 +138,8 @@ public class UpdateVehiclePositionJob {
         var routeRoads = getRouteRoadsByNodeSequence(vehicle.getRouteScheduled());
         int roadsPassed = routeRoads.indexOf(latestTrack.get(latestTrack.size() - 1));
 
-        log.info("route roads: " + routeRoads);
-        log.info("current road: " + latestTrack.get(latestTrack.size() - 1));
-        log.info("roads passed: " + roadsPassed);
-
         if (roadsPassed == -1) {
+            log.info("deviation from scheduled route detected for vehicle with id=" + vehicle.getId() + ", will try to recompute route");
             return computeRoute(latestTrack.get(latestTrack.size() - 1).getEndNode().getNodeId(), vehicle.getSchedule().get(0).getNodeId());
         }
         var updatedRouteRoads = routeRoads.subList(roadsPassed, routeRoads.size());
