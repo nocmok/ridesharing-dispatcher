@@ -5,7 +5,6 @@ import com.nocmok.orp.core_api.GraphBinding;
 import com.nocmok.orp.core_api.GraphRoad;
 import com.nocmok.orp.telemetry.api.GraphToolbox;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-@Component
+//@Component
 public class DumbTracker implements VehicleTracker {
 
     private final GraphToolbox graphToolbox;
@@ -121,5 +120,9 @@ public class DumbTracker implements VehicleTracker {
         GCS E = math.sub(roadToBind.getEndNode().getCoordinates(), S);
         GCS P = math.sub(gcs, S);
         return new GraphBinding(roadToBind, math.dotProduct(P, E) / math.abs2(E));
+    }
+
+    @Override public List<GraphRoad> matchTrackToGraph(List<GCS> track, List<GraphRoad> hint) {
+        return matchTrackToGraph(track);
     }
 }
