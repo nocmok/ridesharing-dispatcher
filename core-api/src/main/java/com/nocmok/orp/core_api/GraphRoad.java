@@ -14,15 +14,9 @@ public class GraphRoad {
      */
     private final GraphNode endNode;
 
-    /**
-     * Стоимость прохождения по ребру
-     */
-    private final double cost;
-
-    public GraphRoad(GraphNode startNode, GraphNode endNode, double cost) {
+    public GraphRoad(GraphNode startNode, GraphNode endNode) {
         this.startNode = startNode;
         this.endNode = endNode;
-        this.cost = cost;
     }
 
     public GraphNode getStartNode() {
@@ -31,10 +25,6 @@ public class GraphRoad {
 
     public GraphNode getEndNode() {
         return endNode;
-    }
-
-    public double getCost() {
-        return cost;
     }
 
     @Override public boolean equals(Object o) {
@@ -56,7 +46,6 @@ public class GraphRoad {
         return "Road{" +
                 "startNode=" + startNode +
                 ", endNode=" + endNode +
-                ", cost=" + cost +
                 '}';
     }
 }

@@ -16,7 +16,6 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
 
     private String id;
     private VehicleStatus status;
-    private GCS gcs;
     private List<ScheduleNode> schedule;
     private List<GraphNode> routeScheduled;
     private int capacity;
@@ -40,10 +39,6 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
 
     @Override public void setStatus(VehicleStatus status) {
         this.status = status;
-    }
-
-    @Override public GCS getGCS() {
-        return gcs;
     }
 
     @Override public List<ScheduleNode> getSchedule() {
@@ -70,15 +65,10 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
         this.residualCapacity = residualCapacity;
     }
 
-    void setGcs(GCS gcs) {
-        this.gcs = gcs;
-    }
-
     @Override public String toString() {
         return "Vehicle{" +
                 "id='" + id + '\'' +
                 ", status=" + status +
-                ", gcs=" + gcs +
                 ", schedule=" + schedule +
                 ", routeScheduled=" + routeScheduled +
                 ", capacity=" + capacity +

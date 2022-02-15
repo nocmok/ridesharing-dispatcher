@@ -2,7 +2,7 @@ package com.nocmok.orp.telemetry.kafka.orp_telemetry;
 
 import com.nocmok.orp.telemetry.kafka.orp_telemetry.dto.VehicleTelemetryMessage;
 import com.nocmok.orp.telemetry.kafka.orp_telemetry.mapper.VehicleTelemetryMapper;
-import com.nocmok.orp.telemetry.service.VehiclePositionBatchUpdater;
+import com.nocmok.orp.telemetry.service.TelemetryStorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;
@@ -22,12 +22,12 @@ import java.util.stream.Collectors;
 )
 public class OrpTelemetryListener {
 
-    private VehiclePositionBatchUpdater vehiclePositionBatchUpdater;
+    private TelemetryStorageService telemetryStorageService;
     private VehicleTelemetryMapper mapper = new VehicleTelemetryMapper();
 
     @Autowired
-    public OrpTelemetryListener(VehiclePositionBatchUpdater vehiclePositionBatchUpdater) {
-        this.vehiclePositionBatchUpdater = vehiclePositionBatchUpdater;
+    public OrpTelemetryListener(TelemetryStorageService telemetryStorageService) {
+        this.telemetryStorageService = telemetryStorageService;
     }
 
     @KafkaHandler
@@ -42,7 +42,7 @@ public class OrpTelemetryListener {
             return;
         }
 
-        vehiclePositionBatchUpdater.batchUpdate(telemetry.stream()
+        telemetryStorageService.storeTelemetry(telemetry.stream()
                 .map(mapper::mapToVehicleTelemetry)
                 .collect(Collectors.toList()));
     }

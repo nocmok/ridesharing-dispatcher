@@ -36,10 +36,26 @@ public class LSSolver implements OrpSolver {
         this.vehicleStateService = vehicleStateService;
     }
 
+    private List<ExtendedVehicle> enrichVehicleWithGeoData(List<? extends Vehicle> vehicles) {
+        // TODO Обогащать батчем
+        var extendedVehicles = new ArrayList<ExtendedVehicle>();
+        for (var vehicle : vehicles) {
+            var extendedVehicle = new ExtendedVehicle(vehicle);
+            if (vehicle.getRouteScheduled().size() >= 2) {
+                extendedVehicle.setCostToNextNodeInScheduledRoute(
+                        roadIndex.getRouteCost(List.of(vehicle.getRouteScheduled().get(0), vehicle.getRouteScheduled().get(1))) *
+                                (1 - vehicle.getRoadBinding().getProgress()));
+
+            }
+            extendedVehicles.add(extendedVehicle);
+        }
+        return extendedVehicles;
+    }
+
     /**
      * Отсекает тс, которые точно не могут обработать запрос
      */
-    private List<? extends Vehicle> filterVehicles(Request request) {
+    private List<ExtendedVehicle> filterVehicles(Request request) {
         // TODO добавить двустороннюю фильтрацию
         long timeReserveSeconds = request.getRequestedAt().getEpochSecond() + request.getMaxPickupDelaySeconds() - Instant.now().getEpochSecond();
         List<String> filteredVehiclesId = roadIndex
@@ -47,7 +63,8 @@ public class LSSolver implements OrpSolver {
                 .stream()
                 .map(GraphIndexEntity::getId)
                 .collect(Collectors.toList());
-        return vehicleStateService.getVehiclesByIds(filteredVehiclesId);
+
+        return enrichVehicleWithGeoData(vehicleStateService.getVehiclesByIds(filteredVehiclesId));
     }
 
     private ScheduleNode createPickupScheduleNode(Request request) {
@@ -109,7 +126,7 @@ public class LSSolver implements OrpSolver {
         return combineRoutes(partialRoutes);
     }
 
-    private Optional<Matching> matchPendingVehicle(Request request, Vehicle vehicle) {
+    private Optional<Matching> matchPendingVehicle(Request request, ExtendedVehicle vehicle) {
         if (vehicle.getResidualCapacity() < request.getLoad()) {
             return Optional.empty();
         }
@@ -128,13 +145,13 @@ public class LSSolver implements OrpSolver {
                 request,
                 bestRoute.getRoute(),
                 bestRoute.getCost(),
-                bestRoute.getCost() + (1 - vehicle.getRoadBinding().getProgress()) * vehicle.getRoadBinding().getRoad().getCost(),
+                bestRoute.getCost() + vehicle.getCostToNextNodeInScheduledRoute(),
                 schedule,
-                vehicle
+                vehicle.getUnderlyingVehicle()
         ));
     }
 
-    private boolean checkCapacityViolation(Vehicle vehicle, List<ScheduleNode> schedule) {
+    private boolean checkCapacityViolation(ExtendedVehicle vehicle, List<ScheduleNode> schedule) {
         int capacity = vehicle.getResidualCapacity();
         for (var node : schedule) {
             if (node.getKind() == ScheduleNodeKind.PICKUP) {
@@ -157,10 +174,10 @@ public class LSSolver implements OrpSolver {
      * Если план не нарушает дедлайны то, возвращается наилучший маршрут для выполнения плана.
      * Если план нарушает дедлайны, то возвращается пустой Optional
      */
-    private Optional<GraphRoute> checkDeadlineViolation(Vehicle vehicle, List<ScheduleNode> schedule) {
+    private Optional<GraphRoute> checkDeadlineViolation(ExtendedVehicle vehicle, List<ScheduleNode> schedule) {
         var partialRoutes = new ArrayList<GraphRoute>();
         long time = Instant.now()
-                .plusSeconds((long) ((1 - vehicle.getRoadBinding().getProgress()) * vehicle.getRoadBinding().getRoad().getCost()))
+                .plusSeconds(vehicle.getCostToNextNodeInScheduledRoute().longValue())
                 .getEpochSecond();
 
         int lastNode = vehicle.getRoadBinding().getRoad().getEndNode().getNodeId();
@@ -177,7 +194,7 @@ public class LSSolver implements OrpSolver {
         return Optional.of(combineRoutes(partialRoutes));
     }
 
-    private Optional<Matching> matchServingVehicle(Request request, Vehicle vehicle) {
+    private Optional<Matching> matchServingVehicle(Request request, ExtendedVehicle vehicle) {
         if (vehicle.getResidualCapacity() < request.getLoad()) {
             return Optional.empty();
         }
@@ -216,7 +233,7 @@ public class LSSolver implements OrpSolver {
                         route.get().getCost(),
                         route.get().getCost() - scheduledRoute.getCost(),
                         schedule,
-                        vehicle
+                        vehicle.getUnderlyingVehicle()
                 );
             }
         }

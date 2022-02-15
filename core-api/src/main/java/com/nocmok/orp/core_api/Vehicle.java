@@ -45,11 +45,6 @@ public interface Vehicle {
     void setResidualCapacity(int capacity);
 
     /**
-     * Текущие координаты тс
-     */
-    GCS getGCS();
-
-    /**
      * Возвращает привязку тс к графу
      */
     GraphBinding getRoadBinding();
