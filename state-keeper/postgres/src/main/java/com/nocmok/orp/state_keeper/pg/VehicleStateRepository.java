@@ -51,7 +51,6 @@ class VehicleStateRepository {
                 .schedule(schedule)
                 .routeScheduled(routeScheduled)
                 .roadBinding(Optional.ofNullable(geotag).map(Geotag::getGraphBinding).orElse(null))
-                .gcs(Optional.ofNullable(geotag).map(Geotag::getGcs).orElse(null))
                 .build();
     }
 
@@ -100,7 +99,7 @@ class VehicleStateRepository {
                         ps.setObject(3, vehicle.getResidualCapacity(), Types.BIGINT);
                         ps.setString(4, Optional.ofNullable(vehicle.getSchedule()).map(scheduleJsonMapper::encodeSchedule).orElse(null));
                         ps.setString(5, Optional.ofNullable(vehicle.getRouteScheduled()).map(routeJsonMapper::encodeRoute).orElse(null));
-                        ps.setString(6, geotagJsonMapper.encodeGeotag(new Geotag(vehicle.getRoadBinding(), vehicle.getGCS())));
+                        ps.setString(6, geotagJsonMapper.encodeGeotag(new Geotag(vehicle.getRoadBinding())));
                         ps.setLong(7, Long.parseLong(vehicle.getId()));
                     }
 

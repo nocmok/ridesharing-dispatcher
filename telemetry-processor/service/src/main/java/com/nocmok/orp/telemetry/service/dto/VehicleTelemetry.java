@@ -1,7 +1,10 @@
-package com.nocmok.orp.telemetry.dto;
+package com.nocmok.orp.telemetry.service.dto;
+
+import lombok.Builder;
 
 import java.time.Instant;
 
+@Builder
 public class VehicleTelemetry {
 
     private String sessionId;

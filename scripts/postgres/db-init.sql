@@ -21,41 +21,40 @@ create table vehicle_session
 
     schedule_json text,
     route_json text,
-
-    road_start_node_id bigint,
-    road_start_node_lat float8,
-    road_start_node_lon float8,
-
-    road_end_node_id bigint,
-    road_end_node_lat float8,
-    road_end_node_lon float8,
-
-    road_cost float8,
-    road_progress float8,
-
-    lat float8,
-    lon float8
+    geotag_json text
 );
 
-drop table if exists vehicle_reservation;
+drop table if exists vehicle_reservation cascade;
 create table vehicle_reservation
 (
     reservation_id bigint primary key default nextval('reservation_id_seq'),
     session_id bigint not null,
     request_id bigint not null,
+    created_at timestamp with time zone default now(),
     expired_at timestamp with time zone,
 
     constraint fk_vere_seid__vese_seid foreign key (session_id) references vehicle_session(session_id)
 );
 
-drop table if exists service_request_outbox;
+drop table if exists service_request_outbox cascade;
 create table service_request_outbox
 (
+    request_id bigint not null primary key,
     session_id bigint not null,
-    request_id bigint not null,
     reservation_id bigint not null,
     sent_at timestamp with time zone,
 
     constraint fk_sereou_reid__vere_reid foreign key (reservation_id) references vehicle_reservation(reservation_id),
     constraint fk_sereou_seid__vese_seid foreign key (session_id) references vehicle_session(session_id)
 );
+
+drop table if exists telemetry cascade;
+create table telemetry
+(
+    session_id bigint not null,
+    latitude float8,
+    longitude float8,
+    accuracy float8,
+    recorded_at timestamp with time zone
+);
+

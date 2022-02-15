@@ -31,7 +31,6 @@ class GeotagJsonMapper {
 
     private GeotagJsonDto mapGeotagToJsonDto(Geotag geotag) {
         return new GeotagJsonDto(
-                new CoordinatesJsonDto(geotag.getGcs().lat(), geotag.getGcs().lon()),
                 new RoadJsonDto(
                         mapGraphNodeToJsonDto(geotag.getGraphBinding().getRoad().getStartNode()),
                         mapGraphNodeToJsonDto(geotag.getGraphBinding().getRoad().getEndNode()),
@@ -48,8 +47,7 @@ class GeotagJsonMapper {
                                 mapJsonDtoToGraphNode(dto.getRoad().getEndNode())
                         ),
                         dto.getRoad().getProgress()
-                ),
-                new GCS(dto.getCoordinates().getLatitude(), dto.getCoordinates().getLongitude())
+                )
         );
     }
 
@@ -71,8 +69,6 @@ class GeotagJsonMapper {
 
     private static class GeotagJsonDto {
 
-        @JsonProperty("coordinates")
-        private CoordinatesJsonDto coordinates;
         @JsonProperty("road")
         private RoadJsonDto road;
 
@@ -80,13 +76,8 @@ class GeotagJsonMapper {
 
         }
 
-        public GeotagJsonDto(CoordinatesJsonDto coordinates, RoadJsonDto road) {
-            this.coordinates = coordinates;
+        public GeotagJsonDto(RoadJsonDto road) {
             this.road = road;
-        }
-
-        public CoordinatesJsonDto getCoordinates() {
-            return coordinates;
         }
 
         public RoadJsonDto getRoad() {

@@ -10,12 +10,13 @@ import com.nocmok.orp.core_api.VehicleStatus;
 import java.util.List;
 
 /**
- * Обертка над интерфейсом тс с дополнительными методами, удобными для lazy search алгоритма
+ * Обертка над интерфейсом тс, обогащенная геоданными
  */
 class ExtendedVehicle {
 
     private Vehicle underlyingVehicle;
     private Double costToNextNodeInScheduledRoute;
+    private GCS gcs;
 
     public ExtendedVehicle(Vehicle vehicle) {
         this.underlyingVehicle = vehicle;
@@ -57,10 +58,6 @@ class ExtendedVehicle {
         underlyingVehicle.setResidualCapacity(capacity);
     }
 
-    public GCS getGCS() {
-        return underlyingVehicle.getGCS();
-    }
-
     public GraphBinding getRoadBinding() {
         return underlyingVehicle.getRoadBinding();
     }
@@ -78,5 +75,12 @@ class ExtendedVehicle {
 
     public void setCostToNextNodeInScheduledRoute(Double costToNextNodeInScheduledRoute) {
         this.costToNextNodeInScheduledRoute = costToNextNodeInScheduledRoute;
+    }
+
+    /**
+     * Возвращает текущую координату тс
+     */
+    public GCS getCurrentGCS() {
+        return this.gcs;
     }
 }

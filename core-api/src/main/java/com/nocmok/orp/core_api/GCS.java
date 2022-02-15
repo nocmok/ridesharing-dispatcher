@@ -4,23 +4,23 @@ public class GCS {
     /**
      * Latitude
      */
-    private final double lat;
+    private final Double lat;
 
     /**
      * Longitude
      */
-    private final double lon;
+    private final Double lon;
 
-    public GCS(double lat, double lon) {
+    public GCS(Double lat, Double lon) {
         this.lat = lat;
         this.lon = lon;
     }
 
-    public double lat() {
+    public Double lat() {
         return lat;
     }
 
-    public double lon() {
+    public Double lon() {
         return lon;
     }
 
