@@ -1,12 +1,20 @@
 package com.nocmok.orp.core_api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public class GraphNode {
 
-    private final int nodeId;
+    @JsonProperty("nodeId")
+    private int nodeId;
 
-    private final GCS coordinates;
+    @JsonProperty("coordinates")
+    private GCS coordinates;
+
+    // для jackson
+    public GraphNode() {
+    }
 
     public GraphNode(int nodeId, GCS coordinates) {
         this.nodeId = nodeId;

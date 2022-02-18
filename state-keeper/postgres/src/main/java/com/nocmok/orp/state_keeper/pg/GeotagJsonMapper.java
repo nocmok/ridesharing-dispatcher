@@ -1,5 +1,6 @@
 package com.nocmok.orp.state_keeper.pg;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nocmok.orp.core_api.GCS;
@@ -67,6 +68,7 @@ class GeotagJsonMapper {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private static class GeotagJsonDto {
 
         @JsonProperty("road")
@@ -85,6 +87,7 @@ class GeotagJsonMapper {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private static class CoordinatesJsonDto {
         @JsonProperty("latitude")
         private Double latitude;
@@ -116,6 +119,7 @@ class GeotagJsonMapper {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private static class NodeJsonDto {
         @JsonProperty("id")
         private Integer id;
@@ -147,6 +151,7 @@ class GeotagJsonMapper {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private static class RoadJsonDto {
         @JsonProperty("startNode")
         private NodeJsonDto startNode;

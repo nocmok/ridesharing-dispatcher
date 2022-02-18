@@ -5,7 +5,8 @@ import com.nocmok.orp.core_api.Request;
 import com.nocmok.orp.core_api.RequestMatching;
 import com.nocmok.orp.core_api.StateKeeper;
 import com.nocmok.orp.core_api.Vehicle;
-import com.nocmok.orp.orp_solver.service.notification.ServiceRequestNotificationDto;
+import com.nocmok.orp.orp_solver.service.dispatching.dto.VehicleReservation;
+import com.nocmok.orp.orp_solver.service.notification.dto.ServiceRequestNotification;
 import com.nocmok.orp.orp_solver.service.notification.ServiceRequestNotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,8 @@ public class ServiceRequestDispatchingService {
     public void dispatchServiceRequest(Request request) {
         var candidates = solver.getTopKCandidateVehicles(request, candidatesToFetch);
         if (candidates.isEmpty()) {
-            log.debug("no candidates to serve request\n" + request);
+            log.info("no candidates to serve request\n" + request);
+            // TODO сделать отправку сообщения об отказе
             return;
         }
         log.debug(" candidate vehicles selected for request\n" + request + "\ncandidates\n" + candidates);
@@ -112,7 +114,7 @@ public class ServiceRequestDispatchingService {
                         .filter(matching -> Objects.equals(ticket.getVehicleId(), matching.getServingVehicle().getId()))
                         .findFirst().get();
 
-                serviceRequestNotificationService.sendNotification(new ServiceRequestNotificationDto(
+                serviceRequestNotificationService.sendNotification(new ServiceRequestNotification(
                         ticket.getVehicleId(),
                         ticket.getRequestId(),
                         ticket.getReservationId(),

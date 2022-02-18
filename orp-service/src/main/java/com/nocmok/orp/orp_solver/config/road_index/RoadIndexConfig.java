@@ -1,5 +1,7 @@
 package com.nocmok.orp.orp_solver.config.road_index;
 
+import com.nocmok.orp.core_api.GCS;
+import com.nocmok.orp.core_api.GraphIndexEntity;
 import com.nocmok.orp.road_index.mem_stub.DijkstraIndex;
 import com.nocmok.orp.road_index.mem_stub.DimacsParser;
 import com.nocmok.orp.road_index.mem_stub.InmemoryGraph;
@@ -32,6 +34,8 @@ public class RoadIndexConfig {
 
     @Bean
     public DijkstraIndex dijkstraIndex() {
-        return new DijkstraIndex(graphInstance());
+        var dijkstraIndex = new DijkstraIndex(graphInstance());
+        dijkstraIndex.addObject(new GraphIndexEntity("1", new GCS(-7.4145588E7, 4.0768E7)));
+        return dijkstraIndex;
     }
 }

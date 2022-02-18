@@ -83,4 +83,39 @@ public class VehicleReservationStorage {
                         params
                 );
     }
+
+    public Optional<VehicleReservationEntry> getReservationById(String id) {
+        var params = new HashMap<String, Object>();
+        params.put("reservationId", Long.parseLong(id));
+        return jdbcTemplate.query(" select " +
+                                " reservation_id, " +
+                                " session_id, " +
+                                " request_id, " +
+                                " created_at, " +
+                                " expired_at  " +
+                                " from vehicle_reservation " +
+                                " where reservation_id = :reservationId ",
+                        params, this::parseVehicleReservationEntryFromResultSet)
+                .stream()
+                .findFirst();
+    }
+
+    public void updateReservation(VehicleReservationEntry entry) {
+        var params = new HashMap<String, Object>();
+        params.put("sessionId", Long.parseLong(entry.getVehicleId()));
+        params.put("requestId", Long.parseLong(entry.getRequestId()));
+        params.put("createdAt", Optional.ofNullable(entry.getCreatedAt()).map(Timestamp::from).orElse(null));
+        params.put("expiredAt", Optional.ofNullable(entry.getExpiredAt()).map(Timestamp::from).orElse(null));
+        params.put("reservationId", Long.parseLong(entry.getReservationId()));
+        jdbcTemplate
+                .update(" update vehicle_reservation " +
+                                " set " +
+                                " session_id = :sessionId, " +
+                                " request_id = :requestId, " +
+                                " created_at = :createdAt, " +
+                                " expired_at = :expiredAt  " +
+                                " where reservation_id = :reservationId ",
+                        params
+                );
+    }
 }

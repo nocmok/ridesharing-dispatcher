@@ -49,6 +49,7 @@ public class KafkaConsumerConfig {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, MatchVehiclesMessage>();
         factory.setConcurrency(nThreads);
         factory.setConsumerFactory(orpInputConsumerFactory());
+//        factory.setErrorHandler();
         return factory;
     }
 }

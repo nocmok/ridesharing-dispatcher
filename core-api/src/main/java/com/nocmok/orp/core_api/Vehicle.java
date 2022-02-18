@@ -53,4 +53,9 @@ public interface Vehicle {
      * Возвращает запланированный маршрут тс включая текущее ребро
      */
     List<GraphNode> getRouteScheduled();
+
+    /**
+     * Обновляет запланированный маршрут
+     */
+    void setRouteScheduled(List<GraphNode> route);
 }

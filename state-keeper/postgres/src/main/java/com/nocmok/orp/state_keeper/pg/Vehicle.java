@@ -1,6 +1,5 @@
 package com.nocmok.orp.state_keeper.pg;
 
-import com.nocmok.orp.core_api.GCS;
 import com.nocmok.orp.core_api.GraphBinding;
 import com.nocmok.orp.core_api.GraphNode;
 import com.nocmok.orp.core_api.ScheduleNode;
@@ -89,7 +88,7 @@ public class Vehicle implements com.nocmok.orp.core_api.Vehicle {
         return routeScheduled;
     }
 
-    public void setRouteScheduled(List<GraphNode> routeScheduled) {
+    @Override public void setRouteScheduled(List<GraphNode> routeScheduled) {
         this.routeScheduled = routeScheduled;
     }
 }
