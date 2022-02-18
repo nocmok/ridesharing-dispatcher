@@ -1,11 +1,11 @@
-package com.nocmok.orp.orp_solver.service.notification;
+package com.nocmok.orp.orp_solver.service.notification.dto;
 
 import com.nocmok.orp.core_api.GraphNode;
 import com.nocmok.orp.core_api.ScheduleNode;
 
 import java.util.List;
 
-public class ServiceRequestNotificationDto {
+public class ServiceRequestNotification {
 
     /**
      * Идентификатор тс которому будет отправлено уведомление
@@ -29,8 +29,8 @@ public class ServiceRequestNotificationDto {
 
     private final List<GraphNode> augmentedRoute;
 
-    public ServiceRequestNotificationDto(String vehicleId, String requestId, String reservationId,
-                                         List<ScheduleNode> augmentedSchedule, List<GraphNode> augmentedRoute) {
+    public ServiceRequestNotification(String vehicleId, String requestId, String reservationId,
+                                      List<ScheduleNode> augmentedSchedule, List<GraphNode> augmentedRoute) {
         this.vehicleId = vehicleId;
         this.requestId = requestId;
         this.reservationId = reservationId;

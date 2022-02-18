@@ -1,19 +1,18 @@
 package com.nocmok.orp.orp_solver.service.dispatching;
 
+import com.nocmok.orp.orp_solver.service.dispatching.dto.VehicleReservation;
+import com.nocmok.orp.orp_solver.service.dispatching.mapper.VehicleReservationMapper;
 import com.nocmok.orp.orp_solver.storage.dispatching.ReservationTicketSequence;
 import com.nocmok.orp.orp_solver.storage.dispatching.VehicleReservationEntry;
 import com.nocmok.orp.orp_solver.storage.dispatching.VehicleReservationStorage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -25,24 +24,17 @@ public class VehicleReservationService {
     private TransactionTemplate transactionTemplate;
     private ReservationTicketSequence reservationTicketSequence;
     private VehicleReservationStorage vehicleReservationStorage;
+    private VehicleReservationMapper vehicleReservationMapper;
 
     @Autowired
     public VehicleReservationService(TransactionTemplate transactionTemplate,
                                      ReservationTicketSequence reservationTicketSequence,
-                                     VehicleReservationStorage vehicleReservationStorage) {
+                                     VehicleReservationStorage vehicleReservationStorage,
+                                     VehicleReservationMapper vehicleReservationMapper) {
         this.transactionTemplate = transactionTemplate;
         this.reservationTicketSequence = reservationTicketSequence;
         this.vehicleReservationStorage = vehicleReservationStorage;
-    }
-
-    private VehicleReservationEntry mapReservationToStorageEntry(VehicleReservation reservation) {
-        return VehicleReservationEntry.builder()
-                .reservationId(reservation.getReservationId())
-                .vehicleId(reservation.getVehicleId())
-                .requestId(reservation.getRequestId())
-                .createdAt(Instant.now())
-                .expiredAt(null)
-                .build();
+        this.vehicleReservationMapper = vehicleReservationMapper;
     }
 
     public List<VehicleReservation> tryReserveVehicles(ReservationCallback callback) {
@@ -57,16 +49,30 @@ public class VehicleReservationService {
 
 
             var reservations = callback.reserveVehicles(feasibleIds);
-            reservations.forEach(reservation -> reservation.setReservationId(reservationTicketSequence.nextValue()));
+            reservations.forEach(reservation -> {
+                reservation.setReservationId(reservationTicketSequence.nextValue());
+                //
+                reservation.setCreatedAt(Instant.now());
+                reservation.setExpiredAt(null);
+            });
 
             vehicleReservationStorage.insertVehicleReservationBatch(reservations.stream()
-                    .map(this::mapReservationToStorageEntry)
+                    .map(vehicleReservationMapper::mapReservationToStorageEntry)
                     .collect(Collectors.toList()));
 
             callback.handleReservations(reservations);
 
             return reservations;
         });
+    }
+
+    public Optional<VehicleReservation> getReservationById(String id) {
+        return vehicleReservationStorage.getReservationById(id)
+                .map(vehicleReservationMapper::mapVehicleReservationEntryToVehicleReservation);
+    }
+
+    public void updateReservation(VehicleReservation reservation) {
+        vehicleReservationStorage.updateReservation(vehicleReservationMapper.mapReservationToStorageEntry(reservation));
     }
 
     public interface ReservationCallback {

@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class LSSolver implements OrpSolver {
 
@@ -41,15 +42,16 @@ public class LSSolver implements OrpSolver {
         var extendedVehicles = new ArrayList<ExtendedVehicle>();
         for (var vehicle : vehicles) {
             var extendedVehicle = new ExtendedVehicle(vehicle);
-            if (vehicle.getRouteScheduled().size() >= 2) {
-                extendedVehicle.setCostToNextNodeInScheduledRoute(
-                        roadIndex.getRouteCost(List.of(vehicle.getRouteScheduled().get(0), vehicle.getRouteScheduled().get(1))) *
-                                (1 - vehicle.getRoadBinding().getProgress()));
-
-            }
+            extendedVehicle.setCostToNextNodeInScheduledRoute(
+                    roadIndex.getRouteCost(List.of(vehicle.getRoadBinding().getRoad().getStartNode(), vehicle.getRoadBinding().getRoad().getEndNode())) *
+                            (1 - vehicle.getRoadBinding().getProgress()));
             extendedVehicles.add(extendedVehicle);
         }
         return extendedVehicles;
+    }
+
+    private ExtendedVehicle enrichVehicleWithGeoData(Vehicle vehicle) {
+        return enrichVehicleWithGeoData(List.of(vehicle)).get(0);
     }
 
     /**
@@ -143,7 +145,8 @@ public class LSSolver implements OrpSolver {
 
         return Optional.of(new Matching(
                 request,
-                bestRoute.getRoute(),
+                Stream.concat(Stream.of(vehicle.getRoadBinding().getRoad().getStartNode()), bestRoute.getRoute().stream())
+                        .collect(Collectors.toList()),
                 bestRoute.getCost(),
                 bestRoute.getCost() + vehicle.getCostToNextNodeInScheduledRoute(),
                 schedule,
@@ -172,9 +175,10 @@ public class LSSolver implements OrpSolver {
     /**
      * Проверяет нарушение дедлайнов прибытия в контрольные точки плана.
      * Если план не нарушает дедлайны то, возвращается наилучший маршрут для выполнения плана.
-     * Если план нарушает дедлайны, то возвращается пустой Optional
+     * Если план нарушает дедлайны, то возвращается пустой Optional.
+     * Возвращает маршрут без текущего ребра тс
      */
-    private Optional<GraphRoute> checkDeadlineViolation(ExtendedVehicle vehicle, List<ScheduleNode> schedule) {
+    private Optional<GraphRoute> checkDeadlineViolationAndGetRoute(ExtendedVehicle vehicle, List<ScheduleNode> schedule) {
         var partialRoutes = new ArrayList<GraphRoute>();
         long time = Instant.now()
                 .plusSeconds(vehicle.getCostToNextNodeInScheduledRoute().longValue())
@@ -222,14 +226,15 @@ public class LSSolver implements OrpSolver {
             if (!checkCapacityViolation(vehicle, schedule)) {
                 continue;
             }
-            var route = checkDeadlineViolation(vehicle, schedule);
+            var route = checkDeadlineViolationAndGetRoute(vehicle, schedule);
             if (route.isEmpty()) {
                 continue;
             }
             if (route.get().getCost() - scheduledRoute.getCost() < bestMatching.additionalCost) {
                 bestMatching = new Matching(
                         request,
-                        route.get().getRoute(),
+                        Stream.concat(Stream.of(vehicle.getRoadBinding().getRoad().getStartNode()), route.get().getRoute().stream())
+                                .collect(Collectors.toList()),
                         route.get().getCost(),
                         route.get().getCost() - scheduledRoute.getCost(),
                         schedule,
@@ -289,7 +294,25 @@ public class LSSolver implements OrpSolver {
     }
 
     @Override public void acceptRequest(Vehicle vehicle, Request request) {
-
+        if (vehicle.getStatus() == VehicleStatus.PENDING) {
+            var extendedVehicle = enrichVehicleWithGeoData(vehicle);
+            var matching = matchPendingVehicle(request, extendedVehicle);
+            if (matching.isEmpty()) {
+                throw new RuntimeException("unable to match vehicle " + vehicle + ", against request " + request);
+            }
+            vehicle.setSchedule(matching.get().getBestSchedule());
+            vehicle.setRouteScheduled(matching.get().getBestRoute());
+        } else if (vehicle.getStatus() == VehicleStatus.SERVING) {
+            var extendedVehicle = enrichVehicleWithGeoData(vehicle);
+            var matching = matchServingVehicle(request, extendedVehicle);
+            if (matching.isEmpty()) {
+                throw new RuntimeException("unable to match vehicle " + vehicle + ", against request " + request);
+            }
+            vehicle.setSchedule(matching.get().getBestSchedule());
+            vehicle.setRouteScheduled(matching.get().getBestRoute());
+        } else {
+            throw new RuntimeException("unknown vehicle status " + vehicle.getStatus());
+        }
     }
 
     @Override public void cancelRequest(Vehicle vehicle, Request request) {
@@ -322,6 +345,9 @@ public class LSSolver implements OrpSolver {
             return additionalCost;
         }
 
+        /**
+         * Возвращает лучший маршрут включая текущее ребро тс
+         */
         public List<GraphNode> getBestRoute() {
             return bestRoute;
         }

@@ -1,5 +1,7 @@
 package com.nocmok.orp.core_api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.Instant;
 
 public class ScheduleNode {
@@ -7,31 +9,42 @@ public class ScheduleNode {
     /**
      * Крайнее время прибытия в контрольную точку
      */
+    @JsonProperty("deadline")
     private Instant deadline;
     /**
      * Дельта нагрузки на тс при прохождении контрольной точки
      */
+    @JsonProperty("load")
     private int load;
     /**
      * Идентификатор вершины в графе к которой прикреплена контрольная точка
      */
+    @JsonProperty("nodeId")
     private int nodeId;
     /**
      * Широта координаты контрольной точки
      */
+    @JsonProperty("latitude")
     private double lat;
     /**
      * Долгота координаты контрольной точки
      */
+    @JsonProperty("longitude")
     private double lon;
     /**
      * Тип контрольной точки
      */
+    @JsonProperty("kind")
     private ScheduleNodeKind kind;
     /**
      * Идентификатор заказа прикрепленного к контрольной точке
      */
+    @JsonProperty("orderId")
     private String orderId;
+
+    public ScheduleNode() {
+
+    }
 
     public ScheduleNode(Instant deadline, int load, int nodeId, double lat, double lon, ScheduleNodeKind kind, String orderId) {
         this.deadline = deadline;

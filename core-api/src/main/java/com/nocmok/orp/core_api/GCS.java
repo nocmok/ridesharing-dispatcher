@@ -1,15 +1,23 @@
 package com.nocmok.orp.core_api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class GCS {
     /**
      * Latitude
      */
-    private final Double lat;
+    @JsonProperty("latitude")
+    private Double lat;
 
     /**
      * Longitude
      */
-    private final Double lon;
+    @JsonProperty("longitude")
+    private Double lon;
+
+    public GCS() {
+
+    }
 
     public GCS(Double lat, Double lon) {
         this.lat = lat;
