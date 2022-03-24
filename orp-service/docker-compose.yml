@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  orp_dispatcher:
+    image: nyusafonov/orp_dispatcher:latest
+    container_name: orp-dispatcher
+    environment:
+      KAFKA_BOOTSTRAP_ADDRESS: kafka:9092
+      CONSUMER_GROUP: orp_solver
+      POSTGRES_USERNAME: orp
+      POSTGRES_PASSWORD: orp
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+    networks:
+      - orp-network
+networks:
+  orp-network:
+    name: orp-network
+    driver: bridge
