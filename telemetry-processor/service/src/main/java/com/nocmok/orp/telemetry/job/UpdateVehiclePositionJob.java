@@ -207,5 +207,9 @@ public class UpdateVehiclePositionJob {
         @Override public List<GraphNode> getRouteScheduled() {
             return routeScheduled;
         }
+
+        @Override public void setRouteScheduled(List<GraphNode> route) {
+            this.routeScheduled = route;
+        }
     }
 }
