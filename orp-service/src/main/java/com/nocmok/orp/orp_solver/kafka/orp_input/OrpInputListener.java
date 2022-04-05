@@ -49,7 +49,7 @@ public class OrpInputListener {
     public void receiveServiceRequestMessage(@Payload ServiceRequestMessage message) {
         var errors = serviceRequestValidator.validateServiceRequest(message);
         if (!errors.isEmpty()) {
-            log.error("invalid service request received:" + message + "\nErrors: " + errors);
+            log.error("invalid service request received: " + message + "\nErrors: " + errors);
             return;
         }
         serviceRequestService.storeRequest(serviceRequestMessageMapper.mapMessageToServiceRequestStorageServiceDto(message));
@@ -58,6 +58,11 @@ public class OrpInputListener {
 
     @KafkaHandler
     public void receiveAcceptRequestMessage(@Payload AssignRequestMessage message) {
+        var errors = assignRequestValidator.validateAssignRequest(message);
+        if (!errors.isEmpty()) {
+            log.error("invalid assign request received: " + message + "\nErrors: " + errors);
+            return;
+        }
         requestAssigningService.assignRequest(assignRequestMessageMapper.mapAssignRequestMessageToAssignRequest(message));
     }
 
