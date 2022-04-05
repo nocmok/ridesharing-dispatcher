@@ -1,7 +1,9 @@
 package com.nocmok.orp.orp_solver.config.kafka;
 
 import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +13,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.CommonLoggingErrorHandler;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
@@ -18,6 +21,7 @@ import java.util.HashMap;
 
 @EnableKafka
 @Configuration
+@Slf4j
 public class KafkaConsumerConfig {
 
     @Autowired
@@ -39,9 +43,16 @@ public class KafkaConsumerConfig {
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-        return new DefaultKafkaConsumerFactory<>(props,
-                new ErrorHandlingDeserializer<>(new StringDeserializer()),
-                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(ServiceRequestMessage.class)));
+
+        return new DefaultKafkaConsumerFactory<>(props, keyDeserializer(), valueDeserializer());
+    }
+
+    private Deserializer<String> keyDeserializer() {
+        return new ErrorHandlingDeserializer<>(new StringDeserializer());
+    }
+
+    private Deserializer<ServiceRequestMessage> valueDeserializer() {
+        return new ErrorHandlingDeserializer<>(new JsonDeserializer<>(ServiceRequestMessage.class));
     }
 
     @Bean
@@ -49,7 +60,7 @@ public class KafkaConsumerConfig {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, ServiceRequestMessage>();
         factory.setConcurrency(nThreads);
         factory.setConsumerFactory(orpInputConsumerFactory());
-//        factory.setErrorHandler();
+        factory.setCommonErrorHandler(new CommonLoggingErrorHandler());
         return factory;
     }
 }

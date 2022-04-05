@@ -1,5 +1,6 @@
 package com.nocmok.orp.kafka.orp_output;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nocmok.orp.core_api.GraphNode;
 import com.nocmok.orp.core_api.ScheduleNode;
 
@@ -13,11 +14,13 @@ public class ServiceRequestNotification {
     /**
      * Идентификатор тс которому будет отправлено уведомление
      */
-    private final String vehicleId;
+    @JsonProperty("sessionId")
+    private final String sessionId;
 
     /**
      * Идентификатор запроса с которым придет уведомление тс
      */
+    @JsonProperty("requestId")
     private final String requestId;
 
     /**
@@ -26,23 +29,26 @@ public class ServiceRequestNotification {
      * При поступлении от тс подтверждение запроса проверяется резервация по этому идентификатору.
      * На тс реально назначается запрос, только если запись с резервацией не истекла
      */
+    @JsonProperty("reservationId")
     private final String reservationId;
 
+    @JsonProperty("augmentedSchedule")
     private final List<ScheduleNode> augmentedSchedule;
 
+    @JsonProperty("augmentedRoute")
     private final List<GraphNode> augmentedRoute;
 
-    public ServiceRequestNotification(String vehicleId, String requestId, String reservationId,
+    public ServiceRequestNotification(String sessionId, String requestId, String reservationId,
                                       List<ScheduleNode> augmentedSchedule, List<GraphNode> augmentedRoute) {
-        this.vehicleId = vehicleId;
+        this.sessionId = sessionId;
         this.requestId = requestId;
         this.reservationId = reservationId;
         this.augmentedSchedule = augmentedSchedule;
         this.augmentedRoute = augmentedRoute;
     }
 
-    public String getVehicleId() {
-        return vehicleId;
+    public String getSessionId() {
+        return sessionId;
     }
 
     public String getRequestId() {
@@ -63,7 +69,7 @@ public class ServiceRequestNotification {
 
     @Override public String toString() {
         return "ServiceRequestNotificationDto{" +
-                "vehicleId='" + vehicleId + '\'' +
+                "vehicleId='" + sessionId + '\'' +
                 ", requestId='" + requestId + '\'' +
                 ", reservationId='" + reservationId + '\'' +
                 ", augmentedSchedule=" + augmentedSchedule +

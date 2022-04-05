@@ -1,12 +1,3 @@
-echo \
-"{\"requestId\":\"1\",    \
-\"pickupNodeId\":\"1\",   \
-\"pickupLat\":\"1\",      \
-\"pickupLon\":\"1\",      \
-\"dropoffNodeId\":\"1\",  \
-\"dropoffLat\":\"1\",     \
-\"dropoffLon\":\"1\",     \
-\"requestedAt\":\"2022-02-05T13:20:24.848519Z\",    \
-\"detourConstraint\":\"1.3\",                       \
-\"load\":\"1\"}" \
-|  kcat -P -b localhost:29092 -t orp.input -H "request_type=com.nocmok.orp.orp_solver.kafka.orp_input.dto.MatchVehiclesRequest"
+echo '{"requestId" : 1,"pickupNodeId" : 1,"pickupLat" : -7.4146388E7, "pickupLon" : 4.07683E7,"dropoffNodeId" : 5,"dropoffLat" : -7.4147588E7, "dropoffLon" : 4.0769E7, "requestedAt" : "2022-04-05T19:23:00.003459Z","detourConstraint" : 1.3,"maxPickupDelaySeconds" : 80000,"load" : 1}' |  kcat -P -b localhost:29092 -t orp.input -H __TypeId__=com.nocmok.orp.kafka.orp_input.ServiceRequestMessage
+
+echo '{"serviceRequestId":1,"sessionId":"1","reservationId":5}' |  kcat -P -b localhost:29092 -t orp.input -H __TypeId__=com.nocmok.orp.kafka.orp_input.AssignRequestMessage

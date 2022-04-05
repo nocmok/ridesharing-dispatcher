@@ -1,114 +1,55 @@
 package com.nocmok.orp.kafka.orp_input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.Instant;
 
 /**
  * Запрос поступивший от клиента на обработку
  */
+@Getter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class ServiceRequestMessage {
 
     @JsonProperty("requestId")
     private String requestId;
 
     @JsonProperty("pickupNodeId")
-    private int pickupNodeId;
+    private Integer pickupNodeId;
 
     @JsonProperty("pickupLat")
-    private double pickupLat;
+    private Double pickupLat;
 
     @JsonProperty("pickupLon")
-    private double pickupLon;
+    private Double pickupLon;
 
     @JsonProperty("dropoffNodeId")
-    private int dropoffNodeId;
+    private Integer dropoffNodeId;
 
     @JsonProperty("dropoffLat")
-    private double dropoffLat;
+    private Double dropoffLat;
 
     @JsonProperty("dropoffLon")
-    private double dropoffLon;
+    private Double dropoffLon;
 
     @JsonProperty("requestedAt")
     private Instant requestedAt;
 
     @JsonProperty("detourConstraint")
-    private double detourConstraint;
+    private Double detourConstraint;
 
     @JsonProperty("maxPickupDelaySeconds")
-    private int maxPickupDelaySeconds;
+    private Integer maxPickupDelaySeconds;
 
     @JsonProperty("load")
-    private int load;
+    private Integer load;
 
     @JsonProperty("topK")
-    private int topK;
-
-    public ServiceRequestMessage() {
-
-    }
-
-    public int getTopK() {
-        return topK;
-    }
-
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public int getPickupNodeId() {
-        return pickupNodeId;
-    }
-
-    public double getPickupLat() {
-        return pickupLat;
-    }
-
-    public double getPickupLon() {
-        return pickupLon;
-    }
-
-    public int getDropoffNodeId() {
-        return dropoffNodeId;
-    }
-
-    public double getDropoffLat() {
-        return dropoffLat;
-    }
-
-    public double getDropoffLon() {
-        return dropoffLon;
-    }
-
-    public Instant getRequestedAt() {
-        return requestedAt;
-    }
-
-    public double getDetourConstraint() {
-        return detourConstraint;
-    }
-
-    public int getMaxPickupDelaySeconds() {
-        return maxPickupDelaySeconds;
-    }
-
-    public int getLoad() {
-        return load;
-    }
-
-    @Override public String toString() {
-        return "MatchVehiclesRequest{" +
-                "requestId='" + requestId + '\'' +
-                ", pickupNodeId=" + pickupNodeId +
-                ", pickupLat=" + pickupLat +
-                ", pickupLon=" + pickupLon +
-                ", dropoffNodeId=" + dropoffNodeId +
-                ", dropoffLat=" + dropoffLat +
-                ", dropoffLon=" + dropoffLon +
-                ", requestedAt=" + requestedAt +
-                ", detourConstraint=" + detourConstraint +
-                ", load=" + load +
-                '}';
-    }
+    private Integer topK;
 }

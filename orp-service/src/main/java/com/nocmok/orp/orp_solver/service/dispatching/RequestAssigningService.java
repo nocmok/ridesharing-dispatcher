@@ -73,7 +73,7 @@ public class RequestAssigningService {
             // Отправляем нотификацию водителю
             assignRequestNotificationService.sendNotification(AssignRequestNotification.builder()
                     .serviceRequestId(request.getServiceRequestId())
-                    .vehicleId(request.getVehicleId())
+                    .sessionId(request.getVehicleId())
                     .schedule(vehicle.getSchedule())
                     .routeScheduled(vehicle.getRouteScheduled())
                     .build());

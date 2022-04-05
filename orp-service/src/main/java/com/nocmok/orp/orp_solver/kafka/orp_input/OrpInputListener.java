@@ -3,7 +3,7 @@ package com.nocmok.orp.orp_solver.kafka.orp_input;
 import com.nocmok.orp.kafka.orp_input.AssignRequestMessage;
 import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
 import com.nocmok.orp.orp_solver.kafka.orp_input.mapper.AssignRequestMessageMapper;
-import com.nocmok.orp.orp_solver.kafka.orp_input.mapper.MatchVehiclesMessageMapper;
+import com.nocmok.orp.orp_solver.kafka.orp_input.mapper.ServiceRequestMessageMapper;
 import com.nocmok.orp.orp_solver.service.dispatching.RequestAssigningService;
 import com.nocmok.orp.orp_solver.service.dispatching.ServiceRequestDispatchingService;
 import com.nocmok.orp.orp_solver.service.dispatching.ServiceRequestService;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class OrpInputListener {
 
-    private final MatchVehiclesMessageMapper matchVehiclesMessageMapper = new MatchVehiclesMessageMapper();
+    private final ServiceRequestMessageMapper serviceRequestMessageMapper = new ServiceRequestMessageMapper();
     private final AssignRequestMessageMapper assignRequestMessageMapper = new AssignRequestMessageMapper();
     private final ServiceRequestDispatchingService requestProcessingService;
     private final ServiceRequestService serviceRequestService;
@@ -38,8 +38,8 @@ public class OrpInputListener {
     }
 
     @KafkaHandler
-    public void receiveMatchVehiclesMessage(@Payload ServiceRequestMessage message) {
-        var serviceRequest = matchVehiclesMessageMapper.mapMessageToRequest(message);
+    public void receiveServiceRequestMessage(@Payload ServiceRequestMessage message) {
+        var serviceRequest = serviceRequestMessageMapper.mapMessageToRequest(message);
         serviceRequestService.insertRequest(serviceRequest);
         requestProcessingService.dispatchServiceRequest(serviceRequest);
     }
