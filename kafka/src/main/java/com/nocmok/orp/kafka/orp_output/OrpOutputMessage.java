@@ -1,7 +1,10 @@
-package com.nocmok.orp.orp_solver.job;
+package com.nocmok.orp.kafka.orp_output;
 
 import lombok.Builder;
 
+/**
+ * Универсальный формат сообщения, используемый в топике orp.output
+ */
 @Builder
 public class OrpOutputMessage {
     private String partitionKey;

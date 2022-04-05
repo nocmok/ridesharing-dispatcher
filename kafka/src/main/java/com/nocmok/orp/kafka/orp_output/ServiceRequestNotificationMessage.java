@@ -1,8 +1,11 @@
-package com.nocmok.orp.orp_solver.job;
+package com.nocmok.orp.kafka.orp_output;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
+/**
+ * Уведомление для водителя о запросе от клиента
+ */
 @Builder
 public class ServiceRequestNotificationMessage {
 

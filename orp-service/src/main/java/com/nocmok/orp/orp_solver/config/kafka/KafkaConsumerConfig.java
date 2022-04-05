@@ -1,6 +1,6 @@
 package com.nocmok.orp.orp_solver.config.kafka;
 
-import com.nocmok.orp.orp_solver.kafka.orp_input.dto.MatchVehiclesMessage;
+import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class KafkaConsumerConfig {
     private Integer nThreads;
 
     @Bean
-    public ConsumerFactory<String, MatchVehiclesMessage> orpInputConsumerFactory() {
+    public ConsumerFactory<String, ServiceRequestMessage> orpInputConsumerFactory() {
         var props = new HashMap<String, Object>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getKafkaBootstrapAddress());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaOrpSolverConsumerGroupId);
@@ -41,12 +41,12 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         return new DefaultKafkaConsumerFactory<>(props,
                 new ErrorHandlingDeserializer<>(new StringDeserializer()),
-                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(MatchVehiclesMessage.class)));
+                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(ServiceRequestMessage.class)));
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, MatchVehiclesMessage> orpInputKafkaListenerContainerFactory() {
-        var factory = new ConcurrentKafkaListenerContainerFactory<String, MatchVehiclesMessage>();
+    public ConcurrentKafkaListenerContainerFactory<String, ServiceRequestMessage> orpInputKafkaListenerContainerFactory() {
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, ServiceRequestMessage>();
         factory.setConcurrency(nThreads);
         factory.setConsumerFactory(orpInputConsumerFactory());
 //        factory.setErrorHandler();

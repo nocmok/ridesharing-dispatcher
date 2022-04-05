@@ -1,7 +1,7 @@
 package com.nocmok.orp.orp_solver.kafka.orp_input;
 
-import com.nocmok.orp.orp_solver.kafka.orp_input.dto.AssignRequestMessage;
-import com.nocmok.orp.orp_solver.kafka.orp_input.dto.MatchVehiclesMessage;
+import com.nocmok.orp.kafka.orp_input.AssignRequestMessage;
+import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
 import com.nocmok.orp.orp_solver.kafka.orp_input.mapper.AssignRequestMessageMapper;
 import com.nocmok.orp.orp_solver.kafka.orp_input.mapper.MatchVehiclesMessageMapper;
 import com.nocmok.orp.orp_solver.service.dispatching.RequestAssigningService;
@@ -38,7 +38,7 @@ public class OrpInputListener {
     }
 
     @KafkaHandler
-    public void receiveMatchVehiclesMessage(@Payload MatchVehiclesMessage message) {
+    public void receiveMatchVehiclesMessage(@Payload ServiceRequestMessage message) {
         var serviceRequest = matchVehiclesMessageMapper.mapMessageToRequest(message);
         serviceRequestService.insertRequest(serviceRequest);
         requestProcessingService.dispatchServiceRequest(serviceRequest);

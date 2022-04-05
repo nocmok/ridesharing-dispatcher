@@ -28,6 +28,7 @@ dependencies {
 	implementation project(':state-keeper:postgres')
 	implementation project(':graph-index:mem-stub')
 	implementation project(':orp-solver:lazy-search-solver')
+	implementation project(':kafka')
 
 	implementation 'org.postgresql:postgresql:42.3.2'
 
