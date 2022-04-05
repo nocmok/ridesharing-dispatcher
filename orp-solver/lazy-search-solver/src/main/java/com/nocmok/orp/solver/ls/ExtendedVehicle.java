@@ -66,6 +66,8 @@ class ExtendedVehicle {
         return underlyingVehicle.getRouteScheduled();
     }
 
+    public void setRouteScheduled(List<GraphNode> route) {underlyingVehicle.setRouteScheduled(route);}
+
     /**
      * Возвращает стоимость перемещения до следующей в маршруте вершины
      */

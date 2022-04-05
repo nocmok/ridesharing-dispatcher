@@ -26,4 +26,6 @@ public interface GraphIndex {
      * Для вычисления стоимости маршрута
      */
     double getRouteCost(List<GraphNode> route);
+
+    GCS getNodeCoordinates(int nodeId);
 }

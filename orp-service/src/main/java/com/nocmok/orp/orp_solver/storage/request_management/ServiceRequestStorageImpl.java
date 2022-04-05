@@ -1,6 +1,5 @@
-package com.nocmok.orp.orp_solver.storage.dispatching;
+package com.nocmok.orp.orp_solver.storage.request_management;
 
-import com.nocmok.orp.core_api.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -12,17 +11,17 @@ import java.util.HashMap;
 import java.util.Optional;
 
 @Repository
-public class ServiceRequestStorage {
+public class ServiceRequestStorageImpl implements ServiceRequestStorage {
 
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    public ServiceRequestStorage(NamedParameterJdbcTemplate jdbcTemplate) {
+    public ServiceRequestStorageImpl(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private Request mapResultSetToServiceRequest(ResultSet rs, int nRow) throws SQLException {
-        return new Request(
+    private ServiceRequestDto mapResultSetToServiceRequest(ResultSet rs, int nRow) throws SQLException {
+        return new ServiceRequestDto(
                 Long.toString(rs.getLong("request_id")),
                 rs.getInt("pickup_node_id"),
                 rs.getDouble("pickup_node_latitude"),
@@ -38,7 +37,8 @@ public class ServiceRequestStorage {
         );
     }
 
-    public Optional<Request> getRequestById(String id) {
+    @Override
+    public Optional<ServiceRequestDto> getRequestById(String id) {
         var params = new HashMap<String, Object>();
         params.put("requestId", Long.parseLong(id));
         var requests = jdbcTemplate.query(
@@ -60,7 +60,8 @@ public class ServiceRequestStorage {
         return requests.stream().findFirst();
     }
 
-    public void insertRequest(Request request) {
+    @Override
+    public void insertRequest(ServiceRequestDto request) {
         var params = new HashMap<String, Object>();
         params.put("request_id", Long.parseLong(request.getRequestId()));
         params.put("pickup_node_id", request.getPickupNodeId());
