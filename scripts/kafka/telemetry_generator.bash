@@ -59,6 +59,6 @@ telemetry_log=('echo "{\"sessionId\":\"1\",\"lat\":\"-7.4146388E7\",\"lon\":\"4.
 
 for telemetry in "${telemetry_log[@]}"; do
   echo "sending telemetry $(eval "$telemetry")"
-  eval "$telemetry" | kcat -P -b localhost:29092 -k 1 -t orp.telemetry -H __TypeId__=com.nocmok.orp.telemetry.kafka.orp_telemetry.dto.VehicleTelemetryMessage
+  eval "$telemetry" | kcat -P -b localhost:29092 -k 1 -t orp.telemetry -H __TypeId__=com.nocmok.orp.kafka.orp_telemetry.VehicleTelemetryMessage
   sleep 5
 done

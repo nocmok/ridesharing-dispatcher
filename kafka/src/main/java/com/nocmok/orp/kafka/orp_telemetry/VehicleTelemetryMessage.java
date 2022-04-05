@@ -1,11 +1,10 @@
-package com.nocmok.orp.telemetry.kafka.orp_telemetry.dto;
+package com.nocmok.orp.kafka.orp_telemetry;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 
 public class VehicleTelemetryMessage {
-
     @JsonProperty("sessionId")
     private String sessionId;
 

@@ -1,6 +1,6 @@
 package com.nocmok.orp.telemetry.kafka.orp_telemetry;
 
-import com.nocmok.orp.telemetry.kafka.orp_telemetry.dto.VehicleTelemetryMessage;
+import com.nocmok.orp.kafka.orp_telemetry.VehicleTelemetryMessage;
 import com.nocmok.orp.telemetry.kafka.orp_telemetry.mapper.VehicleTelemetryMapper;
 import com.nocmok.orp.telemetry.service.TelemetryStorageService;
 import lombok.extern.slf4j.Slf4j;
