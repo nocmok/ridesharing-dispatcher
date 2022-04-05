@@ -1,5 +1,6 @@
 package com.nocmok.orp.orp_solver.job;
 
+import com.nocmok.orp.kafka.orp_output.ServiceRequestNotificationMessage;
 import com.nocmok.orp.orp_solver.storage.notification.ServiceRequestOutboxEntry;
 import com.nocmok.orp.orp_solver.storage.notification.ServiceRequestOutboxStorage;
 import lombok.extern.slf4j.Slf4j;

@@ -1,7 +1,10 @@
-package com.nocmok.orp.orp_solver.kafka.orp_input.dto;
+package com.nocmok.orp.kafka.orp_input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Подтверждение запроса от клиента, отправленное водителем
+ */
 public class AssignRequestMessage {
 
     @JsonProperty("reservationId")

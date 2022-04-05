@@ -1,10 +1,13 @@
-package com.nocmok.orp.orp_solver.kafka.orp_input.dto;
+package com.nocmok.orp.kafka.orp_input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 
-public class MatchVehiclesMessage {
+/**
+ * Запрос поступивший от клиента на обработку
+ */
+public class ServiceRequestMessage {
 
     @JsonProperty("requestId")
     private String requestId;
@@ -42,7 +45,7 @@ public class MatchVehiclesMessage {
     @JsonProperty("topK")
     private int topK;
 
-    public MatchVehiclesMessage() {
+    public ServiceRequestMessage() {
 
     }
 

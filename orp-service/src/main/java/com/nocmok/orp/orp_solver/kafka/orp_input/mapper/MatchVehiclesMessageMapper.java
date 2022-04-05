@@ -1,11 +1,11 @@
 package com.nocmok.orp.orp_solver.kafka.orp_input.mapper;
 
 import com.nocmok.orp.core_api.Request;
-import com.nocmok.orp.orp_solver.kafka.orp_input.dto.MatchVehiclesMessage;
+import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
 
 public class MatchVehiclesMessageMapper {
 
-    public Request mapMessageToRequest(MatchVehiclesMessage message) {
+    public Request mapMessageToRequest(ServiceRequestMessage message) {
         return new Request(
                 message.getRequestId(),
                 message.getPickupNodeId(),
