@@ -1,22 +1,25 @@
-package com.nocmok.orp.orp_solver.service.dispatching;
+package com.nocmok.orp.orp_solver.storage.request_management;
 
+import com.nocmok.orp.core_api.Request;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.time.Instant;
+import java.util.Optional;
 
-public interface ServiceRequestDispatchingService {
+public interface ServiceRequestStorage {
 
-    void dispatchServiceRequest(ServiceRequestDto serviceRequest);
+    Optional<ServiceRequestDto> getRequestById(String id);
+
+    void insertRequest(ServiceRequestDto request);
 
     @Getter
     @Builder
     @AllArgsConstructor
     @ToString
     public static class ServiceRequestDto {
-
         /**
          * Идентификатор запроса
          */
@@ -28,9 +31,29 @@ public interface ServiceRequestDispatchingService {
         private final Integer pickupNodeId;
 
         /**
+         * Широта координаты точки посадки
+         */
+        private final Double pickupLat;
+
+        /**
+         * Долгота координаты точки посадки
+         */
+        private final Double pickupLon;
+
+        /**
          * Идентификатор вершины графа, привязанной к точке высадки
          */
-        private final int dropoffNodeId;
+        private final Integer dropoffNodeId;
+
+        /**
+         * Широта координаты точки высадки
+         */
+        private final Double dropoffLat;
+
+        /**
+         * Долгота координаты точки высадки
+         */
+        private final Double dropoffLon;
 
         /**
          * Время создания запроса
@@ -56,6 +79,5 @@ public interface ServiceRequestDispatchingService {
          * Нагрузка оказываемая на тс при выполнении запроса, например количество человек
          */
         private final Integer load;
-
     }
 }

@@ -15,29 +15,9 @@ public class Request {
     private final int pickupNodeId;
 
     /**
-     * Широта координаты точки посадки
-     */
-    private final double pickupLat;
-
-    /**
-     * Долгота координаты точки посадки
-     */
-    private final double pickupLon;
-
-    /**
      * Идентификатор вершины графа, привязанной к точке высадки
      */
     private final int dropoffNodeId;
-
-    /**
-     * Широта координаты точки высадки
-     */
-    private final double dropoffLat;
-
-    /**
-     * Долгота координаты точки высадки
-     */
-    private final double dropoffLon;
 
     /**
      * Время создания запроса
@@ -64,23 +44,14 @@ public class Request {
      */
     private final int load;
 
-    public Request(String requestId, int pickupNodeId, double pickupLat, double pickupLon, int dropoffNodeId, double dropoffLat, double dropoffLon,
-                   Instant requestedAt, double detourConstraint, int maxPickupDelaySeconds, int load) {
+    public Request(String requestId, int pickupNodeId, int dropoffNodeId, Instant requestedAt, double detourConstraint, int maxPickupDelaySeconds, int load) {
         this.requestId = requestId;
         this.pickupNodeId = pickupNodeId;
-        this.pickupLat = pickupLat;
-        this.pickupLon = pickupLon;
         this.dropoffNodeId = dropoffNodeId;
-        this.dropoffLat = dropoffLat;
-        this.dropoffLon = dropoffLon;
         this.requestedAt = requestedAt;
         this.detourConstraint = detourConstraint;
         this.maxPickupDelaySeconds = maxPickupDelaySeconds;
         this.load = load;
-    }
-
-    public int getMaxPickupDelaySeconds() {
-        return maxPickupDelaySeconds;
     }
 
     public String getRequestId() {
@@ -91,24 +62,8 @@ public class Request {
         return pickupNodeId;
     }
 
-    public double getPickupLat() {
-        return pickupLat;
-    }
-
-    public double getPickupLon() {
-        return pickupLon;
-    }
-
     public int getDropoffNodeId() {
         return dropoffNodeId;
-    }
-
-    public double getDropoffLat() {
-        return dropoffLat;
-    }
-
-    public double getDropoffLon() {
-        return dropoffLon;
     }
 
     public Instant getRequestedAt() {
@@ -119,6 +74,10 @@ public class Request {
         return detourConstraint;
     }
 
+    public int getMaxPickupDelaySeconds() {
+        return maxPickupDelaySeconds;
+    }
+
     public int getLoad() {
         return load;
     }
@@ -127,11 +86,7 @@ public class Request {
         return "Request{" +
                 "requestId='" + requestId + '\'' +
                 ", pickupNodeId=" + pickupNodeId +
-                ", pickupLat=" + pickupLat +
-                ", pickupLon=" + pickupLon +
                 ", dropoffNodeId=" + dropoffNodeId +
-                ", dropoffLat=" + dropoffLat +
-                ", dropoffLon=" + dropoffLon +
                 ", requestedAt=" + requestedAt +
                 ", detourConstraint=" + detourConstraint +
                 ", maxPickupDelaySeconds=" + maxPickupDelaySeconds +

@@ -3,8 +3,10 @@ package com.nocmok.orp.orp_solver.service.dispatching;
 import com.nocmok.orp.core_api.OrpSolver;
 import com.nocmok.orp.core_api.StateKeeper;
 import com.nocmok.orp.orp_solver.service.dispatching.dto.AssignRequest;
+import com.nocmok.orp.orp_solver.service.dispatching.mapper.ServiceRequestMapper;
 import com.nocmok.orp.orp_solver.service.notification.AssignRequestNotificationService;
 import com.nocmok.orp.orp_solver.service.notification.dto.AssignRequestNotification;
+import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,21 +23,24 @@ public class RequestAssigningService {
     private OrpSolver orpSolver;
     private StateKeeper<?> stateKeeper;
     private TransactionTemplate transactionTemplate;
-    private ServiceRequestService serviceRequestService;
+    private ServiceRequestStorageServiceImpl serviceRequestService;
     private VehicleReservationService vehicleReservationService;
     private AssignRequestNotificationService assignRequestNotificationService;
+    private ServiceRequestMapper serviceRequestMapper;
 
     @Autowired
     public RequestAssigningService(OrpSolver orpSolver, StateKeeper<?> stateKeeper, TransactionTemplate transactionTemplate,
-                                   ServiceRequestService serviceRequestService,
+                                   ServiceRequestStorageServiceImpl serviceRequestService,
                                    VehicleReservationService vehicleReservationService,
-                                   AssignRequestNotificationService assignRequestNotificationService) {
+                                   AssignRequestNotificationService assignRequestNotificationService,
+                                   ServiceRequestMapper serviceRequestMapper) {
         this.orpSolver = orpSolver;
         this.stateKeeper = stateKeeper;
         this.transactionTemplate = transactionTemplate;
         this.serviceRequestService = serviceRequestService;
         this.vehicleReservationService = vehicleReservationService;
         this.assignRequestNotificationService = assignRequestNotificationService;
+        this.serviceRequestMapper = serviceRequestMapper;
     }
 
     public void assignRequest(AssignRequest request) {
@@ -66,7 +71,7 @@ public class RequestAssigningService {
                 return;
             }
 
-            orpSolver.acceptRequest(vehicle, serviceRequest);
+            orpSolver.acceptRequest(vehicle, serviceRequestMapper.mapServiceDtoToRequest(serviceRequest));
             // Обновляем состояние тс
             stateKeeper.updateVehiclesBatch(List.of(vehicle));
 

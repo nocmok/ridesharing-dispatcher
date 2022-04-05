@@ -18,7 +18,7 @@ public class RouteJsonMapperTest {
     public void testDecodeNonEmptyString() {
         var mapper = new RouteJsonMapper(objectMapper);
         var route = mapper.decodeRoute("[{\"nodeId\":\"0\",\"lat\":0.0,\"lon\":0.0}]");
-        assertEquals(List.of(new GraphNode(0,new GCS(0,0))), route);
+        assertEquals(List.of(new GraphNode(0,new GCS(0d,0d))), route);
     }
 
     @Test
@@ -52,7 +52,7 @@ public class RouteJsonMapperTest {
     @Test
     public void testEncodeNonEmptyRoute() {
         var mapper = new RouteJsonMapper(objectMapper);
-        var route = List.of(new GraphNode(0,new GCS(0,0)));
+        var route = List.of(new GraphNode(0,new GCS(0d,0d)));
         var json = mapper.encodeRoute(route);
         assertEquals("[{\"nodeId\":\"0\",\"lat\":0.0,\"lon\":0.0}]", json);
     }

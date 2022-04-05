@@ -23,18 +23,30 @@ public class ServiceRequestMessage {
     @JsonProperty("pickupNodeId")
     private Integer pickupNodeId;
 
+    /**
+     * Фактические координаты указанные клиентом
+     */
     @JsonProperty("pickupLat")
     private Double pickupLat;
 
+    /**
+     * Фактические координаты указанные клиентом
+     */
     @JsonProperty("pickupLon")
     private Double pickupLon;
 
     @JsonProperty("dropoffNodeId")
     private Integer dropoffNodeId;
 
+    /**
+     * Фактические координаты указанные клиентом
+     */
     @JsonProperty("dropoffLat")
     private Double dropoffLat;
 
+    /**
+     * Фактические координаты указанные клиентом
+     */
     @JsonProperty("dropoffLon")
     private Double dropoffLon;
 

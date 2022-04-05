@@ -4,9 +4,11 @@ import com.nocmok.orp.kafka.orp_input.AssignRequestMessage;
 import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
 import com.nocmok.orp.orp_solver.kafka.orp_input.mapper.AssignRequestMessageMapper;
 import com.nocmok.orp.orp_solver.kafka.orp_input.mapper.ServiceRequestMessageMapper;
+import com.nocmok.orp.orp_solver.kafka.orp_input.validator.AssignRequestValidator;
+import com.nocmok.orp.orp_solver.kafka.orp_input.validator.ServiceRequestValidator;
 import com.nocmok.orp.orp_solver.service.dispatching.RequestAssigningService;
 import com.nocmok.orp.orp_solver.service.dispatching.ServiceRequestDispatchingService;
-import com.nocmok.orp.orp_solver.service.dispatching.ServiceRequestService;
+import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;
@@ -25,27 +27,42 @@ public class OrpInputListener {
     private final ServiceRequestMessageMapper serviceRequestMessageMapper = new ServiceRequestMessageMapper();
     private final AssignRequestMessageMapper assignRequestMessageMapper = new AssignRequestMessageMapper();
     private final ServiceRequestDispatchingService requestProcessingService;
-    private final ServiceRequestService serviceRequestService;
+    private final ServiceRequestStorageService serviceRequestService;
     private final RequestAssigningService requestAssigningService;
+    private final ServiceRequestValidator serviceRequestValidator;
+    private final AssignRequestValidator assignRequestValidator;
 
     @Autowired
     public OrpInputListener(ServiceRequestDispatchingService requestProcessingService,
-                            ServiceRequestService serviceRequestService,
-                            RequestAssigningService requestAssigningService) {
+                            ServiceRequestStorageService serviceRequestService,
+                            RequestAssigningService requestAssigningService,
+                            ServiceRequestValidator serviceRequestValidator,
+                            AssignRequestValidator assignRequestValidator) {
         this.requestProcessingService = requestProcessingService;
         this.serviceRequestService = serviceRequestService;
         this.requestAssigningService = requestAssigningService;
+        this.serviceRequestValidator = serviceRequestValidator;
+        this.assignRequestValidator = assignRequestValidator;
     }
 
     @KafkaHandler
     public void receiveServiceRequestMessage(@Payload ServiceRequestMessage message) {
-        var serviceRequest = serviceRequestMessageMapper.mapMessageToRequest(message);
-        serviceRequestService.insertRequest(serviceRequest);
-        requestProcessingService.dispatchServiceRequest(serviceRequest);
+        var errors = serviceRequestValidator.validateServiceRequest(message);
+        if (!errors.isEmpty()) {
+            log.error("invalid service request received: " + message + "\nErrors: " + errors);
+            return;
+        }
+        serviceRequestService.storeRequest(serviceRequestMessageMapper.mapMessageToServiceRequestStorageServiceDto(message));
+        requestProcessingService.dispatchServiceRequest(serviceRequestMessageMapper.mapMessageToServiceRequestDispatchingServiceDto(message));
     }
 
     @KafkaHandler
     public void receiveAcceptRequestMessage(@Payload AssignRequestMessage message) {
+        var errors = assignRequestValidator.validateAssignRequest(message);
+        if (!errors.isEmpty()) {
+            log.error("invalid assign request received: " + message + "\nErrors: " + errors);
+            return;
+        }
         requestAssigningService.assignRequest(assignRequestMessageMapper.mapAssignRequestMessageToAssignRequest(message));
     }
 

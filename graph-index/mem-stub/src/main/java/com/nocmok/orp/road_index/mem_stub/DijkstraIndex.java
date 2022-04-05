@@ -181,4 +181,8 @@ public class DijkstraIndex implements GraphIndex {
         }
         return cost;
     }
+
+    @Override public GCS getNodeCoordinates(int nodeId) {
+        return new GCS(co.get(nodeId)[0], co.get(nodeId)[1]);
+    }
 }
