@@ -3,6 +3,7 @@ package com.nocmok.orp.orp_solver.service.dispatching;
 import com.nocmok.orp.core_api.OrpSolver;
 import com.nocmok.orp.core_api.Request;
 import com.nocmok.orp.core_api.RequestMatching;
+import com.nocmok.orp.core_api.ScheduleNode;
 import com.nocmok.orp.core_api.StateKeeper;
 import com.nocmok.orp.core_api.Vehicle;
 import com.nocmok.orp.orp_solver.service.dispatching.dto.VehicleReservation;
@@ -47,6 +48,7 @@ public class ServiceRequestDispatchingService {
     }
 
     public void dispatchServiceRequest(Request request) {
+
         var candidates = solver.getTopKCandidateVehicles(request, candidatesToFetch);
         if (candidates.isEmpty()) {
             log.info("no candidates to serve request\n" + request);
@@ -94,6 +96,14 @@ public class ServiceRequestDispatchingService {
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(HashSet::new));
 
+                // TODO Записывать причину отказа в хранилище
+                if(suitableVehicleIds.isEmpty()) {
+                    log.info("Unable to satisfy request " + sortedMatchings.get(0).getRequest() + ", as state checksums mismatched for all candidate vehicles." +
+                            "\nCandidate vehicles (found by algorithm): " + sortedMatchings.size() +
+                            "\nReserved vehicles (vehicles that decide on another request): " + (sortedMatchings.size() - feasibleVehicleIds.size()) +
+                            "\nVehicles with mismatched checksum: " + feasibleVehicleIds.size());
+                }
+
                 var matchingToSatisfy = sortedMatchings.stream()
                         .filter(matching -> suitableVehicleIds.contains(matching.getServingVehicle().getId()))
                         .findFirst();
@@ -137,7 +147,9 @@ public class ServiceRequestDispatchingService {
     }
 
     private String getVehicleStateChecksum(Vehicle vehicle) {
-        return Integer.toString(Objects.hash(vehicle.getSchedule()));
+        return Integer.toString(vehicle.getSchedule().stream()
+                .map(ScheduleNode::getNodeId)
+                .collect(Collectors.toList()).hashCode());
     }
 
     private void initiateRetry(Request request) {

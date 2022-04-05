@@ -1,15 +1,23 @@
 package com.nocmok.orp.orp_solver.service.notification.mapper;
 
 import com.nocmok.orp.orp_solver.service.notification.dto.ServiceRequestNotification;
-import com.nocmok.orp.orp_solver.storage.notification.ServiceRequestOutboxEntry;
+import com.nocmok.orp.orp_solver.storage.notification.dto.OrpOutputOutboxRecord;
+import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+
+@Component
 public class ServiceRequestNotificationMapper {
 
-    public ServiceRequestOutboxEntry mapToServiceRequestOutboxEntry(ServiceRequestNotification serviceRequestNotificationDto) {
-        return ServiceRequestOutboxEntry.builder()
-                .vehicleId(serviceRequestNotificationDto.getVehicleId())
-                .requestId(serviceRequestNotificationDto.getRequestId())
-                .reservationId(serviceRequestNotificationDto.getReservationId())
+    public OrpOutputOutboxRecord<ServiceRequestNotification> mapServiceRequestNotificationToOrpOutboxRecord(
+            ServiceRequestNotification serviceRequestNotification) {
+        return OrpOutputOutboxRecord.<ServiceRequestNotification>builder()
+                .messageId(null)
+                .partitionKey(serviceRequestNotification.getSessionId())
+                .messageKind(com.nocmok.orp.kafka.orp_output.ServiceRequestNotification.class.getName())
+                .createdAt(Instant.now())
+                .sentAt(null)
+                .payload(serviceRequestNotification)
                 .build();
     }
 }

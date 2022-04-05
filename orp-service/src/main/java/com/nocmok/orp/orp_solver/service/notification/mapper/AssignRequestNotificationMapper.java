@@ -17,10 +17,10 @@ public class AssignRequestNotificationMapper {
 
         return OrpOutputOutboxRecord.<AssignRequestNotification>builder()
                 .messageId(null)
-                .partitionKey(assignRequestNotification.getVehicleId())
+                .partitionKey(assignRequestNotification.getSessionId())
                 .payload(assignRequestNotification)
                 .createdAt(Instant.now())
-                .messageKind(AssignRequestNotification.class.getName())
+                .messageKind(com.nocmok.orp.kafka.orp_output.AssignRequestNotification.class.getName())
                 .sentAt(null)
                 .build();
     }

@@ -16,8 +16,8 @@ import java.util.List;
 @Builder
 public class AssignRequestNotification {
 
-    @JsonProperty("vehicleId")
-    private String vehicleId;
+    @JsonProperty("sessionId")
+    private String sessionId;
 
     @JsonProperty("serviceRequestId")
     private String serviceRequestId;
@@ -28,16 +28,16 @@ public class AssignRequestNotification {
     @JsonProperty("routeScheduled")
     private List<GraphNode> routeScheduled;
 
-    public AssignRequestNotification(String vehicleId, String serviceRequestId, List<ScheduleNode> schedule,
+    public AssignRequestNotification(String sessionId, String serviceRequestId, List<ScheduleNode> schedule,
                                      List<GraphNode> routeScheduled) {
-        this.vehicleId = vehicleId;
+        this.sessionId = sessionId;
         this.serviceRequestId = serviceRequestId;
         this.schedule = schedule;
         this.routeScheduled = routeScheduled;
     }
 
-    public String getVehicleId() {
-        return vehicleId;
+    public String getSessionId() {
+        return sessionId;
     }
 
     public String getServiceRequestId() {
@@ -54,7 +54,7 @@ public class AssignRequestNotification {
 
     @Override public String toString() {
         return "AssignRequestNotification{" +
-                "vehicleId='" + vehicleId + '\'' +
+                "vehicleId='" + sessionId + '\'' +
                 ", requestId='" + serviceRequestId + '\'' +
                 ", schedule=" + schedule +
                 ", routeScheduled=" + routeScheduled +

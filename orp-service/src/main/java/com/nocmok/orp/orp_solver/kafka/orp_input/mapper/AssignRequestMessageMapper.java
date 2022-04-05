@@ -8,7 +8,7 @@ public class AssignRequestMessageMapper {
     public AssignRequest mapAssignRequestMessageToAssignRequest(AssignRequestMessage assignRequestMessage) {
         return AssignRequest.builder()
                 .reservationId(assignRequestMessage.getReservationId())
-                .vehicleId(assignRequestMessage.getVehicleId())
+                .vehicleId(assignRequestMessage.getSessionId())
                 .serviceRequestId(assignRequestMessage.getServiceRequestId())
                 .build();
     }

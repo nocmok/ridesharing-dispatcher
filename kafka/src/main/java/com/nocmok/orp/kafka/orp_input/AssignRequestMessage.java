@@ -1,48 +1,26 @@
 package com.nocmok.orp.kafka.orp_input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Подтверждение запроса от клиента, отправленное водителем
  */
+@Getter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class AssignRequestMessage {
 
     @JsonProperty("reservationId")
     private String reservationId;
 
-    @JsonProperty("vehicleId")
-    private String vehicleId;
+    @JsonProperty("sessionId")
+    private String sessionId;
 
     @JsonProperty("serviceRequestId")
     private String serviceRequestId;
-
-    public AssignRequestMessage(String reservationId, String vehicleId, String serviceRequestId) {
-        this.reservationId = reservationId;
-        this.vehicleId = vehicleId;
-        this.serviceRequestId = serviceRequestId;
-    }
-
-    public AssignRequestMessage() {
-
-    }
-
-    public String getReservationId() {
-        return reservationId;
-    }
-
-    public String getVehicleId() {
-        return vehicleId;
-    }
-
-    public String getServiceRequestId() {
-        return serviceRequestId;
-    }
-
-    @Override public String toString() {
-        return "AssignRequestMessage{" +
-                "reservationId='" + reservationId + '\'' +
-                ", vehicleId='" + vehicleId + '\'' +
-                ", requestId='" + serviceRequestId + '\'' +
-                '}';
-    }
 }
