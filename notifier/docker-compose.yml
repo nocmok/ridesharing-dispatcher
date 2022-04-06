@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  orp_dispatcher:
+    image: nyusafonov/orp-notifier:latest
+    container_name: orp-notifier
+    environment:
+      KAFKA_BOOTSTRAP_ADDRESS: kafka:9092
+      CONSUMER_GROUP: orp_notifier
+    networks:
+      - orp-network
+    ports:
+      - "8081:8080"
+networks:
+  orp-network:
+    name: orp-network
+    driver: bridge
