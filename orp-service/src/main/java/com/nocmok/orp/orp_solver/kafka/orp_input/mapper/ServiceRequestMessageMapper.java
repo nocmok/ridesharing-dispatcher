@@ -9,27 +9,36 @@ public class ServiceRequestMessageMapper {
     public ServiceRequestDispatchingService.ServiceRequestDto mapMessageToServiceRequestDispatchingServiceDto(ServiceRequestMessage message) {
         return ServiceRequestDispatchingService.ServiceRequestDto.builder()
                 .requestId(message.getRequestId())
-                .pickupNodeId(message.getPickupNodeId())
-                .dropoffNodeId(message.getDropoffNodeId())
+                .recordedOriginLatitude(message.getRecordedOriginLatitude())
+                .recordedOriginLongitude(message.getRecordedOriginLongitude())
+                .recordedDestinationLatitude(message.getRecordedDestinationLatitude())
+                .recordedDestinationLongitude(message.getRecordedDestinationLongitude())
+                .pickupRoadSegmentStartNodeId(message.getPickupRoadSegmentStartNodeId())
+                .pickupRoadSegmentEndNodeId(message.getPickupRoadSegmentEndNodeId())
+                .dropOffRoadSegmentStartNodeId(message.getDropOffRoadSegmentStartNodeId())
+                .dropOffRoadSegmentEndNodeId(message.getDropOffRoadSegmentEndNodeId())
+                .load(message.getLoad())
                 .detourConstraint(message.getDetourConstraint())
                 .maxPickupDelaySeconds(message.getMaxPickupDelaySeconds())
-                .load(message.getLoad())
                 .requestedAt(message.getRequestedAt())
                 .build();
+
     }
 
     public ServiceRequestStorageService.ServiceRequestDto mapMessageToServiceRequestStorageServiceDto(ServiceRequestMessage message) {
         return ServiceRequestStorageService.ServiceRequestDto.builder()
                 .requestId(message.getRequestId())
-                .pickupNodeId(message.getPickupNodeId())
-                .pickupLat(message.getPickupLat())
-                .pickupLon(message.getPickupLon())
-                .dropoffNodeId(message.getDropoffNodeId())
-                .dropoffLat(message.getDropoffLat())
-                .dropoffLon(message.getDropoffLon())
+                .recordedOriginLatitude(message.getRecordedOriginLatitude())
+                .recordedOriginLongitude(message.getRecordedOriginLongitude())
+                .recordedDestinationLatitude(message.getRecordedDestinationLatitude())
+                .recordedDestinationLongitude(message.getRecordedDestinationLongitude())
+                .pickupRoadSegmentStartNodeId(message.getPickupRoadSegmentStartNodeId())
+                .pickupRoadSegmentEndNodeId(message.getPickupRoadSegmentEndNodeId())
+                .dropOffRoadSegmentStartNodeId(message.getDropOffRoadSegmentStartNodeId())
+                .dropOffRoadSegmentEndNodeId(message.getDropOffRoadSegmentEndNodeId())
+                .load(message.getLoad())
                 .detourConstraint(message.getDetourConstraint())
                 .maxPickupDelaySeconds(message.getMaxPickupDelaySeconds())
-                .load(message.getLoad())
                 .requestedAt(message.getRequestedAt())
                 .build();
     }

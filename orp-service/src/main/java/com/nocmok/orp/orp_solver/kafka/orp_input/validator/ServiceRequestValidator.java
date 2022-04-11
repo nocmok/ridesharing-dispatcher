@@ -17,12 +17,14 @@ public class ServiceRequestValidator {
         var errors = new ArrayList<String>();
 
         validateRequestIdNotNull(serviceRequestMessage).ifPresent(errors::add);
-        validatePickupNodeIdNotNull(serviceRequestMessage).ifPresent(errors::add);
-        validatePickupLatitudeNotNull(serviceRequestMessage).ifPresent(errors::add);
-        validatePickupLongitudeNotNull(serviceRequestMessage).ifPresent(errors::add);
-        validateDropoffNodeIdNotNull(serviceRequestMessage).ifPresent(errors::add);
-        validateDropoffLatitudeNotNull(serviceRequestMessage).ifPresent(errors::add);
-        validateDropoffLongitudeNotNull(serviceRequestMessage).ifPresent(errors::add);
+        validateRecordedOriginLatitudeNotNull(serviceRequestMessage).ifPresent(errors::add);
+        validateRecordedOriginLongitudeNotNull(serviceRequestMessage).ifPresent(errors::add);
+        validateRecordedDestinationLatitudeNotNull(serviceRequestMessage).ifPresent(errors::add);
+        validateRecordedDestinationLongitudeNotNull(serviceRequestMessage).ifPresent(errors::add);
+        validatePickupRoadSegmentStartNodeIdNotNull(serviceRequestMessage).ifPresent(errors::add);
+        validatePickupRoadSegmentEndNodeIdNotNull(serviceRequestMessage).ifPresent(errors::add);
+        validateDropOffRoadSegmentStartNodeIdNotNull(serviceRequestMessage).ifPresent(errors::add);
+        validateDropOffRoadSegmentEndNodeIdNotNull(serviceRequestMessage).ifPresent(errors::add);
         validateRequestedAtNotNull(serviceRequestMessage).ifPresent(errors::add);
         validateDetourConstraintNotNull(serviceRequestMessage).ifPresent(errors::add);
         validateMaxPickupDelayNotNull(serviceRequestMessage).ifPresent(errors::add);
@@ -33,32 +35,48 @@ public class ServiceRequestValidator {
         return errors;
     }
 
+    private Optional<String> validateDropOffRoadSegmentEndNodeIdNotNull(ServiceRequestMessage serviceRequestMessage) {
+        return serviceRequestMessage.getDropOffRoadSegmentEndNodeId() == null ? Optional.of("drop off road segment end node id should not be null") :
+                Optional.empty();
+    }
+
+    private Optional<String> validateDropOffRoadSegmentStartNodeIdNotNull(ServiceRequestMessage serviceRequestMessage) {
+        return serviceRequestMessage.getDropOffRoadSegmentStartNodeId() == null ? Optional.of("drop off road segment start node id should not be null") :
+                Optional.empty();
+    }
+
+    private Optional<String> validatePickupRoadSegmentEndNodeIdNotNull(ServiceRequestMessage serviceRequestMessage) {
+        return serviceRequestMessage.getPickupRoadSegmentEndNodeId() == null ? Optional.of("pick up road segment end node id should not be null") :
+                Optional.empty();
+    }
+
+    private Optional<String> validatePickupRoadSegmentStartNodeIdNotNull(ServiceRequestMessage serviceRequestMessage) {
+        return serviceRequestMessage.getPickupRoadSegmentEndNodeId() == null ? Optional.of("pick up road segment start node id should not be null") :
+                Optional.empty();
+    }
+
+    private Optional<String> validateRecordedDestinationLongitudeNotNull(ServiceRequestMessage serviceRequestMessage) {
+        return serviceRequestMessage.getRecordedDestinationLongitude() == null ? Optional.of("recorded destination longitude should not be null") :
+                Optional.empty();
+    }
+
+    private Optional<String> validateRecordedDestinationLatitudeNotNull(ServiceRequestMessage serviceRequestMessage) {
+        return serviceRequestMessage.getRecordedDestinationLatitude() == null ? Optional.of("recorded destination latitude should not be null") :
+                Optional.empty();
+    }
+
+    private Optional<String> validateRecordedOriginLongitudeNotNull(ServiceRequestMessage serviceRequestMessage) {
+        return serviceRequestMessage.getRecordedOriginLongitude() == null ? Optional.of("recorded origin longitude should not be null") :
+                Optional.empty();
+    }
+
+    private Optional<String> validateRecordedOriginLatitudeNotNull(ServiceRequestMessage serviceRequestMessage) {
+        return serviceRequestMessage.getRecordedOriginLatitude() == null ? Optional.of("recorded origin latitude should not be null") :
+                Optional.empty();
+    }
+
     private Optional<String> validateRequestIdNotNull(ServiceRequestMessage serviceRequestMessage) {
         return serviceRequestMessage.getRequestId() == null ? Optional.of("request id should not be null") : Optional.empty();
-    }
-
-    private Optional<String> validatePickupNodeIdNotNull(ServiceRequestMessage serviceRequestMessage) {
-        return serviceRequestMessage.getPickupNodeId() == null ? Optional.of("origin node id should not be null") : Optional.empty();
-    }
-
-    private Optional<String> validatePickupLatitudeNotNull(ServiceRequestMessage serviceRequestMessage) {
-        return serviceRequestMessage.getPickupLat() == null ? Optional.of("origin latitude should not be null") : Optional.empty();
-    }
-
-    private Optional<String> validatePickupLongitudeNotNull(ServiceRequestMessage serviceRequestMessage) {
-        return serviceRequestMessage.getPickupLon() == null ? Optional.of("origin longitude should not be null") : Optional.empty();
-    }
-
-    private Optional<String> validateDropoffNodeIdNotNull(ServiceRequestMessage serviceRequestMessage) {
-        return serviceRequestMessage.getDropoffNodeId() == null ? Optional.of("destination node id should not be null") : Optional.empty();
-    }
-
-    private Optional<String> validateDropoffLatitudeNotNull(ServiceRequestMessage serviceRequestMessage) {
-        return serviceRequestMessage.getDropoffLat() == null ? Optional.of("destination latitude should not be null") : Optional.empty();
-    }
-
-    private Optional<String> validateDropoffLongitudeNotNull(ServiceRequestMessage serviceRequestMessage) {
-        return serviceRequestMessage.getDropoffLon() == null ? Optional.of("destination longitude should not be null") : Optional.empty();
     }
 
     private Optional<String> validateRequestedAtNotNull(ServiceRequestMessage serviceRequestMessage) {

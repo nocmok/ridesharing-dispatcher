@@ -17,45 +17,30 @@ public interface ServiceRequestDispatchingService {
     @ToString
     public static class ServiceRequestDto {
 
-        /**
-         * Идентификатор запроса
-         */
-        private final String requestId;
+        private String requestId;
 
-        /**
-         * Идентификатор вершины графа, привязанной к точке посадки
-         */
-        private final Integer pickupNodeId;
+        private Double recordedOriginLatitude;
 
-        /**
-         * Идентификатор вершины графа, привязанной к точке высадки
-         */
-        private final int dropoffNodeId;
+        private Double recordedOriginLongitude;
 
-        /**
-         * Время создания запроса
-         */
-        private final Instant requestedAt;
+        private Double recordedDestinationLatitude;
 
-        /**
-         * Ограничение на задержку связанную с применением райдшеринга.
-         * Например, если
-         * detourConstraint = 1.5
-         * t = оценка времени кратчайшего маршрута от точки посадки до точки высадки
-         * T = оценка времени построенного маршрута от точки посадки до точки высадки
-         * то T <= detourConstraint * t
-         */
-        private final Double detourConstraint;
+        private Double recordedDestinationLongitude;
 
-        /**
-         * Максимальное допустимое время ожидания тс от момента формирования запроса
-         */
-        private final Integer maxPickupDelaySeconds;
+        private String pickupRoadSegmentStartNodeId;
 
-        /**
-         * Нагрузка оказываемая на тс при выполнении запроса, например количество человек
-         */
-        private final Integer load;
+        private String pickupRoadSegmentEndNodeId;
 
+        private String dropOffRoadSegmentStartNodeId;
+
+        private String dropOffRoadSegmentEndNodeId;
+
+        private Instant requestedAt;
+
+        private Double detourConstraint;
+
+        private Integer maxPickupDelaySeconds;
+
+        private Integer load;
     }
 }

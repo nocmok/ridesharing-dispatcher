@@ -1,6 +1,6 @@
 package com.nocmok.orp.solver.ls;
 
-import com.nocmok.orp.core_api.ScheduleNode;
+import com.nocmok.orp.solver.api.ScheduleNode;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,5 +1,6 @@
 create sequence if not exists session_id_seq increment by 1 minvalue 1 no maxvalue start 1;
 create sequence if not exists reservation_id_seq increment by 1 minvalue 1 no maxvalue start 1;
+create sequence if not exists orp_output_outbox_seq increment by 1 minvalue 1 no maxvalue start 1;
 
 drop type if exists vehicle_status cascade;
 create type vehicle_status as enum ('PENDING', 'SERVING');
@@ -20,8 +21,25 @@ create table vehicle_session
 	residual_capacity bigint,
 
     schedule_json text,
-    route_json text,
-    geotag_json text
+    route_json text
+);
+
+drop table if exists service_request cascade;
+create table service_request
+(
+    request_id bigint primary key not null,
+    recorded_origin_latitude float8 not null,
+    recorded_origin_longitude float8 not null,
+    recorded_destination_latitude float8 not null,
+    recorded_destination_longitude float8 not null,
+    pickup_road_segment_start_node_id text not null,
+    pickup_road_segment_end_node_id text not null,
+    dropoff_road_segment_start_node_id text not null,
+    dropoff_road_segment_end_node_id text not null,
+    detour_constraint float8 not null,
+    max_pickup_delay_seconds bigint not null,
+    requested_at timestamp with time zone not null,
+    load bigint not null
 );
 
 drop table if exists vehicle_reservation cascade;
@@ -36,16 +54,15 @@ create table vehicle_reservation
     constraint fk_vere_seid__vese_seid foreign key (session_id) references vehicle_session(session_id)
 );
 
-drop table if exists service_request_outbox cascade;
-create table service_request_outbox
+drop table if exists orp_output_outbox cascade;
+create table orp_output_outbox
 (
-    request_id bigint not null primary key,
-    session_id bigint not null,
-    reservation_id bigint not null,
-    sent_at timestamp with time zone,
-
-    constraint fk_sereou_reid__vere_reid foreign key (reservation_id) references vehicle_reservation(reservation_id),
-    constraint fk_sereou_seid__vese_seid foreign key (session_id) references vehicle_session(session_id)
+    message_id bigint,
+    partition_key text,
+    message_kind text,
+    payload text,
+    created_at timestamp with time zone,
+    sent_at timestamp with time zone
 );
 
 drop table if exists telemetry cascade;
