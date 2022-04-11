@@ -12,6 +12,8 @@ repositories {
 	mavenCentral()
 }
 
+def grpcVersion = '1.45.1'
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -24,9 +26,17 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.22'
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-	implementation project(':core-api')
+	implementation "io.grpc:grpc-netty:${grpcVersion}"
+	implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+	implementation "io.grpc:grpc-stub:${grpcVersion}"
+
+//	implementation project(':core-api')
+	implementation project(':orp-solver:api')
+	implementation project(':state-keeper:api')
 	implementation project(':state-keeper:postgres')
-	implementation project(':graph-index:mem-stub')
+//	implementation project(':graph-index:mem-stub')
+	implementation project(':graph-index:api')
+	implementation project(':graph-index:mem-stub:client')
 	implementation project(':orp-solver:lazy-search-solver')
 	implementation project(':kafka')
 

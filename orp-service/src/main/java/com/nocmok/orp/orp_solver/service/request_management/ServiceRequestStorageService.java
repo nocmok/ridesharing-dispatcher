@@ -1,6 +1,5 @@
 package com.nocmok.orp.orp_solver.service.request_management;
 
-import com.nocmok.orp.core_api.Request;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,29 +22,21 @@ public interface ServiceRequestStorageService {
 
         private String requestId;
 
-        private Integer pickupNodeId;
+        private Double recordedOriginLatitude;
 
-        /**
-         * Фактические координаты указанные клиентом
-         */
-        private Double pickupLat;
+        private Double recordedOriginLongitude;
 
-        /**
-         * Фактические координаты указанные клиентом
-         */
-        private Double pickupLon;
+        private Double recordedDestinationLatitude;
 
-        private Integer dropoffNodeId;
+        private Double recordedDestinationLongitude;
 
-        /**
-         * Фактические координаты указанные клиентом
-         */
-        private Double dropoffLat;
+        private String pickupRoadSegmentStartNodeId;
 
-        /**
-         * Фактические координаты указанные клиентом
-         */
-        private Double dropoffLon;
+        private String pickupRoadSegmentEndNodeId;
+
+        private String dropOffRoadSegmentStartNodeId;
+
+        private String dropOffRoadSegmentEndNodeId;
 
         private Instant requestedAt;
 
@@ -54,7 +45,5 @@ public interface ServiceRequestStorageService {
         private Integer maxPickupDelaySeconds;
 
         private Integer load;
-
-        private Integer topK;
     }
 }

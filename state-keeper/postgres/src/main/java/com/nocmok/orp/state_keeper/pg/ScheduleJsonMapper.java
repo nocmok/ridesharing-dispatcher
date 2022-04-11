@@ -11,8 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.nocmok.orp.core_api.ScheduleNode;
-import com.nocmok.orp.core_api.ScheduleNodeKind;
+import com.nocmok.orp.state_keeper.api.ScheduleEntry;
+import com.nocmok.orp.state_keeper.api.ScheduleEntryKind;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -31,37 +31,40 @@ class ScheduleJsonMapper {
         this.objectMapper = objectMapper;
     }
 
-    private ScheduleNode mapDtoToScheduleNode(ScheduleNodeJsonDto dto) {
-        return new ScheduleNode(dto.deadline, dto.load, dto.nodeId, dto.lat, dto.lon, dto.kind, dto.orderId);
+    private ScheduleEntry mapDtoToScheduleEntry(ScheduleEntryJsonDto dto) {
+        return new ScheduleEntry(dto.deadline, dto.load, dto.nodeId, dto.latitude, dto.longitude, dto.kind, dto.orderId);
     }
 
-    private ScheduleNodeJsonDto mapScheduleNodeToDto(ScheduleNode schedule) {
-        return new ScheduleNodeJsonDto(schedule.getDeadline(), schedule.getLoad(), schedule.getNodeId(), schedule.getLat(), schedule.getLon(),
-                schedule.getKind(), schedule.getOrderId());
+    private ScheduleEntryJsonDto mapScheduleEntryToDto(ScheduleEntry schedule) {
+        return new ScheduleEntryJsonDto(
+                schedule.getDeadline(), schedule.getLoad(),
+                schedule.getNodeId(), schedule.getLatitude(),
+                schedule.getLongitude(), schedule.getKind(),
+                schedule.getOrderId());
     }
 
-    public List<ScheduleNode> decodeSchedule(String json) {
+    public List<ScheduleEntry> decodeSchedule(String json) {
         return _decodeSchedule(json).stream()
-                .map(this::mapDtoToScheduleNode)
+                .map(this::mapDtoToScheduleEntry)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public String encodeSchedule(List<ScheduleNode> schedule) {
+    public String encodeSchedule(List<ScheduleEntry> schedule) {
         return _encodeSchedule(schedule.stream()
-                .map(this::mapScheduleNodeToDto)
+                .map(this::mapScheduleEntryToDto)
                 .collect(Collectors.toList()));
     }
 
-    private List<ScheduleNodeJsonDto> _decodeSchedule(String json) {
+    private List<ScheduleEntryJsonDto> _decodeSchedule(String json) {
         try {
-            ScheduleNodeJsonDto[] scheduleArray = objectMapper.readValue(json, ScheduleNodeJsonDto[].class);
+            ScheduleEntryJsonDto[] scheduleArray = objectMapper.readValue(json, ScheduleEntryJsonDto[].class);
             return new ArrayList<>(Arrays.asList(scheduleArray));
         } catch (Exception e) {
             return Collections.emptyList();
         }
     }
 
-    private String _encodeSchedule(List<ScheduleNodeJsonDto> schedule) {
+    private String _encodeSchedule(List<ScheduleEntryJsonDto> schedule) {
         try {
             return objectMapper.writeValueAsString(schedule);
         } catch (Exception e) {
@@ -81,43 +84,43 @@ class ScheduleJsonMapper {
         }
     }
 
-    private static class ScheduleNodeJsonDto {
+    private static class ScheduleEntryJsonDto {
         @JsonProperty("deadline")
         @JsonSerialize(using = InstantSerializer.class)
         @JsonDeserialize(using = InstantDeserializer.class)
         private Instant deadline;
 
         @JsonProperty("load")
-        private int load;
+        private Integer load;
 
         @JsonProperty("nodeId")
-        private int nodeId;
+        private String nodeId;
 
-        @JsonProperty("lat")
-        private double lat;
+        @JsonProperty("latitude")
+        private Double latitude;
 
-        @JsonProperty("lon")
-        private double lon;
+        @JsonProperty("longitude")
+        private Double longitude;
 
         @JsonProperty("kind")
-        private ScheduleNodeKind kind;
+        private ScheduleEntryKind kind;
 
         @JsonProperty("orderId")
         private String orderId;
 
-        public ScheduleNodeJsonDto() {
+        public ScheduleEntryJsonDto() {
 
         }
 
-        public ScheduleNodeJsonDto(Instant deadline, int load, int nodeId, double lat, double lon, ScheduleNodeKind kind, String orderId) {
+        public ScheduleEntryJsonDto(Instant deadline, Integer load, String nodeId, Double latitude, Double longitude,
+                                    ScheduleEntryKind kind, String orderId) {
             this.deadline = deadline;
             this.load = load;
             this.nodeId = nodeId;
-            this.lat = lat;
-            this.lon = lon;
+            this.latitude = latitude;
+            this.longitude = longitude;
             this.kind = kind;
             this.orderId = orderId;
         }
-
     }
 }

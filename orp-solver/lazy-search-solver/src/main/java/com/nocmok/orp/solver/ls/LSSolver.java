@@ -1,19 +1,23 @@
 package com.nocmok.orp.solver.ls;
 
 import com.google.common.collect.MinMaxPriorityQueue;
-import com.nocmok.orp.core_api.GCS;
-import com.nocmok.orp.core_api.GraphIndex;
-import com.nocmok.orp.core_api.GraphIndexEntity;
-import com.nocmok.orp.core_api.GraphNode;
-import com.nocmok.orp.core_api.GraphRoute;
-import com.nocmok.orp.core_api.OrpSolver;
-import com.nocmok.orp.core_api.Request;
-import com.nocmok.orp.core_api.RequestMatching;
-import com.nocmok.orp.core_api.ScheduleNode;
-import com.nocmok.orp.core_api.ScheduleNodeKind;
-import com.nocmok.orp.core_api.StateKeeper;
-import com.nocmok.orp.core_api.Vehicle;
-import com.nocmok.orp.core_api.VehicleStatus;
+import com.nocmok.orp.graph.api.SpatialGraphMetadataStorage;
+import com.nocmok.orp.graph.api.SpatialGraphObject;
+import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
+import com.nocmok.orp.graph.api.Node;
+import com.nocmok.orp.graph.api.Route;
+import com.nocmok.orp.graph.api.Segment;
+import com.nocmok.orp.graph.api.ShortestRouteSolver;
+import com.nocmok.orp.solver.api.OrpSolver;
+import com.nocmok.orp.solver.api.Request;
+import com.nocmok.orp.solver.api.RequestMatching;
+import com.nocmok.orp.solver.api.RouteNode;
+import com.nocmok.orp.solver.api.ScheduleNode;
+import com.nocmok.orp.solver.api.ScheduleNodeKind;
+import com.nocmok.orp.state_keeper.api.ScheduleEntry;
+import com.nocmok.orp.state_keeper.api.StateKeeper;
+import com.nocmok.orp.state_keeper.api.VehicleState;
+import com.nocmok.orp.state_keeper.api.VehicleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,41 +32,83 @@ import java.util.stream.Stream;
 
 public class LSSolver implements OrpSolver {
 
-    private static Logger log = LoggerFactory.getLogger(LSSolver.class);
-    private GraphIndex roadIndex;
-    private StateKeeper<? extends Vehicle> vehicleStateService;
+    private static final Logger log = LoggerFactory.getLogger(LSSolver.class);
 
-    public LSSolver(GraphIndex roadIndex, StateKeeper<? extends Vehicle> vehicleStateService) {
-        this.roadIndex = roadIndex;
-        this.vehicleStateService = vehicleStateService;
+    private final SpatialGraphMetadataStorage graphMetadataStorage;
+    private final SpatialGraphObjectsStorage graphObjectsStorage;
+    private final ShortestRouteSolver shortestRouteSolver;
+    private final StateKeeper<? extends VehicleState> stateKeeper;
+    private final RoadProgressStrategy roadProgressStrategy;
+
+    public LSSolver(SpatialGraphMetadataStorage graphMetadataStorage,
+                    SpatialGraphObjectsStorage graphObjectsStorage,
+                    ShortestRouteSolver shortestRouteSolver,
+                    StateKeeper<? extends VehicleState> stateKeeper) {
+        this.graphMetadataStorage = graphMetadataStorage;
+        this.graphObjectsStorage = graphObjectsStorage;
+        this.shortestRouteSolver = shortestRouteSolver;
+        this.stateKeeper = stateKeeper;
+        this.roadProgressStrategy = new DumbRoadProgressStrategy();
     }
 
-    private List<ExtendedVehicle> enrichVehicleWithGeoData(List<? extends Vehicle> vehicles) {
+    private Double getVehicleProgressOnCurrentRoad(SpatialGraphObject vehicle) {
+        return roadProgressStrategy.getProgress(
+                vehicle.getSegment().getStartNode().getLatitude(),
+                vehicle.getSegment().getStartNode().getLongitude(),
+                vehicle.getSegment().getEndNode().getLatitude(),
+                vehicle.getSegment().getEndNode().getLongitude(),
+                vehicle.getLatitude(),
+                vehicle.getLongitude()
+        );
+    }
+
+    private Optional<ExtendedVehicle> enrichVehicleWithGeoData(VehicleState vehicle) {
+        return graphObjectsStorage.getObject(vehicle.getId())
+                .map(graphObject -> new ExtendedVehicle(
+                        vehicle,
+                        graphObject.getLatitude(),
+                        graphObject.getLongitude(),
+                        graphObject.getSegment(),
+                        getVehicleProgressOnCurrentRoad(graphObject),
+                        getRouteToCompleteSchedule(Stream.concat(
+                                Stream.of(graphObject.getSegment().getStartNode().getId()),
+                                vehicle.getSchedule().stream().map(ScheduleEntry::getNodeId)
+                        ).collect(Collectors.toList()))
+                ));
+    }
+
+    private List<ExtendedVehicle> enrichVehiclesWithGeoData(List<? extends VehicleState> vehicles) {
         // TODO Обогащать батчем
-        var extendedVehicles = new ArrayList<ExtendedVehicle>();
-        for (var vehicle : vehicles) {
-            var extendedVehicle = new ExtendedVehicle(vehicle);
-            extendedVehicle.setCostToNextNodeInScheduledRoute(
-                    roadIndex.getRouteCost(List.of(vehicle.getRoadBinding().getRoad().getStartNode(), vehicle.getRoadBinding().getRoad().getEndNode())) *
-                            (1 - vehicle.getRoadBinding().getProgress()));
-            extendedVehicles.add(extendedVehicle);
-        }
-        return extendedVehicles;
+        return vehicles.stream()
+                .map(this::enrichVehicleWithGeoData)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private ExtendedRequest enrichRequestWithGeoData(Request request) {
-        var extendedRequest = new ExtendedRequest(request);
-        var originCoordinates = roadIndex.getNodeCoordinates(request.getPickupNodeId());
-        var destinationCoordinates = roadIndex.getNodeCoordinates(request.getDropoffNodeId());
-        extendedRequest.setPickupLatitude(originCoordinates.lat());
-        extendedRequest.setPickupLongitude(originCoordinates.lon());
-        extendedRequest.setDropoffLatitude(destinationCoordinates.lat());
-        extendedRequest.setDropoffLongitude(destinationCoordinates.lon());
-        return extendedRequest;
-    }
-
-    private ExtendedVehicle enrichVehicleWithGeoData(Vehicle vehicle) {
-        return enrichVehicleWithGeoData(List.of(vehicle)).get(0);
+        var pickupRoadSegment = graphMetadataStorage.getSegment(request.getPickupRoadSegment().getStartNodeId(), request.getPickupRoadSegment().getEndNodeId());
+        var dropOffRoadSegment =
+                graphMetadataStorage.getSegment(request.getDropOffRoadSegment().getStartNodeId(), request.getDropOffRoadSegment().getEndNodeId());
+        return new ExtendedRequest(
+                request, pickupRoadSegment, dropOffRoadSegment,
+                pickupRoadSegment.getCost() * roadProgressStrategy.getProgress(
+                        pickupRoadSegment.getStartNode().getLatitude(),
+                        pickupRoadSegment.getStartNode().getLongitude(),
+                        pickupRoadSegment.getEndNode().getLatitude(),
+                        pickupRoadSegment.getEndNode().getLongitude(),
+                        request.getRecordedOriginLatitude(),
+                        request.getRecordedOriginLongitude()
+                ),
+                dropOffRoadSegment.getCost() * roadProgressStrategy.getProgress(
+                        dropOffRoadSegment.getStartNode().getLatitude(),
+                        dropOffRoadSegment.getStartNode().getLongitude(),
+                        dropOffRoadSegment.getEndNode().getLatitude(),
+                        dropOffRoadSegment.getEndNode().getLongitude(),
+                        request.getRecordedDestinationLatitude(),
+                        request.getRecordedDestinationLongitude()
+                )
+        );
     }
 
     /**
@@ -71,22 +117,24 @@ public class LSSolver implements OrpSolver {
     private List<ExtendedVehicle> filterVehicles(ExtendedRequest request) {
         // TODO добавить двустороннюю фильтрацию
         long timeReserveSeconds = request.getRequestedAt().getEpochSecond() + request.getMaxPickupDelaySeconds() - Instant.now().getEpochSecond();
-        List<String> filteredVehiclesId = roadIndex
-                .getNeighborhood(new GCS(request.getPickupLatitude(), request.getPickupLongitude()), timeReserveSeconds)
+        long timeOnPickupRoadSegment = request.getTimeOnPickupRoadSegment().longValue();
+
+        List<String> filteredVehiclesId = graphObjectsStorage
+                .getNeighborhood(request.getPickupRoadSegment().getStartNode().getId(), timeReserveSeconds - timeOnPickupRoadSegment)
                 .stream()
-                .map(GraphIndexEntity::getId)
+                .map(SpatialGraphObject::getId)
                 .collect(Collectors.toList());
 
-        return enrichVehicleWithGeoData(vehicleStateService.getVehiclesByIds(filteredVehiclesId));
+        return enrichVehiclesWithGeoData(stateKeeper.getVehiclesByIds(filteredVehiclesId));
     }
 
     private ScheduleNode createPickupScheduleNode(ExtendedRequest request) {
         return new ScheduleNode(
                 request.getRequestedAt().plusSeconds(request.getMaxPickupDelaySeconds()),
                 request.getLoad(),
-                request.getPickupNodeId(),
-                request.getPickupLatitude(),
-                request.getPickupLongitude(),
+                request.getOriginNodeId(),
+                request.getRecordedOriginLatitude(),
+                request.getRecordedOriginLongitude(),
                 ScheduleNodeKind.PICKUP,
                 request.getRequestId()
         );
@@ -95,15 +143,15 @@ public class LSSolver implements OrpSolver {
     private ScheduleNode createDropoffScheduleNode(ExtendedRequest request) {
         Instant deadline = request.getRequestedAt()
                 .plusSeconds(request.getMaxPickupDelaySeconds())
-                .plusSeconds((long) (roadIndex.shortestRoute(
-                        request.getPickupNodeId(),
-                        request.getDropoffNodeId()).getCost() * request.getDetourConstraint()));
+                .plusSeconds((long) (shortestRouteSolver.getShortestRoute(
+                        request.getOriginNodeId(),
+                        request.getDestinationNodeId()).getRouteCost() * request.getDetourConstraint()));
         return new ScheduleNode(
                 deadline,
                 request.getLoad(),
-                request.getDropoffNodeId(),
-                request.getDropoffLatitude(),
-                request.getDropoffLongitude(),
+                request.getDestinationNodeId(),
+                request.getRecordedDestinationLatitude(),
+                request.getRecordedDestinationLongitude(),
                 ScheduleNodeKind.DROPOFF,
                 request.getRequestId()
         );
@@ -112,56 +160,73 @@ public class LSSolver implements OrpSolver {
     /**
      * Объединяет цепочку смежных по вершине маршрутов в один маршрут
      */
-    private GraphRoute combineRoutes(List<GraphRoute> routes) {
-        var combinedRoute = new ArrayList<GraphNode>();
+    private NodesRoute combineRoutes(List<NodesRoute> routes) {
+        var combinedRoute = new ArrayList<Node>();
         double combinedCost = 0;
+
         for (var route : routes) {
             if (!combinedRoute.isEmpty()) {
                 combinedRoute.remove(combinedRoute.size() - 1);
             }
             combinedRoute.addAll(route.getRoute());
-            combinedCost += route.getCost();
+            combinedCost += route.getRouteCost();
         }
-        return new GraphRoute(combinedRoute, combinedCost);
+
+        return new NodesRoute(combinedRoute, combinedCost);
+    }
+
+    private NodesRoute mapSegmentsRouteToNodesRoute(Route segmentsRoute) {
+        if (segmentsRoute.isEmpty()) {
+            return NodesRoute.emptyRoute();
+        }
+        var nodes = segmentsRoute.getRoute().stream()
+                .map(Segment::getStartNode)
+                .collect(Collectors.toCollection(ArrayList::new));
+        nodes.add(segmentsRoute.getRoute().get(segmentsRoute.size() - 1).getEndNode());
+        return new NodesRoute(nodes, segmentsRoute.getRouteCost());
     }
 
     /**
      * Принимает список идентификаторов вершин привязанных к контрольным точкам.
      * Возвращает маршрут, который обходит переданные точки в заданном порядке
      */
-    private GraphRoute getRouteToCompleteSchedule(List<Integer> schedule) {
-        var partialRoutes = new ArrayList<GraphRoute>();
+    private NodesRoute getRouteToCompleteSchedule(List<String> schedule) {
+        var partialRoutes = new ArrayList<NodesRoute>();
         for (int i = 1; i < schedule.size(); ++i) {
-            partialRoutes.add(roadIndex.shortestRoute(
+            partialRoutes.add(mapSegmentsRouteToNodesRoute(shortestRouteSolver.getShortestRoute(
                     schedule.get(i - 1),
-                    schedule.get(i)));
+                    schedule.get(i))));
         }
         return combineRoutes(partialRoutes);
     }
 
-    private Optional<Matching> matchPendingVehicle(ExtendedRequest request, ExtendedVehicle vehicle) {
+    private RouteNode mapNodeToRouteNode(Node node) {
+        return new RouteNode(node.getId(), node.getLatitude(), node.getLongitude());
+    }
+
+    private Optional<RequestMatching> matchPendingVehicle(ExtendedRequest request, ExtendedVehicle vehicle) {
         if (vehicle.getResidualCapacity() < request.getLoad()) {
             return Optional.empty();
         }
 
-        var checkpoints = new ArrayList<Integer>();
-        checkpoints.add(vehicle.getRoadBinding().getRoad().getEndNode().getNodeId());
-        checkpoints.add(request.getPickupNodeId());
-        checkpoints.add(request.getDropoffNodeId());
+        var checkpoints = new ArrayList<String>();
+        checkpoints.add(vehicle.getRoadSegment().getEndNode().getId());
+        checkpoints.add(request.getOriginNodeId());
+        checkpoints.add(request.getDestinationNodeId());
         var bestRoute = getRouteToCompleteSchedule(checkpoints);
 
         var schedule = new ArrayList<ScheduleNode>();
         schedule.add(createPickupScheduleNode(request));
         schedule.add(createDropoffScheduleNode(request));
 
-        return Optional.of(new Matching(
-                request.getUnderlyingRequest(),
-                Stream.concat(Stream.of(vehicle.getRoadBinding().getRoad().getStartNode()), bestRoute.getRoute().stream())
-                        .collect(Collectors.toList()),
-                bestRoute.getCost(),
-                bestRoute.getCost() + vehicle.getCostToNextNodeInScheduledRoute(),
+        return Optional.of(new RequestMatching(
+                vehicle.getId(),
+                vehicle.getSchedule(),
                 schedule,
-                vehicle.getUnderlyingVehicle()
+                bestRoute.getRoute().stream()
+                        .map(this::mapNodeToRouteNode)
+                        .collect(Collectors.toList()),
+                bestRoute.getRouteCost() + vehicle.getCostToNextNodeInScheduledRoute()
         ));
     }
 
@@ -189,49 +254,68 @@ public class LSSolver implements OrpSolver {
      * Если план нарушает дедлайны, то возвращается пустой Optional.
      * Возвращает маршрут без текущего ребра тс
      */
-    private Optional<GraphRoute> checkDeadlineViolationAndGetRoute(ExtendedVehicle vehicle, List<ScheduleNode> schedule) {
-        var partialRoutes = new ArrayList<GraphRoute>();
+    private Optional<NodesRoute> checkDeadlineViolationAndGetRoute(ExtendedVehicle vehicle, List<ScheduleNode> schedule) {
+        var partialRoutes = new ArrayList<NodesRoute>();
+
         long time = Instant.now()
                 .plusSeconds(vehicle.getCostToNextNodeInScheduledRoute().longValue())
                 .getEpochSecond();
 
-        int lastNode = vehicle.getRoadBinding().getRoad().getEndNode().getNodeId();
+        var lastNode = vehicle.getRoadSegment().getEndNode().getId();
+
         for (var node : schedule) {
-            var route = roadIndex.shortestRoute(lastNode, node.getNodeId());
-            time += (long) (route.getCost());
+            var route = shortestRouteSolver.getShortestRoute(lastNode, node.getNodeId());
+
+            time += route.getRouteCost().longValue();
+
             if (time > node.getDeadline().getEpochSecond()) {
                 return Optional.empty();
             }
-            partialRoutes.add(route);
+
+            partialRoutes.add(mapSegmentsRouteToNodesRoute(route));
+
             lastNode = node.getNodeId();
         }
 
         return Optional.of(combineRoutes(partialRoutes));
     }
 
-    private Optional<Matching> matchServingVehicle(ExtendedRequest request, ExtendedVehicle vehicle) {
+    private Double getRouteCost(List<RouteNode> route) {
+        if (route.size() < 2) {
+            return 0d;
+        }
+
+        var routeNodesIds = route.stream()
+                .map(RouteNode::getNodeId)
+                .map(Object::toString)
+                .collect(Collectors.toList());
+
+        var routeSegments = graphMetadataStorage.getSegments(
+                routeNodesIds.subList(0, routeNodesIds.size() - 1),
+                routeNodesIds.subList(1, routeNodesIds.size())
+        );
+
+        return routeSegments.stream()
+                .map(Segment::getCost)
+                .reduce(0d, Double::sum);
+    }
+
+    private Optional<RequestMatching> matchServingVehicle(ExtendedRequest request, ExtendedVehicle vehicle) {
         if (vehicle.getResidualCapacity() < request.getLoad()) {
             return Optional.empty();
         }
 
-        // Запланированный маршрут тс без текущего ребра
-        var scheduledRoute = new GraphRoute(
-                vehicle.getRouteScheduled().subList(1, vehicle.getRouteScheduled().size()),
-                roadIndex.getRouteCost(vehicle.getRouteScheduled().subList(1, vehicle.getRouteScheduled().size()))
-        );
+        // Стоимость текущего маршрута тс без учета дорожного сегмента, на котором находится тс в текущий момент времени
+        double scheduledRouteCost = vehicle.getRouteScheduled().getRouteCost() - vehicle.getRoadSegment().getCost();
 
         var pickupNode = createPickupScheduleNode(request);
         var dropoffNode = createDropoffScheduleNode(request);
 
         var augmentedSchedules = new LazyScheduleGenerator(vehicle.getSchedule(), pickupNode, dropoffNode).getAllSchedules();
 
-        Matching bestMatching = new Matching(
-                request.getUnderlyingRequest(),
-                Collections.emptyList(),
-                Double.POSITIVE_INFINITY,
-                Double.POSITIVE_INFINITY,
-                Collections.emptyList(),
-                null);
+        double bestAdditionalCost = Double.POSITIVE_INFINITY;
+        List<ScheduleNode> bestSchedule = Collections.emptyList();
+        List<Node> bestRoute = Collections.emptyList();
 
         for (var schedule : augmentedSchedules) {
             if (!checkCapacityViolation(vehicle, schedule)) {
@@ -241,34 +325,26 @@ public class LSSolver implements OrpSolver {
             if (route.isEmpty()) {
                 continue;
             }
-            if (route.get().getCost() - scheduledRoute.getCost() < bestMatching.additionalCost) {
-                bestMatching = new Matching(
-                        request.getUnderlyingRequest(),
-                        Stream.concat(Stream.of(vehicle.getRoadBinding().getRoad().getStartNode()), route.get().getRoute().stream())
-                                .collect(Collectors.toList()),
-                        route.get().getCost(),
-                        route.get().getCost() - scheduledRoute.getCost(),
-                        schedule,
-                        vehicle.getUnderlyingVehicle()
-                );
+            if (route.get().getRouteCost() - scheduledRouteCost < bestAdditionalCost) {
+                bestAdditionalCost = route.get().getRouteCost() - scheduledRouteCost;
+                bestSchedule = schedule;
+                bestRoute = route.get().getRoute();
             }
         }
 
-        if (bestMatching.bestSchedule.isEmpty()) {
+        if (bestSchedule.isEmpty()) {
             return Optional.empty();
         }
 
-        return Optional.of(bestMatching);
-    }
-
-    private RequestMatching mapInternalMatchingToRequestMatching(Matching matching) {
-        return new RequestMatching(
-                matching.getRequest(),
-                matching.getVehicle(),
-                matching.getAdditionalCost(),
-                matching.getBestRoute(),
-                matching.getBestSchedule()
-        );
+        return Optional.of(new RequestMatching(
+                vehicle.getId(),
+                vehicle.getSchedule(),
+                bestSchedule,
+                bestRoute.stream()
+                        .map(this::mapNodeToRouteNode)
+                        .collect(Collectors.toList()),
+                bestAdditionalCost
+        ));
     }
 
     @Override public List<RequestMatching> getTopKCandidateVehicles(Request request, int kCandidates) {
@@ -276,20 +352,12 @@ public class LSSolver implements OrpSolver {
         return getTopKCandidateVehiclesInternal(extendedRequest, kCandidates);
     }
 
-    @Override public void acceptRequest(Vehicle vehicle, Request request) {
-        var extendedVehicle = enrichVehicleWithGeoData(vehicle);
-        var extendedRequest = enrichRequestWithGeoData(request);
-        acceptRequestInternal(extendedVehicle, extendedRequest);
-        vehicle.setRouteScheduled(extendedVehicle.getRouteScheduled());
-        vehicle.setSchedule(extendedVehicle.getSchedule());
-    }
-
     public List<RequestMatching> getTopKCandidateVehiclesInternal(ExtendedRequest request, int kCandidates) {
         // Валидации
 
         var candidateVehicles = filterVehicles(request);
         var topKCandidates = MinMaxPriorityQueue
-                .orderedBy(Comparator.<Matching>naturalOrder())
+                .orderedBy(Comparator.comparingDouble(RequestMatching::getAdditionalCost))
                 .maximumSize(kCandidates)
                 .create();
 
@@ -312,96 +380,29 @@ public class LSSolver implements OrpSolver {
         }
 
         return topKCandidates.stream()
-                .sorted(Comparator.naturalOrder())
-                .map(this::mapInternalMatchingToRequestMatching)
+                .sorted(Comparator.comparingDouble(RequestMatching::getAdditionalCost))
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public void acceptRequestInternal(ExtendedVehicle vehicle, ExtendedRequest request) {
+    private Optional<RequestMatching> getRequestMatchingForVehicleInternal(ExtendedRequest request, ExtendedVehicle vehicle) {
         if (vehicle.getStatus() == VehicleStatus.PENDING) {
-            var matching = matchPendingVehicle(request, vehicle);
-            if (matching.isEmpty()) {
-                throw new RuntimeException("unable to match vehicle " + vehicle + ", against request " + request);
-            }
-            vehicle.setRouteScheduled(matching.get().getBestRoute());
-            vehicle.setSchedule(matching.get().getBestSchedule());
+            return matchPendingVehicle(request, vehicle);
         } else if (vehicle.getStatus() == VehicleStatus.SERVING) {
-            var matching = matchServingVehicle(request, vehicle);
-            if (matching.isEmpty()) {
-                throw new RuntimeException("unable to match vehicle " + vehicle + ", against request " + request);
-            }
-            vehicle.setRouteScheduled(matching.get().getBestRoute());
-            vehicle.setSchedule(matching.get().getBestSchedule());
+            return matchServingVehicle(request, vehicle);
         } else {
             throw new RuntimeException("unknown vehicle status " + vehicle.getStatus());
         }
     }
 
-    @Override public void cancelRequest(Vehicle vehicle, Request request) {
-
-    }
-
-    private static class Matching implements Comparable<Matching> {
-        private Request request;
-        private List<GraphNode> bestRoute;
-        private double bestRouteCost;
-        private double additionalCost;
-        private List<ScheduleNode> bestSchedule;
-        private Vehicle vehicle;
-
-        public Matching(Request request, List<GraphNode> bestRoute, double bestRouteCost, double additionalCost,
-                        List<ScheduleNode> bestSchedule, Vehicle vehicle) {
-            this.request = request;
-            this.bestRoute = bestRoute;
-            this.bestRouteCost = bestRouteCost;
-            this.additionalCost = additionalCost;
-            this.bestSchedule = bestSchedule;
-            this.vehicle = vehicle;
+    @Override public Optional<RequestMatching> getRequestMatchingForVehicle(Request request, String vehicleId) {
+        var vehicle = stateKeeper.getVehiclesByIds(List.of(vehicleId)).stream().findFirst();
+        if (vehicle.isEmpty()) {
+            throw new IllegalArgumentException("vehicle with id " + vehicleId + ", does not exist");
         }
-
-        public Request getRequest() {
-            return request;
+        var extendedVehicle = enrichVehicleWithGeoData(vehicle.get());
+        if (extendedVehicle.isEmpty()) {
+            throw new IllegalArgumentException("vehicle with id " + vehicleId + ", does not exist in graph index");
         }
-
-        public double getAdditionalCost() {
-            return additionalCost;
-        }
-
-        /**
-         * Возвращает лучший маршрут включая текущее ребро тс
-         */
-        public List<GraphNode> getBestRoute() {
-            return bestRoute;
-        }
-
-        public double getBestRouteCost() {
-            return bestRouteCost;
-        }
-
-        public List<ScheduleNode> getBestSchedule() {
-            return bestSchedule;
-        }
-
-        public Vehicle getVehicle() {
-            return vehicle;
-        }
-
-        @Override public int compareTo(Matching o) {
-            if (o == null) {
-                throw new NullPointerException();
-            }
-            return Double.compare(this.additionalCost, o.additionalCost);
-        }
-
-        @Override public String toString() {
-            return "Matching{" +
-                    "request=" + request +
-                    ", bestRoute=" + bestRoute +
-                    ", bestRouteCost=" + bestRouteCost +
-                    ", additionalCost=" + additionalCost +
-                    ", bestSchedule=" + bestSchedule +
-                    ", vehicle=" + vehicle +
-                    '}';
-        }
+        return getRequestMatchingForVehicleInternal(enrichRequestWithGeoData(request), extendedVehicle.get());
     }
 }

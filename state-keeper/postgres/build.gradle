@@ -11,7 +11,8 @@ repositories {
 }
 
 dependencies {
-    implementation project(':core-api')
+    implementation project(':state-keeper:api')
+
     implementation 'org.springframework:spring-jdbc:5.3.15'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'

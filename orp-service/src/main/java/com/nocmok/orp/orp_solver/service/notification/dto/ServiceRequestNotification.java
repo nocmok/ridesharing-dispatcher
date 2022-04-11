@@ -1,8 +1,8 @@
 package com.nocmok.orp.orp_solver.service.notification.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nocmok.orp.core_api.GraphNode;
-import com.nocmok.orp.core_api.ScheduleNode;
+import com.nocmok.orp.solver.api.RouteNode;
+import com.nocmok.orp.solver.api.ScheduleNode;
 
 import java.util.List;
 
@@ -33,10 +33,10 @@ public class ServiceRequestNotification {
     private final List<ScheduleNode> augmentedSchedule;
 
     @JsonProperty("augmentedRoute")
-    private final List<GraphNode> augmentedRoute;
+    private final List<RouteNode> augmentedRoute;
 
     public ServiceRequestNotification(String sessionId, String requestId, String reservationId,
-                                      List<ScheduleNode> augmentedSchedule, List<GraphNode> augmentedRoute) {
+                                      List<ScheduleNode> augmentedSchedule, List<RouteNode> augmentedRoute) {
         this.sessionId = sessionId;
         this.requestId = requestId;
         this.reservationId = reservationId;
@@ -60,7 +60,7 @@ public class ServiceRequestNotification {
         return augmentedSchedule;
     }
 
-    public List<GraphNode> getAugmentedRoute() {
+    public List<RouteNode> getAugmentedRoute() {
         return augmentedRoute;
     }
 

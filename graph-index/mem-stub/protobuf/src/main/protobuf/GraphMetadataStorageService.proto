@@ -1,0 +1,45 @@
+syntax = "proto3";
+option java_package = "com.nocmok.orp.road_index.mem_stub.server.grpc";
+
+import "GraphApiModels.proto";
+
+service GraphMetadataStorageService {
+  rpc getSegment(GetSegmentRequest) returns (GetSegmentResponse);
+  rpc getNode(GetNodeRequest) returns (GetNodeResponse);
+  rpc getSegments(GetSegmentsRequest) returns (GetSegmentsResponse);
+  rpc getNodes(GetNodesRequest) returns (GetNodesResponse);
+}
+
+message GetSegmentRequest {
+  string startNodeId = 1;
+  string endNodeId = 2;
+}
+
+message GetSegmentResponse {
+  Segment segment = 1;
+}
+
+message GetNodeRequest {
+  string nodeId = 1;
+}
+
+message GetNodeResponse {
+  Node node = 1;
+}
+
+message GetSegmentsRequest {
+  repeated string startNodeIds = 1;
+  repeated string endNodeIds = 2;
+}
+
+message GetSegmentsResponse {
+  repeated Segment segments = 1;
+}
+
+message GetNodesRequest {
+  repeated string ids = 1;
+}
+
+message GetNodesResponse {
+  repeated Node nodes = 1;
+}

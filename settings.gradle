@@ -1,11 +1,21 @@
 rootProject.name = 'orp'
-include 'core-api'
-include 'orp-solver'
-include 'state-keeper:postgres'
-include 'graph-index:mem-stub'
-include 'orp-service'
+
+include 'orp-solver:api'
 include 'orp-solver:lazy-search-solver'
-include 'telemetry-processor:api'
+
+include 'state-keeper:api'
+include 'state-keeper:postgres'
+
+include 'graph-index:api'
+include 'graph-index:mem-stub:protobuf'
+include 'graph-index:mem-stub:server'
+include 'graph-index:mem-stub:client'
+include 'graph-index:tools'
+
 include 'telemetry-processor:service'
+
+include 'orp-service'
+
 include 'notifier'
+
 include 'kafka'

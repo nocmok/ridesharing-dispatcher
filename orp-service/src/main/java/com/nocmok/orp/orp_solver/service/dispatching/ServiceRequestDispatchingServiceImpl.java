@@ -1,16 +1,17 @@
 package com.nocmok.orp.orp_solver.service.dispatching;
 
-import com.nocmok.orp.core_api.OrpSolver;
-import com.nocmok.orp.core_api.RequestMatching;
-import com.nocmok.orp.core_api.ScheduleNode;
-import com.nocmok.orp.core_api.StateKeeper;
-import com.nocmok.orp.core_api.Vehicle;
 import com.nocmok.orp.orp_solver.service.dispatching.dto.VehicleReservation;
 import com.nocmok.orp.orp_solver.service.dispatching.mapper.ServiceRequestMapper;
+import com.nocmok.orp.orp_solver.service.dispatching.mapper.VehicleStateMapper;
 import com.nocmok.orp.orp_solver.service.notification.ServiceRequestNotificationService;
 import com.nocmok.orp.orp_solver.service.notification.dto.ServiceRequestNotification;
+import com.nocmok.orp.solver.api.OrpSolver;
+import com.nocmok.orp.solver.api.RequestMatching;
+import com.nocmok.orp.solver.api.ScheduleNode;
+import com.nocmok.orp.state_keeper.api.StateKeeper;
+import com.nocmok.orp.state_keeper.api.VehicleState;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -34,20 +35,23 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
     private StateKeeper<?> stateKeeper;
     private ServiceRequestNotificationService serviceRequestNotificationService;
     private ServiceRequestMapper serviceRequestMapper;
+    private VehicleStateMapper vehicleStateMapper;
 
     @Value("${orp.orp_dispatcher.service.ServiceRequestDispatchingService.candidatesToFetch:5}")
     private Integer candidatesToFetch;
 
+    @Autowired
     public ServiceRequestDispatchingServiceImpl(OrpSolver solver, VehicleReservationService vehicleReservationService,
                                                 StateKeeper<?> stateKeeper,
                                                 ServiceRequestNotificationService serviceRequestNotificationService,
-                                                @Qualifier("com.nocmok.orp.orp_solver.service.dispatching.mapper.ServiceRequestMapper")
-                                                        ServiceRequestMapper serviceRequestMapper) {
+                                                ServiceRequestMapper serviceRequestMapper,
+                                                VehicleStateMapper vehicleStateMapper) {
         this.solver = solver;
         this.vehicleReservationService = vehicleReservationService;
         this.stateKeeper = stateKeeper;
         this.serviceRequestNotificationService = serviceRequestNotificationService;
         this.serviceRequestMapper = serviceRequestMapper;
+        this.vehicleStateMapper = vehicleStateMapper;
     }
 
     @Override
@@ -60,7 +64,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
             return;
         }
         log.debug(" candidate vehicles selected for request\n" + serviceRequest + "\ncandidates\n" + candidates);
-        var servingVehicleId = dispatchToFirstFeasibleVehicle(candidates);
+        var servingVehicleId = dispatchToFirstFeasibleVehicle(serviceRequest, candidates);
         if (servingVehicleId.isEmpty()) {
             log.debug("all candidates to serve request reserved for another request\n");
             initiateRetry(serviceRequest);
@@ -69,7 +73,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
         log.debug(" serving vehicle selected for request\n" + serviceRequest + "\nserving vehicle id\n" + servingVehicleId);
     }
 
-    private Optional<String> dispatchToFirstFeasibleVehicle(List<RequestMatching> sortedMatchings) {
+    private Optional<String> dispatchToFirstFeasibleVehicle(ServiceRequestDto request, List<RequestMatching> sortedMatchings) {
         if (sortedMatchings.isEmpty()) {
             return Optional.empty();
         }
@@ -77,8 +81,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
         var reservations = vehicleReservationService.tryReserveVehicles(new VehicleReservationService.ReservationCallback() {
             @Override public List<String> getVehicleIdsToCheckReservation() {
                 return sortedMatchings.stream()
-                        .map(RequestMatching::getServingVehicle)
-                        .map(Vehicle::getId)
+                        .map(RequestMatching::getServingVehicleId)
                         .collect(Collectors.toList());
             }
 
@@ -87,52 +90,61 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
                     return Collections.emptyList();
                 }
 
-                var oldChecksums = sortedMatchings.stream()
-                        .map(RequestMatching::getServingVehicle)
-                        .collect(Collectors.toMap(Vehicle::getId, ServiceRequestDispatchingServiceImpl.this::getVehicleStateChecksum));
+                // Планы тс которые ожидаются.
+                var expectedSchedules = sortedMatchings.stream()
+                        .collect(Collectors.toMap(RequestMatching::getServingVehicleId, RequestMatching::getOldServingPlan));
 
-                var newChecksums = stateKeeper.getVehiclesByIds(feasibleVehicleIds).stream()
-                        .collect(Collectors.toMap(Vehicle::getId, ServiceRequestDispatchingServiceImpl.this::getVehicleStateChecksum));
+                // Фактические планы тс на текущий момент
+                var actualSchedules = stateKeeper.getVehiclesByIds(feasibleVehicleIds).stream()
+                        .collect(Collectors.toMap(
+                                VehicleState::getId,
+                                vehicleState -> vehicleState.getSchedule().stream()
+                                        .map(vehicleStateMapper::mapScheduleNodeToScheduleEntry)
+                                        .collect(Collectors.toUnmodifiableList())));
 
                 // финальный список идентификаторов тс, которым можно отправлять запрос
-                var suitableVehicleIds = newChecksums.entrySet().stream()
-                        .filter(entry -> oldChecksums.get(entry.getKey()).equals(entry.getValue()))
+                var suitableVehicleIds = actualSchedules.entrySet().stream()
+                        .filter(vehicleIdAndSchedule -> schedulesEquals(vehicleIdAndSchedule.getValue(), expectedSchedules.get(vehicleIdAndSchedule.getKey())))
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(HashSet::new));
 
                 // TODO Записывать причину отказа в хранилище
                 if (suitableVehicleIds.isEmpty()) {
                     log.info(
-                            "Unable to satisfy request " + sortedMatchings.get(0).getRequest() + ", as state checksums mismatched for all candidate vehicles." +
+                            "Unable to satisfy request " + request + " as state checksums mismatched for all candidate vehicles." +
                                     "\nCandidate vehicles (found by algorithm): " + sortedMatchings.size() +
                                     "\nReserved vehicles (vehicles that decide on another request): " + (sortedMatchings.size() - feasibleVehicleIds.size()) +
                                     "\nVehicles with mismatched checksum: " + feasibleVehicleIds.size());
                 }
 
                 var matchingToSatisfy = sortedMatchings.stream()
-                        .filter(matching -> suitableVehicleIds.contains(matching.getServingVehicle().getId()))
+                        .filter(matching -> suitableVehicleIds.contains(matching.getServingVehicleId()))
                         .findFirst();
 
                 return matchingToSatisfy
-                        .map(ServiceRequestDispatchingServiceImpl.this::mapRequestMatchingToVehicleReservation)
+                        .map(matching -> VehicleReservation.builder()
+                                .vehicleId(matching.getServingVehicleId())
+                                .requestId(request.getRequestId())
+                                .build()
+                        )
                         .map(List::of)
                         .orElse(Collections.emptyList());
             }
 
-            @Override public void handleReservations(List<VehicleReservation> tickets) {
-                if (tickets.isEmpty()) {
+            @Override public void handleReservations(List<VehicleReservation> reservations) {
+                if (reservations.isEmpty()) {
                     return;
                 }
 
-                var ticket = tickets.get(0);
+                var reservation = reservations.get(0);
                 var matchingToSatisfy = sortedMatchings.stream()
-                        .filter(matching -> Objects.equals(ticket.getVehicleId(), matching.getServingVehicle().getId()))
+                        .filter(matching -> Objects.equals(reservation.getVehicleId(), matching.getServingVehicleId()))
                         .findFirst().get();
 
                 serviceRequestNotificationService.sendNotification(new ServiceRequestNotification(
-                        ticket.getVehicleId(),
-                        ticket.getRequestId(),
-                        ticket.getReservationId(),
+                        reservation.getVehicleId(),
+                        reservation.getRequestId(),
+                        reservation.getReservationId(),
                         matchingToSatisfy.getServingPlan(),
                         matchingToSatisfy.getServingRoute()
                 ));
@@ -144,17 +156,8 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
                 .findFirst();
     }
 
-    private VehicleReservation mapRequestMatchingToVehicleReservation(RequestMatching matching) {
-        return VehicleReservation.builder()
-                .vehicleId(matching.getServingVehicle().getId())
-                .requestId(matching.getRequest().getRequestId())
-                .build();
-    }
-
-    private String getVehicleStateChecksum(Vehicle vehicle) {
-        return Integer.toString(vehicle.getSchedule().stream()
-                .map(ScheduleNode::getNodeId)
-                .collect(Collectors.toList()).hashCode());
+    private boolean schedulesEquals(List<ScheduleNode> scheduleOne, List<ScheduleNode> scheduleTwo) {
+        return Objects.equals(scheduleOne, scheduleTwo);
     }
 
     private void initiateRetry(ServiceRequestDto serviceRequestServiceDto) {

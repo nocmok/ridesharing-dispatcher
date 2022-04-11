@@ -20,39 +20,53 @@ public class ServiceRequestMessage {
     @JsonProperty("requestId")
     private String requestId;
 
-    @JsonProperty("pickupNodeId")
-    private Integer pickupNodeId;
+    /**
+     * Фактические координаты указанные клиентом
+     */
+    @JsonProperty("recordedOriginLatitude")
+    private Double recordedOriginLatitude;
 
     /**
      * Фактические координаты указанные клиентом
      */
-    @JsonProperty("pickupLat")
-    private Double pickupLat;
+    @JsonProperty("recordedOriginLongitude")
+    private Double recordedOriginLongitude;
 
     /**
      * Фактические координаты указанные клиентом
      */
-    @JsonProperty("pickupLon")
-    private Double pickupLon;
-
-    @JsonProperty("dropoffNodeId")
-    private Integer dropoffNodeId;
+    @JsonProperty("recordedDestinationLatitude")
+    private Double recordedDestinationLatitude;
 
     /**
      * Фактические координаты указанные клиентом
      */
-    @JsonProperty("dropoffLat")
-    private Double dropoffLat;
+    @JsonProperty("recordedDestinationLongitude")
+    private Double recordedDestinationLongitude;
 
-    /**
-     * Фактические координаты указанные клиентом
-     */
-    @JsonProperty("dropoffLon")
-    private Double dropoffLon;
+    @JsonProperty("pickupRoadSegmentStartNodeId")
+    private String pickupRoadSegmentStartNodeId;
+
+    @JsonProperty("pickupRoadSegmentEndNodeId")
+    private String pickupRoadSegmentEndNodeId;
+
+    @JsonProperty("dropOffRoadSegmentStartNodeId")
+    private String dropOffRoadSegmentStartNodeId;
+
+    @JsonProperty("dropOffRoadSegmentEndNodeId")
+    private String dropOffRoadSegmentEndNodeId;
 
     @JsonProperty("requestedAt")
     private Instant requestedAt;
 
+    /**
+     * Ограничение на задержку вызванную применением райдшеринга.
+     * Например, если
+     * detourConstraint = 1.5
+     * t = оценка времени кратчайшего маршрута от точки посадки до точки высадки
+     * T = оценка времени построенного маршрута от точки посадки до точки высадки
+     * то T <= detourConstraint * t
+     */
     @JsonProperty("detourConstraint")
     private Double detourConstraint;
 
@@ -61,7 +75,4 @@ public class ServiceRequestMessage {
 
     @JsonProperty("load")
     private Integer load;
-
-    @JsonProperty("topK")
-    private Integer topK;
 }

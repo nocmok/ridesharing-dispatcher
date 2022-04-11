@@ -23,12 +23,14 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
     private ServiceRequestDto mapResultSetToServiceRequest(ResultSet rs, int nRow) throws SQLException {
         return new ServiceRequestDto(
                 Long.toString(rs.getLong("request_id")),
-                rs.getInt("pickup_node_id"),
-                rs.getDouble("pickup_node_latitude"),
-                rs.getDouble("pickup_node_longitude"),
-                rs.getInt("dropoff_node_id"),
-                rs.getDouble("dropoff_node_latitude"),
-                rs.getDouble("dropoff_node_longitude"),
+                rs.getDouble("recorded_origin_latitude"),
+                rs.getDouble("recorded_origin_longitude"),
+                rs.getDouble("recorded_destination_latitude"),
+                rs.getDouble("recorded_destination_longitude"),
+                rs.getString("pickup_road_segment_start_node_id"),
+                rs.getString("pickup_road_segment_end_node_id"),
+                rs.getString("dropoff_road_segment_start_node_id"),
+                rs.getString("dropoff_road_segment_end_node_id"),
                 Optional.ofNullable(rs.getTimestamp("requested_at")).map(Timestamp::toInstant)
                         .orElseThrow(() -> new NullPointerException("requested_at not expected to be null")),
                 rs.getDouble("detour_constraint"),
@@ -44,17 +46,19 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
         var requests = jdbcTemplate.query(
                 " select " +
                         " request_id," +
-                        " pickup_node_id," +
-                        " pickup_node_latitude," +
-                        " pickup_node_longitude," +
-                        " dropoff_node_id," +
-                        " dropoff_node_latitude," +
-                        " dropoff_node_longitude," +
+                        " recorded_origin_latitude," +
+                        " recorded_origin_longitude," +
+                        " recorded_destination_latitude," +
+                        " recorded_destination_longitude," +
+                        " pickup_road_segment_start_node_id," +
+                        " pickup_road_segment_end_node_id," +
+                        " dropoff_road_segment_start_node_id," +
+                        " dropoff_road_segment_end_node_id," +
                         " detour_constraint," +
                         " max_pickup_delay_seconds," +
                         " requested_at," +
                         " load " +
-                        " from request " +
+                        " from service_request " +
                         " where request_id = :requestId",
                 params, this::mapResultSetToServiceRequest);
         return requests.stream().findFirst();
@@ -64,40 +68,46 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
     public void insertRequest(ServiceRequestDto request) {
         var params = new HashMap<String, Object>();
         params.put("request_id", Long.parseLong(request.getRequestId()));
-        params.put("pickup_node_id", request.getPickupNodeId());
-        params.put("pickup_node_latitude", request.getPickupLat());
-        params.put("pickup_node_longitude", request.getPickupLon());
-        params.put("dropoff_node_id", request.getDropoffNodeId());
-        params.put("dropoff_node_latitude", request.getDropoffLat());
-        params.put("dropoff_node_longitude", request.getDropoffLon());
+        params.put("recorded_origin_latitude", request.getRecordedOriginLatitude());
+        params.put("recorded_origin_longitude", request.getRecordedOriginLongitude());
+        params.put("recorded_destination_latitude", request.getRecordedDestinationLatitude());
+        params.put("recorded_destination_longitude", request.getRecordedDestinationLongitude());
+        params.put("pickup_road_segment_start_node_id", request.getPickupRoadSegmentStartNodeId());
+        params.put("pickup_road_segment_end_node_id", request.getPickupRoadSegmentEndNodeId());
+        params.put("dropoff_road_segment_start_node_id", request.getDropOffRoadSegmentStartNodeId());
+        params.put("dropoff_road_segment_end_node_id", request.getDropOffRoadSegmentEndNodeId());
         params.put("detour_constraint", request.getDetourConstraint());
         params.put("max_pickup_delay_seconds", request.getMaxPickupDelaySeconds());
         params.put("requested_at", Optional.ofNullable(request.getRequestedAt()).map(Timestamp::from)
                 .orElseThrow(() -> new NullPointerException("requested_at not expected to be null")));
         params.put("load", request.getLoad());
-        jdbcTemplate.update(" insert into request " +
+        jdbcTemplate.update(" insert into service_request " +
                         " ( " +
-                        "   request_id, " +
-                        "   pickup_node_id, " +
-                        "   pickup_node_latitude, " +
-                        "   pickup_node_longitude, " +
-                        "   dropoff_node_id, " +
-                        "   dropoff_node_latitude, " +
-                        "   dropoff_node_longitude, " +
-                        "   detour_constraint, " +
-                        "   max_pickup_delay_seconds, " +
-                        "   requested_at, " +
-                        "   load " +
+                        " request_id," +
+                        " recorded_origin_latitude," +
+                        " recorded_origin_longitude," +
+                        " recorded_destination_latitude," +
+                        " recorded_destination_longitude," +
+                        " pickup_road_segment_start_node_id," +
+                        " pickup_road_segment_end_node_id," +
+                        " dropoff_road_segment_start_node_id," +
+                        " dropoff_road_segment_end_node_id," +
+                        " detour_constraint," +
+                        " max_pickup_delay_seconds," +
+                        " requested_at," +
+                        " load " +
                         " ) " +
                         " values " +
                         " ( " +
                         "   :request_id, " +
-                        "   :pickup_node_id, " +
-                        "   :pickup_node_latitude, " +
-                        "   :pickup_node_longitude, " +
-                        "   :dropoff_node_id, " +
-                        "   :dropoff_node_latitude, " +
-                        "   :dropoff_node_longitude, " +
+                        "   :recorded_origin_latitude, " +
+                        "   :recorded_origin_longitude, " +
+                        "   :recorded_destination_latitude, " +
+                        "   :recorded_destination_longitude, " +
+                        "   :pickup_road_segment_start_node_id, " +
+                        "   :pickup_road_segment_end_node_id, " +
+                        "   :dropoff_road_segment_start_node_id, " +
+                        "   :dropoff_road_segment_end_node_id, " +
                         "   :detour_constraint, " +
                         "   :max_pickup_delay_seconds, " +
                         "   :requested_at, " +

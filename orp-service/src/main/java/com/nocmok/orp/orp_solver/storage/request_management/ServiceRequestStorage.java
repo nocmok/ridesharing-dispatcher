@@ -1,6 +1,5 @@
 package com.nocmok.orp.orp_solver.storage.request_management;
 
-import com.nocmok.orp.core_api.Request;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,64 +19,30 @@ public interface ServiceRequestStorage {
     @AllArgsConstructor
     @ToString
     public static class ServiceRequestDto {
-        /**
-         * Идентификатор запроса
-         */
-        private final String requestId;
+        private String requestId;
 
-        /**
-         * Идентификатор вершины графа, привязанной к точке посадки
-         */
-        private final Integer pickupNodeId;
+        private Double recordedOriginLatitude;
 
-        /**
-         * Широта координаты точки посадки
-         */
-        private final Double pickupLat;
+        private Double recordedOriginLongitude;
 
-        /**
-         * Долгота координаты точки посадки
-         */
-        private final Double pickupLon;
+        private Double recordedDestinationLatitude;
 
-        /**
-         * Идентификатор вершины графа, привязанной к точке высадки
-         */
-        private final Integer dropoffNodeId;
+        private Double recordedDestinationLongitude;
 
-        /**
-         * Широта координаты точки высадки
-         */
-        private final Double dropoffLat;
+        private String pickupRoadSegmentStartNodeId;
 
-        /**
-         * Долгота координаты точки высадки
-         */
-        private final Double dropoffLon;
+        private String pickupRoadSegmentEndNodeId;
 
-        /**
-         * Время создания запроса
-         */
-        private final Instant requestedAt;
+        private String dropOffRoadSegmentStartNodeId;
 
-        /**
-         * Ограничение на задержку связанную с применением райдшеринга.
-         * Например, если
-         * detourConstraint = 1.5
-         * t = оценка времени кратчайшего маршрута от точки посадки до точки высадки
-         * T = оценка времени построенного маршрута от точки посадки до точки высадки
-         * то T <= detourConstraint * t
-         */
-        private final Double detourConstraint;
+        private String dropOffRoadSegmentEndNodeId;
 
-        /**
-         * Максимальное допустимое время ожидания тс от момента формирования запроса
-         */
-        private final Integer maxPickupDelaySeconds;
+        private Instant requestedAt;
 
-        /**
-         * Нагрузка оказываемая на тс при выполнении запроса, например количество человек
-         */
-        private final Integer load;
+        private Double detourConstraint;
+
+        private Integer maxPickupDelaySeconds;
+
+        private Integer load;
     }
 }
