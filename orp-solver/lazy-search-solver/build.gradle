@@ -15,5 +15,10 @@ dependencies {
 
     implementation 'com.google.guava:guava:31.0.1-jre'
 
-    implementation project(':core-api')
+//    implementation project(':core-api')
+    implementation project(':graph-index:api')
+    implementation project(':graph-index:tools')
+    implementation project(':orp-solver:api')
+    implementation project(':state-keeper:api')
+
 }

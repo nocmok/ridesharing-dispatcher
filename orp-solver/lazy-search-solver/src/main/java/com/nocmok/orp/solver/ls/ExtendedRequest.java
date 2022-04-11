@@ -1,6 +1,7 @@
 package com.nocmok.orp.solver.ls;
 
-import com.nocmok.orp.core_api.Request;
+import com.nocmok.orp.graph.api.Segment;
+import com.nocmok.orp.solver.api.Request;
 
 import java.time.Instant;
 
@@ -11,91 +12,86 @@ class ExtendedRequest {
 
     private Request underlyingRequest;
 
-    /**
-     * Широта координаты точки посадки
-     */
-    private Double pickupLatitude;
+    private Segment pickupRoadSegment;
 
-    /**
-     * Долгота координаты точки посадки
-     */
-    private Double pickupLongitude;
+    private Segment dropOffRoadSegment;
 
-    /**
-     * Широта координаты точки высадки
-     */
-    private Double dropoffLatitude;
+    private Double timeOnPickupRoadSegment;
 
-    /**
-     * Долгота координаты точки высадки
-     */
-    private Double dropoffLongitude;
+    private Double timeOnDropOffRoadSegment;
 
-    public ExtendedRequest(Request underlyingRequest) {
+    public ExtendedRequest(Request underlyingRequest, Segment pickupRoadSegment, Segment dropOffRoadSegment, Double timeOnPickupRoadSegment,
+                           Double timeOnDropOffRoadSegment) {
         this.underlyingRequest = underlyingRequest;
-    }
-
-    public void setPickupLatitude(Double pickupLatitude) {
-        this.pickupLatitude = pickupLatitude;
-    }
-
-    public void setPickupLongitude(Double pickupLongitude) {
-        this.pickupLongitude = pickupLongitude;
-    }
-
-    public void setDropoffLatitude(Double dropoffLatitude) {
-        this.dropoffLatitude = dropoffLatitude;
-    }
-
-    public void setDropoffLongitude(Double dropoffLongitude) {
-        this.dropoffLongitude = dropoffLongitude;
-    }
-
-    public int getMaxPickupDelaySeconds() {
-        return underlyingRequest.getMaxPickupDelaySeconds();
-    }
-
-    public String getRequestId() {
-        return underlyingRequest.getRequestId();
-    }
-
-    public int getPickupNodeId() {
-        return underlyingRequest.getPickupNodeId();
-    }
-
-    public double getPickupLatitude() {
-        return pickupLatitude;
-    }
-
-    public double getPickupLongitude() {
-        return pickupLongitude;
-    }
-
-    public int getDropoffNodeId() {
-        return underlyingRequest.getDropoffNodeId();
-    }
-
-    public double getDropoffLatitude() {
-        return dropoffLatitude;
-    }
-
-    public double getDropoffLongitude() {
-        return dropoffLongitude;
+        this.pickupRoadSegment = pickupRoadSegment;
+        this.dropOffRoadSegment = dropOffRoadSegment;
+        this.timeOnPickupRoadSegment = timeOnPickupRoadSegment;
+        this.timeOnDropOffRoadSegment = timeOnDropOffRoadSegment;
     }
 
     public Instant getRequestedAt() {
         return underlyingRequest.getRequestedAt();
     }
 
-    public double getDetourConstraint() {
-        return underlyingRequest.getDetourConstraint();
+    public Integer getMaxPickupDelaySeconds() {
+        return underlyingRequest.getMaxPickupDelaySeconds();
     }
 
-    public int getLoad() {
+    public Integer getLoad() {
         return underlyingRequest.getLoad();
     }
 
-    public Request getUnderlyingRequest() {
-        return underlyingRequest;
+    public String getOriginNodeId() {
+        return underlyingRequest.getPickupRoadSegment().getStartNodeId();
+    }
+
+    public String getDestinationNodeId() {
+        return underlyingRequest.getDropOffRoadSegment().getStartNodeId();
+    }
+
+    public String getRequestId() {
+        return underlyingRequest.getRequestId();
+    }
+
+    public Double getDetourConstraint() {
+        return underlyingRequest.getDetourConstraint();
+    }
+
+    public Segment getPickupRoadSegment() {
+        return pickupRoadSegment;
+    }
+
+    public Segment getDropOffRoadSegment() {
+        return dropOffRoadSegment;
+    }
+
+    public Double getRecordedOriginLatitude() {
+        return underlyingRequest.getRecordedOriginLatitude();
+    }
+
+    public Double getRecordedOriginLongitude() {
+        return underlyingRequest.getRecordedOriginLongitude();
+    }
+
+    public Double getRecordedDestinationLatitude() {
+        return underlyingRequest.getRecordedDestinationLatitude();
+    }
+
+    public Double getRecordedDestinationLongitude() {
+        return underlyingRequest.getRecordedDestinationLongitude();
+    }
+
+    /**
+     * Сколько времени будет затрачено на участке дороги с которого будет осуществлена посадка клиента.
+     */
+    public Double getTimeOnPickupRoadSegment() {
+        return this.timeOnPickupRoadSegment;
+    }
+
+    /**
+     * Сколько времени будет затрачено на участке дороги с которого будет осуществлена высадка клиента.
+     */
+    public Double getTimeOnDropOffRoadSegment() {
+        return this.timeOnDropOffRoadSegment;
     }
 }

@@ -1,5 +1,6 @@
 package com.nocmok.orp.telemetry.config.kafka;
 
+import com.nocmok.orp.kafka.config.KafkaConfig;
 import com.nocmok.orp.kafka.orp_telemetry.VehicleTelemetryMessage;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;

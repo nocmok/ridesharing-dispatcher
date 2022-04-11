@@ -1,0 +1,4429 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d16" for="edge" attr.name="bridge" attr.type="string" />
+  <key id="d15" for="edge" attr.name="lanes" attr.type="string" />
+  <key id="d14" for="edge" attr.name="maxspeed" attr.type="string" />
+  <key id="d13" for="edge" attr.name="travel_time" attr.type="string" />
+  <key id="d12" for="edge" attr.name="speed_kph" attr.type="string" />
+  <key id="d11" for="edge" attr.name="length" attr.type="string" />
+  <key id="d10" for="edge" attr.name="oneway" attr.type="string" />
+  <key id="d9" for="edge" attr.name="highway" attr.type="string" />
+  <key id="d8" for="edge" attr.name="name" attr.type="string" />
+  <key id="d7" for="edge" attr.name="osmid" attr.type="string" />
+  <key id="d6" for="node" attr.name="highway" attr.type="string" />
+  <key id="d5" for="node" attr.name="street_count" attr.type="string" />
+  <key id="d4" for="node" attr.name="x" attr.type="string" />
+  <key id="d3" for="node" attr.name="y" attr.type="string" />
+  <key id="d2" for="graph" attr.name="crs" attr.type="string" />
+  <key id="d1" for="graph" attr.name="created_with" attr.type="string" />
+  <key id="d0" for="graph" attr.name="created_date" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="260329698">
+      <data key="d3">55.669512</data>
+      <data key="d4">37.2777359</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260329700">
+      <data key="d3">55.6703622</data>
+      <data key="d4">37.2799061</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260329701">
+      <data key="d3">55.6702918</data>
+      <data key="d4">37.2809782</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260329702">
+      <data key="d3">55.671351</data>
+      <data key="d4">37.2839105</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260329703">
+      <data key="d3">55.6716433</data>
+      <data key="d4">37.285089</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260329704">
+      <data key="d3">55.6716301</data>
+      <data key="d4">37.286351</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260329705">
+      <data key="d3">55.6715951</data>
+      <data key="d4">37.2875058</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260329706">
+      <data key="d3">55.6713782</data>
+      <data key="d4">37.2899565</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260329707">
+      <data key="d3">55.6711029</data>
+      <data key="d4">37.2906722</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260329860">
+      <data key="d3">55.6689217</data>
+      <data key="d4">37.2765929</data>
+      <data key="d5">4</data>
+    </node>
+    <node id="260330234">
+      <data key="d3">55.6686934</data>
+      <data key="d4">37.2763697</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260330235">
+      <data key="d3">55.668265</data>
+      <data key="d4">37.2761871</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260330237">
+      <data key="d3">55.6679079</data>
+      <data key="d4">37.2761172</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260330240">
+      <data key="d3">55.6673249</data>
+      <data key="d4">37.2762297</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="260330272">
+      <data key="d3">55.6703933</data>
+      <data key="d4">37.2813826</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="266305161">
+      <data key="d3">55.6669689</data>
+      <data key="d4">37.2848752</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="277545819">
+      <data key="d3">55.6702325</data>
+      <data key="d4">37.2767222</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="300424391">
+      <data key="d3">55.6688988</data>
+      <data key="d4">37.2760594</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="300424712">
+      <data key="d3">55.669193</data>
+      <data key="d4">37.2770388</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="470263560">
+      <data key="d3">55.6681279</data>
+      <data key="d4">37.2779999</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="470263563">
+      <data key="d3">55.6667389</data>
+      <data key="d4">37.2802394</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="470263569">
+      <data key="d3">55.6682898</data>
+      <data key="d4">37.2790361</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="470263586">
+      <data key="d3">55.6671249</data>
+      <data key="d4">37.280262</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="470263589">
+      <data key="d3">55.6676362</data>
+      <data key="d4">37.2798578</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="470263593">
+      <data key="d3">55.6683204</data>
+      <data key="d4">37.2791944</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="470263594">
+      <data key="d3">55.6677826</data>
+      <data key="d4">37.2802839</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="470263595">
+      <data key="d3">55.668115</data>
+      <data key="d4">37.2803125</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="470263596">
+      <data key="d3">55.6683665</data>
+      <data key="d4">37.2802682</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="470263597">
+      <data key="d3">55.6692009</data>
+      <data key="d4">37.2795697</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="470263598">
+      <data key="d3">55.6699302</data>
+      <data key="d4">37.2786697</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="470263652">
+      <data key="d3">55.667542</data>
+      <data key="d4">37.2797446</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="475709531">
+      <data key="d3">55.6715313</data>
+      <data key="d4">37.2884235</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="475709532">
+      <data key="d3">55.6702714</data>
+      <data key="d4">37.2882696</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="475709534">
+      <data key="d3">55.6668253</data>
+      <data key="d4">37.28724</data>
+      <data key="d5">4</data>
+    </node>
+    <node id="579485831">
+      <data key="d3">55.6716417</data>
+      <data key="d4">37.275075</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="703572183">
+      <data key="d3">55.6689533</data>
+      <data key="d4">37.2764055</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="842934716">
+      <data key="d3">55.6702761</data>
+      <data key="d4">37.2794063</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="860064455">
+      <data key="d3">55.6668018</data>
+      <data key="d4">37.2804449</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="860064473">
+      <data key="d3">55.6669514</data>
+      <data key="d4">37.2811903</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="893156104">
+      <data key="d3">55.6668737</data>
+      <data key="d4">37.2807717</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="899220552">
+      <data key="d3">55.6702845</data>
+      <data key="d4">37.2805941</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="899221645">
+      <data key="d3">55.6676638</data>
+      <data key="d4">37.2761112</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="899222316">
+      <data key="d3">55.6690654</data>
+      <data key="d4">37.2768123</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="899273920">
+      <data key="d3">55.6705516</data>
+      <data key="d4">37.2818246</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="903295612">
+      <data key="d3">55.6668956</data>
+      <data key="d4">37.2841169</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="903295633">
+      <data key="d3">55.6677901</data>
+      <data key="d4">37.2840359</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="903295689">
+      <data key="d3">55.6669434</data>
+      <data key="d4">37.2831784</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="903295692">
+      <data key="d3">55.666945</data>
+      <data key="d4">37.282919</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="903295702">
+      <data key="d3">55.6669585</data>
+      <data key="d4">37.2824598</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="903295723">
+      <data key="d3">55.6677139</data>
+      <data key="d4">37.2818089</data>
+      <data key="d5">1</data>
+    </node>
+    <node id="903295726">
+      <data key="d3">55.666861</data>
+      <data key="d4">37.2847694</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="903295729">
+      <data key="d3">55.6669676</data>
+      <data key="d4">37.2817295</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="903418609">
+      <data key="d3">55.6704319</data>
+      <data key="d4">37.281494</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="903418615">
+      <data key="d3">55.6703112</data>
+      <data key="d4">37.2811092</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="903418625">
+      <data key="d3">55.6704597</data>
+      <data key="d4">37.2815758</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="903418639">
+      <data key="d3">55.6702733</data>
+      <data key="d4">37.2815007</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="903418642">
+      <data key="d3">55.670343</data>
+      <data key="d4">37.2812208</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="942583207">
+      <data key="d3">55.6701525</data>
+      <data key="d4">37.2900143</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="954628814">
+      <data key="d3">55.6673648</data>
+      <data key="d4">37.2844623</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="954628816">
+      <data key="d3">55.6669656</data>
+      <data key="d4">37.2849428</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="956227664">
+      <data key="d3">55.6669547</data>
+      <data key="d4">37.2826037</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="956923489">
+      <data key="d3">55.6679588</data>
+      <data key="d4">37.2815198</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="956923505">
+      <data key="d3">55.6688027</data>
+      <data key="d4">37.2805238</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="980874796">
+      <data key="d3">55.6669293</data>
+      <data key="d4">37.2856561</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="980874843">
+      <data key="d3">55.6667211</data>
+      <data key="d4">37.2882187</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1028234128">
+      <data key="d3">55.6687463</data>
+      <data key="d4">37.2880143</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1028328180">
+      <data key="d3">55.6701573</data>
+      <data key="d4">37.2899114</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1106840096">
+      <data key="d3">55.6688717</data>
+      <data key="d4">37.2799338</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1106840099">
+      <data key="d3">55.6687495</data>
+      <data key="d4">37.28005</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1106840101">
+      <data key="d3">55.6670826</data>
+      <data key="d4">37.2798939</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1106840103">
+      <data key="d3">55.6686108</data>
+      <data key="d4">37.2801523</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1106840107">
+      <data key="d3">55.6682497</data>
+      <data key="d4">37.2802974</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1106840112">
+      <data key="d3">55.6695145</data>
+      <data key="d4">37.2791749</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1106840117">
+      <data key="d3">55.6690076</data>
+      <data key="d4">37.2797985</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1113969958">
+      <data key="d3">55.6674913</data>
+      <data key="d4">37.2761433</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1113969981">
+      <data key="d3">55.6671867</data>
+      <data key="d4">37.2797369</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1113969984">
+      <data key="d3">55.6672806</data>
+      <data key="d4">37.2795804</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1122348982">
+      <data key="d3">55.6668931</data>
+      <data key="d4">37.2765297</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1122380405">
+      <data key="d3">55.6669804</data>
+      <data key="d4">37.2814957</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1127688433">
+      <data key="d3">55.6700325</data>
+      <data key="d4">37.280585</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1127696026">
+      <data key="d3">55.6697525</data>
+      <data key="d4">37.2820445</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1128055051">
+      <data key="d3">55.6695148</data>
+      <data key="d4">37.2881421</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1137814881">
+      <data key="d3">55.6679377</data>
+      <data key="d4">37.2838943</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1140205915">
+      <data key="d3">55.6687899</data>
+      <data key="d4">37.2756534</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1140205925">
+      <data key="d3">55.6689365</data>
+      <data key="d4">37.2762465</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1171237943">
+      <data key="d3">55.6668838</data>
+      <data key="d4">37.2865028</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1171237971">
+      <data key="d3">55.6668489</data>
+      <data key="d4">37.2871356</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1171237981">
+      <data key="d3">55.6669367</data>
+      <data key="d4">37.2855283</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1171238026">
+      <data key="d3">55.6667784</data>
+      <data key="d4">37.2873775</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1178227211">
+      <data key="d3">55.667297</data>
+      <data key="d4">37.2799307</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1178227219">
+      <data key="d3">55.6671197</data>
+      <data key="d4">37.2800484</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1178227222">
+      <data key="d3">55.6669852</data>
+      <data key="d4">37.2800053</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1202307397">
+      <data key="d3">55.6685357</data>
+      <data key="d4">37.2832964</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1202307406">
+      <data key="d3">55.6681226</data>
+      <data key="d4">37.283698</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1216667877">
+      <data key="d3">55.6674503</data>
+      <data key="d4">37.2802161</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1232715151">
+      <data key="d3">55.6668669</data>
+      <data key="d4">37.2868381</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1232715162">
+      <data key="d3">55.6668933</data>
+      <data key="d4">37.2863064</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1239807627">
+      <data key="d3">55.6704871</data>
+      <data key="d4">37.2816522</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1239807703">
+      <data key="d3">55.6702742</data>
+      <data key="d4">37.2807545</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1239807735">
+      <data key="d3">55.670146</data>
+      <data key="d4">37.2791307</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1239807754">
+      <data key="d3">55.6703512</data>
+      <data key="d4">37.2796939</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1241364715">
+      <data key="d3">55.6711114</data>
+      <data key="d4">37.2883799</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991250">
+      <data key="d3">55.6693457</data>
+      <data key="d4">37.2792974</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991252">
+      <data key="d3">55.6688888</data>
+      <data key="d4">37.2797316</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991253">
+      <data key="d3">55.6685402</data>
+      <data key="d4">37.2800181</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991255">
+      <data key="d3">55.6680129</data>
+      <data key="d4">37.2790397</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991257">
+      <data key="d3">55.6683359</data>
+      <data key="d4">37.2800807</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991258">
+      <data key="d3">55.6673397</data>
+      <data key="d4">37.2801021</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991260">
+      <data key="d3">55.6692152</data>
+      <data key="d4">37.2793636</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991274">
+      <data key="d3">55.6679344</data>
+      <data key="d4">37.2786255</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991277">
+      <data key="d3">55.6681919</data>
+      <data key="d4">37.2798224</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991279">
+      <data key="d3">55.6679771</data>
+      <data key="d4">37.2784564</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991282">
+      <data key="d3">55.6680227</data>
+      <data key="d4">37.2783293</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991290">
+      <data key="d3">55.6686527</data>
+      <data key="d4">37.2799423</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991292">
+      <data key="d3">55.6684532</data>
+      <data key="d4">37.2800687</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991299">
+      <data key="d3">55.6694655</data>
+      <data key="d4">37.2792366</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="1255991301">
+      <data key="d3">55.6679397</data>
+      <data key="d4">37.2788684</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991303">
+      <data key="d3">55.6682426</data>
+      <data key="d4">37.279989</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1255991308">
+      <data key="d3">55.6681798</data>
+      <data key="d4">37.279626</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1425441694">
+      <data key="d3">55.6703248</data>
+      <data key="d4">37.2795296</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1444835205">
+      <data key="d3">55.6674007</data>
+      <data key="d4">37.2761885</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1444835206">
+      <data key="d3">55.6675617</data>
+      <data key="d4">37.2761259</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1444835207">
+      <data key="d3">55.6677796</data>
+      <data key="d4">37.276102</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1444835208">
+      <data key="d3">55.6680738</data>
+      <data key="d4">37.2761411</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1444835209">
+      <data key="d3">55.6683624</data>
+      <data key="d4">37.2762174</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1444835210">
+      <data key="d3">55.6684413</data>
+      <data key="d4">37.2762507</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1444835211">
+      <data key="d3">55.6685158</data>
+      <data key="d4">37.2762812</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1444835212">
+      <data key="d3">55.6685702</data>
+      <data key="d4">37.276309</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1444835215">
+      <data key="d3">55.6686252</data>
+      <data key="d4">37.276329</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1444835216">
+      <data key="d3">55.6687565</data>
+      <data key="d4">37.2764122</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1444835217">
+      <data key="d3">55.6688433</data>
+      <data key="d4">37.2764998</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1792509684">
+      <data key="d3">55.6702806</data>
+      <data key="d4">37.2808825</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1792509686">
+      <data key="d3">55.6714705</data>
+      <data key="d4">37.2842338</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1792509687">
+      <data key="d3">55.6715214</data>
+      <data key="d4">37.2844089</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1792509688">
+      <data key="d3">55.6715678</data>
+      <data key="d4">37.2846274</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="1792509690">
+      <data key="d3">55.6716103</data>
+      <data key="d4">37.2848851</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641450">
+      <data key="d3">55.666947</data>
+      <data key="d4">37.2803637</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641451">
+      <data key="d3">55.6669711</data>
+      <data key="d4">37.2813377</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641453">
+      <data key="d3">55.6672599</data>
+      <data key="d4">37.2802174</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641454">
+      <data key="d3">55.6673571</data>
+      <data key="d4">37.2802095</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641456">
+      <data key="d3">55.6674481</data>
+      <data key="d4">37.2800221</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641458">
+      <data key="d3">55.66779</data>
+      <data key="d4">37.2795399</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641459">
+      <data key="d3">55.6678372</data>
+      <data key="d4">37.2796831</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641461">
+      <data key="d3">55.6679255</data>
+      <data key="d4">37.2787472</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641462">
+      <data key="d3">55.6679421</data>
+      <data key="d4">37.2803056</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641463">
+      <data key="d3">55.6679716</data>
+      <data key="d4">37.2789903</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641464">
+      <data key="d3">55.6679468</data>
+      <data key="d4">37.2783038</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641465">
+      <data key="d3">55.6680716</data>
+      <data key="d4">37.2790797</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641466">
+      <data key="d3">55.6681817</data>
+      <data key="d4">37.2797273</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641467">
+      <data key="d3">55.6681869</data>
+      <data key="d4">37.2795015</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641468">
+      <data key="d3">55.6682109</data>
+      <data key="d4">37.2799068</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641469">
+      <data key="d3">55.6682903</data>
+      <data key="d4">37.2800475</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641470">
+      <data key="d3">55.6683884</data>
+      <data key="d4">37.2800864</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641471">
+      <data key="d3">55.6685001</data>
+      <data key="d4">37.2802114</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641472">
+      <data key="d3">55.6685978</data>
+      <data key="d4">37.2787075</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641473">
+      <data key="d3">55.6686417</data>
+      <data key="d4">37.2788761</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641474">
+      <data key="d3">55.6687857</data>
+      <data key="d4">37.276852</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641475">
+      <data key="d3">55.6700688</data>
+      <data key="d4">37.2764933</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2029641476">
+      <data key="d3">55.6710008</data>
+      <data key="d4">37.2756039</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="2989051462">
+      <data key="d3">55.6714118</data>
+      <data key="d4">37.2840713</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3323106175">
+      <data key="d3">55.6716503</data>
+      <data key="d4">37.2851463</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3323106176">
+      <data key="d3">55.6716533</data>
+      <data key="d4">37.2852035</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3687466489">
+      <data key="d3">55.6671519</data>
+      <data key="d4">37.2763453</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3739115804">
+      <data key="d3">55.6702391</data>
+      <data key="d4">37.288829</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3739387073">
+      <data key="d3">55.6709894</data>
+      <data key="d4">37.2908379</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3739387074">
+      <data key="d3">55.6711606</data>
+      <data key="d4">37.2905735</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3739387075">
+      <data key="d3">55.6712643</data>
+      <data key="d4">37.2903422</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3739387076">
+      <data key="d3">55.671326</data>
+      <data key="d4">37.2901584</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3739560736">
+      <data key="d3">55.6714525</data>
+      <data key="d4">37.2884069</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3739560746">
+      <data key="d3">55.6685389</data>
+      <data key="d4">37.2879651</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3739560775">
+      <data key="d3">55.6682334</data>
+      <data key="d4">37.2878731</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3739560780">
+      <data key="d3">55.6677128</data>
+      <data key="d4">37.2876561</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3739565671">
+      <data key="d3">55.6702158</data>
+      <data key="d4">37.2892629</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3740184063">
+      <data key="d3">55.6691814</data>
+      <data key="d4">37.2881108</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="3740184070">
+      <data key="d3">55.6715679</data>
+      <data key="d4">37.2879567</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="4045841168">
+      <data key="d3">55.6715877</data>
+      <data key="d4">37.2876281</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="4045852434">
+      <data key="d3">55.6703953</data>
+      <data key="d4">37.2764994</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="4045864690">
+      <data key="d3">55.6688166</data>
+      <data key="d4">37.2757529</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="4095051938">
+      <data key="d3">55.6700637</data>
+      <data key="d4">37.2805868</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="4176067556">
+      <data key="d3">55.6692037</data>
+      <data key="d4">37.2779251</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="4176067557">
+      <data key="d3">55.6692758</data>
+      <data key="d4">37.278066</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="4663314800">
+      <data key="d3">55.6671458</data>
+      <data key="d4">37.2873931</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="4663314801">
+      <data key="d3">55.6692364</data>
+      <data key="d4">37.2881213</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="4679760995">
+      <data key="d3">55.666889</data>
+      <data key="d4">37.2864028</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="4679761016">
+      <data key="d3">55.6686797</data>
+      <data key="d4">37.2831566</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5041062196">
+      <data key="d3">55.6703005</data>
+      <data key="d4">37.2810367</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5041062201">
+      <data key="d3">55.668942</data>
+      <data key="d4">37.2764723</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5041062626">
+      <data key="d3">55.6698002</data>
+      <data key="d4">37.2819947</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5041062627">
+      <data key="d3">55.669213</data>
+      <data key="d4">37.2826038</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5282713807">
+      <data key="d3">55.6709463</data>
+      <data key="d4">37.2754569</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5282714428">
+      <data key="d3">55.6706349</data>
+      <data key="d4">37.2762168</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5282714460">
+      <data key="d3">55.6689388</data>
+      <data key="d4">37.2785292</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5282714461">
+      <data key="d3">55.6688602</data>
+      <data key="d4">37.2783735</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5282714462">
+      <data key="d3">55.6695953</data>
+      <data key="d4">37.2775286</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5282714463">
+      <data key="d3">55.6704227</data>
+      <data key="d4">37.2762385</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5282714464">
+      <data key="d3">55.670692</data>
+      <data key="d4">37.275922</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5282714465">
+      <data key="d3">55.670639</data>
+      <data key="d4">37.2757718</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5282714466">
+      <data key="d3">55.6703652</data>
+      <data key="d4">37.2760829</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5282714467">
+      <data key="d3">55.6698509</data>
+      <data key="d4">37.2768286</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5282714468">
+      <data key="d3">55.6695197</data>
+      <data key="d4">37.2773918</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5282714471">
+      <data key="d3">55.6701172</data>
+      <data key="d4">37.2766623</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5297737517">
+      <data key="d3">55.6700657</data>
+      <data key="d4">37.2762865</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5297737518">
+      <data key="d3">55.6705105</data>
+      <data key="d4">37.2757316</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5297737519">
+      <data key="d3">55.6708569</data>
+      <data key="d4">37.2753668</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5297737823">
+      <data key="d3">55.6702297</data>
+      <data key="d4">37.2760752</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5297737826">
+      <data key="d3">55.6681567</data>
+      <data key="d4">37.2790816</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="5297737827">
+      <data key="d3">55.6682339</data>
+      <data key="d4">37.279366</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="6619790083">
+      <data key="d3">55.669738</data>
+      <data key="d4">37.2789033</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="6619791804">
+      <data key="d3">55.6687455</data>
+      <data key="d4">37.2769222</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="6619791822">
+      <data key="d3">55.6668129</data>
+      <data key="d4">37.2804955</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="6619791825">
+      <data key="d3">55.6697525</data>
+      <data key="d4">37.2782729</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="6666488070">
+      <data key="d3">55.6683914</data>
+      <data key="d4">37.2810065</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="6666488071">
+      <data key="d3">55.6680861</data>
+      <data key="d4">37.2813723</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="6684305842">
+      <data key="d3">55.6709887</data>
+      <data key="d4">37.2752312</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="6840028083">
+      <data key="d3">55.6672254</data>
+      <data key="d4">37.2762962</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="6972740451">
+      <data key="d3">55.6702598</data>
+      <data key="d4">37.2766848</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="7242613420">
+      <data key="d3">55.6691433</data>
+      <data key="d4">37.2804905</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="7300205211">
+      <data key="d3">55.6686459</data>
+      <data key="d4">37.2879905</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="7300205230">
+      <data key="d3">55.6702099</data>
+      <data key="d4">37.2893381</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="7350539064">
+      <data key="d3">55.666737</data>
+      <data key="d4">37.2871971</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="7350539068">
+      <data key="d3">55.6669107</data>
+      <data key="d4">37.2849373</data>
+      <data key="d5">3</data>
+    </node>
+    <node id="7762406479">
+      <data key="d3">55.6688889</data>
+      <data key="d4">37.2804952</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="7762406480">
+      <data key="d3">55.6689736</data>
+      <data key="d4">37.2804885</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="7762406481">
+      <data key="d3">55.6696339</data>
+      <data key="d4">37.2805153</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="8396026452">
+      <data key="d3">55.6701177</data>
+      <data key="d4">37.2762195</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="8396026453">
+      <data key="d3">55.6702881</data>
+      <data key="d4">37.276646</data>
+      <data key="d6">crossing</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="8396026454">
+      <data key="d3">55.6706146</data>
+      <data key="d4">37.275622</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="8396026456">
+      <data key="d3">55.6704023</data>
+      <data key="d4">37.275864</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="9018162099">
+      <data key="d3">55.6701497</data>
+      <data key="d4">37.2900794</data>
+      <data key="d5">2</data>
+    </node>
+    <node id="9094242843">
+      <data key="d3">55.6707911</data>
+      <data key="d4">37.2824495</data>
+      <data key="d5">2</data>
+    </node>
+    <edge source="260329698" target="6619791825" id="0">
+      <data key="d7">398938356</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">43.002</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.9</data>
+    </edge>
+    <edge source="260329698" target="300424712" id="0">
+      <data key="d7">398938356</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">56.296</data>
+      <data key="d12">40.0</data>
+      <data key="d13">5.1</data>
+    </edge>
+    <edge source="260329700" target="899220552" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">44.0</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.0</data>
+    </edge>
+    <edge source="260329700" target="1239807754" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">13.363</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="260329701" target="5041062196" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">3.794</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.3</data>
+    </edge>
+    <edge source="260329701" target="1792509684" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">6.129</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="260329702" target="2989051462" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">12.14</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="260329702" target="9094242843" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">110.768</data>
+      <data key="d12">40.0</data>
+      <data key="d13">10.0</data>
+    </edge>
+    <edge source="260329703" target="3323106175" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">3.676</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.3</data>
+    </edge>
+    <edge source="260329703" target="1792509690" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">13.302</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="260329704" target="260329705" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">72.518</data>
+      <data key="d12">40.0</data>
+      <data key="d13">6.5</data>
+    </edge>
+    <edge source="260329704" target="3323106176" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">72.002</data>
+      <data key="d12">40.0</data>
+      <data key="d13">6.5</data>
+    </edge>
+    <edge source="260329705" target="4045841168" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">7.713</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="260329705" target="260329704" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">72.518</data>
+      <data key="d12">40.0</data>
+      <data key="d13">6.5</data>
+    </edge>
+    <edge source="260329706" target="3739387076" id="0">
+      <data key="d7">983593820</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">13.928</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.3</data>
+    </edge>
+    <edge source="260329706" target="475709531" id="0">
+      <data key="d7">983593820</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">97.626</data>
+      <data key="d12">40.0</data>
+      <data key="d13">8.8</data>
+    </edge>
+    <edge source="260329707" target="3739387073" id="0">
+      <data key="d7">983593820</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">16.348</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.5</data>
+    </edge>
+    <edge source="260329707" target="3739387074" id="0">
+      <data key="d7">983593820</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">8.915</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="260329860" target="2029641474" id="0">
+      <data key="d7">39248722</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">22.197</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.0</data>
+    </edge>
+    <edge source="260329860" target="1444835217" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">10.492</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="260329860" target="5041062201" id="0">
+      <data key="d7">192288154</data>
+      <data key="d8">улица Яскино</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">7.893</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="260329860" target="899222316" id="0">
+      <data key="d7">398938356</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">21.086</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.9</data>
+    </edge>
+    <edge source="260330234" target="1444835215" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">8.002</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="260330234" target="1444835216" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">7.506</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="260330235" target="1444835208" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">21.455</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.9</data>
+    </edge>
+    <edge source="260330235" target="1444835209" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">10.996</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="260330237" target="1444835207" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">14.298</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.3</data>
+    </edge>
+    <edge source="260330237" target="1444835208" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">18.508</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.7</data>
+    </edge>
+    <edge source="260330240" target="6840028083" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">11.824</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="260330240" target="1444835205" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">8.816</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="260330272" target="903418639" id="0">
+      <data key="d7">156094594</data>
+      <data key="d10">True</data>
+      <data key="d8">Верхне-Пролетарская улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">15.261</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.4</data>
+    </edge>
+    <edge source="260330272" target="903418609" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">8.199</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="260330272" target="903418642" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">11.586</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="266305161" target="954628816" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">4.255</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.4</data>
+    </edge>
+    <edge source="266305161" target="7350539068" id="0">
+      <data key="d7">656893144</data>
+      <data key="d10">True</data>
+      <data key="d8">Верхне-Пролетарская улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">7.553</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="277545819" target="6972740451" id="0">
+      <data key="d7">101931111</data>
+      <data key="d10">True</data>
+      <data key="d8">Коммунальный проезд</data>
+      <data key="d9">unclassified</data>
+      <data key="d11">3.836</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.3</data>
+    </edge>
+    <edge source="277545819" target="5297737517" id="0">
+      <data key="d7">548377955</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">33.023</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.0</data>
+    </edge>
+    <edge source="300424391" target="1140205925" id="0">
+      <data key="d7">192288154</data>
+      <data key="d8">улица Яскино</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">12.46</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="300424391" target="4045864690" id="0">
+      <data key="d7">192288154</data>
+      <data key="d8">улица Яскино</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">21.284</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.9</data>
+    </edge>
+    <edge source="300424712" target="260329698" id="0">
+      <data key="d7">398938356</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">56.296</data>
+      <data key="d12">40.0</data>
+      <data key="d13">5.1</data>
+    </edge>
+    <edge source="300424712" target="899222316" id="0">
+      <data key="d7">398938356</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">20.077</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.8</data>
+    </edge>
+    <edge source="470263560" target="6619791804" id="0">
+      <data key="d7">39248722</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">96.353</data>
+      <data key="d12">40.0</data>
+      <data key="d13">8.7</data>
+    </edge>
+    <edge source="470263560" target="2029641464" id="0">
+      <data key="d7">97934089</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">27.726</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.5</data>
+    </edge>
+    <edge source="470263569" target="5297737826" id="0">
+      <data key="d7">109805080</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">15.073</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.4</data>
+    </edge>
+    <edge source="470263569" target="2029641458" id="0">
+      <data key="d7">192402753</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d8">улица Маковского</data>
+      <data key="d9">secondary</data>
+      <data key="d11">63.928</data>
+      <data key="d12">40.0</data>
+      <data key="d13">5.8</data>
+    </edge>
+    <edge source="470263586" target="2029641453" id="0">
+      <data key="d7">39248726</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">15.27</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.4</data>
+    </edge>
+    <edge source="470263586" target="1255991258" id="0">
+      <data key="d7">192402752</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d8">улица Маковского</data>
+      <data key="d9">secondary</data>
+      <data key="d11">25.904</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.3</data>
+    </edge>
+    <edge source="470263589" target="2029641459" id="0">
+      <data key="d7">192402752</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d8">улица Маковского</data>
+      <data key="d9">secondary</data>
+      <data key="d11">24.891</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.2</data>
+    </edge>
+    <edge source="470263593" target="2029641473" id="0">
+      <data key="d7">192402750</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">40.925</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.7</data>
+    </edge>
+    <edge source="470263594" target="2029641462" id="0">
+      <data key="d7">39248726</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">17.788</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.6</data>
+    </edge>
+    <edge source="470263595" target="1106840107" id="0">
+      <data key="d7">97934088</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">15.008</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.4</data>
+    </edge>
+    <edge source="470263596" target="2029641471" id="0">
+      <data key="d7">97934088</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">15.277</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.4</data>
+    </edge>
+    <edge source="470263597" target="1255991299" id="0">
+      <data key="d7">97934088</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">36.083</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.2</data>
+    </edge>
+    <edge source="470263598" target="6619791825" id="0">
+      <data key="d7">398938356</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">31.774</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.9</data>
+    </edge>
+    <edge source="470263598" target="6619790083" id="0">
+      <data key="d7">619452285</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">25.91</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.3</data>
+    </edge>
+    <edge source="470263598" target="1239807735" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">37.57</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.4</data>
+    </edge>
+    <edge source="470263652" target="1178227211" id="0">
+      <data key="d7">192402753</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d8">улица Маковского</data>
+      <data key="d9">secondary</data>
+      <data key="d11">29.638</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.7</data>
+    </edge>
+    <edge source="475709531" target="3740184070" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">29.553</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.7</data>
+    </edge>
+    <edge source="475709531" target="260329706" id="0">
+      <data key="d7">983593820</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">97.626</data>
+      <data key="d12">40.0</data>
+      <data key="d13">8.8</data>
+    </edge>
+    <edge source="475709531" target="3739560736" id="0">
+      <data key="d7">983593821</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">8.824</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="475709532" target="1128055051" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">84.509</data>
+      <data key="d12">40.0</data>
+      <data key="d13">7.6</data>
+    </edge>
+    <edge source="475709532" target="3739115804" id="0">
+      <data key="d7">74550971</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">35.263</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.2</data>
+    </edge>
+    <edge source="475709532" target="1241364715" id="0">
+      <data key="d7">983593821</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">93.66</data>
+      <data key="d12">40.0</data>
+      <data key="d13">8.4</data>
+    </edge>
+    <edge source="475709534" target="4663314800" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">36.909</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.3</data>
+    </edge>
+    <edge source="475709534" target="1171238026" id="0">
+      <data key="d7">410609026</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">10.078</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="475709534" target="7350539064" id="0">
+      <data key="d7">410609027</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">10.18</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="475709534" target="1171237971" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">7.054</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="703572183" target="5041062201" id="0">
+      <data key="d7">192288154</data>
+      <data key="d8">улица Яскино</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">4.373</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.4</data>
+    </edge>
+    <edge source="703572183" target="1140205925" id="0">
+      <data key="d7">192288154</data>
+      <data key="d8">улица Яскино</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">10.145</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="842934716" target="1425441694" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">9.44</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="842934716" target="1239807735" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">22.538</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.0</data>
+    </edge>
+    <edge source="860064455" target="2029641450" id="0">
+      <data key="d7">39248725</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d8">улица Маковского</data>
+      <data key="d9">secondary</data>
+      <data key="d11">16.93</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.5</data>
+    </edge>
+    <edge source="860064455" target="6619791822" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">3.405</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.3</data>
+    </edge>
+    <edge source="860064473" target="2029641451" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">9.5</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="860064473" target="893156104" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">27.637</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.5</data>
+    </edge>
+    <edge source="893156104" target="860064473" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">27.637</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.5</data>
+    </edge>
+    <edge source="893156104" target="6619791822" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">18.594</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.7</data>
+    </edge>
+    <edge source="899220552" target="4095051938" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">24.556</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.2</data>
+    </edge>
+    <edge source="899220552" target="1239807703" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">10.124</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="899220552" target="260329700" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">44.0</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.0</data>
+    </edge>
+    <edge source="899221645" target="1444835206" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">11.39</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="899221645" target="1444835207" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">12.889</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="899222316" target="300424712" id="0">
+      <data key="d7">398938356</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">20.077</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.8</data>
+    </edge>
+    <edge source="899222316" target="260329860" id="0">
+      <data key="d7">398938356</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">21.086</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.9</data>
+    </edge>
+    <edge source="899273920" target="9094242843" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">47.379</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.3</data>
+    </edge>
+    <edge source="899273920" target="1239807627" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">12.974</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="903295612" target="903295726" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">41.102</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.7</data>
+    </edge>
+    <edge source="903295612" target="903295689" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">59.097</data>
+      <data key="d12">40.0</data>
+      <data key="d13">5.3</data>
+    </edge>
+    <edge source="903295633" target="954628814" id="0">
+      <data key="d7">156094594</data>
+      <data key="d10">True</data>
+      <data key="d8">Верхне-Пролетарская улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">54.328</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.9</data>
+    </edge>
+    <edge source="903295689" target="903295612" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">59.097</data>
+      <data key="d12">40.0</data>
+      <data key="d13">5.3</data>
+    </edge>
+    <edge source="903295689" target="903295692" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">16.269</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.5</data>
+    </edge>
+    <edge source="903295692" target="903295689" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">16.269</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.5</data>
+    </edge>
+    <edge source="903295692" target="956227664" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">19.803</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.8</data>
+    </edge>
+    <edge source="903295702" target="956227664" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">9.034</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="903295702" target="903295729" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">45.811</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.1</data>
+    </edge>
+    <edge source="903295723" target="956923489" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">32.715</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.9</data>
+    </edge>
+    <edge source="903295726" target="7350539068" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">11.892</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="903295726" target="903295612" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">41.102</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.7</data>
+    </edge>
+    <edge source="903295729" target="903295702" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">45.811</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.1</data>
+    </edge>
+    <edge source="903295729" target="1122380405" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">14.732</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.3</data>
+    </edge>
+    <edge source="903418609" target="903418625" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">5.989</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.5</data>
+    </edge>
+    <edge source="903418609" target="260330272" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">8.199</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="903418615" target="903418642" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">7.841</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="903418615" target="5041062196" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">4.7</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.4</data>
+    </edge>
+    <edge source="903418625" target="1239807627" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">5.678</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.5</data>
+    </edge>
+    <edge source="903418625" target="903418609" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">5.989</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.5</data>
+    </edge>
+    <edge source="903418639" target="5041062626" id="0">
+      <data key="d7">156094594</data>
+      <data key="d10">True</data>
+      <data key="d8">Верхне-Пролетарская улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">61.05</data>
+      <data key="d12">40.0</data>
+      <data key="d13">5.5</data>
+    </edge>
+    <edge source="903418642" target="260330272" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">11.586</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="903418642" target="903418615" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">7.841</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="942583207" target="9018162099" id="0">
+      <data key="d7">74550971</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">4.094</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.4</data>
+    </edge>
+    <edge source="942583207" target="1028328180" id="0">
+      <data key="d7">74550971</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">6.475</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="954628814" target="266305161" id="0">
+      <data key="d7">156094594</data>
+      <data key="d10">True</data>
+      <data key="d8">Верхне-Пролетарская улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">51.073</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.6</data>
+    </edge>
+    <edge source="954628816" target="1171237981" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">36.86</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.3</data>
+    </edge>
+    <edge source="954628816" target="266305161" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">4.255</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.4</data>
+    </edge>
+    <edge source="956227664" target="903295692" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">19.803</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.8</data>
+    </edge>
+    <edge source="956227664" target="903295702" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">9.034</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="956923489" target="903295723" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">32.715</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.9</data>
+    </edge>
+    <edge source="956923489" target="6666488071" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">16.91</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.5</data>
+    </edge>
+    <edge source="956923505" target="6666488070" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">54.845</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.9</data>
+    </edge>
+    <edge source="956923505" target="7762406479" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">9.751</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="980874796" target="1232715162" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">40.979</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.7</data>
+    </edge>
+    <edge source="980874796" target="1171237981" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">8.057</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="980874843" target="1171238026" id="0">
+      <data key="d7">410609026</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">53.139</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.8</data>
+    </edge>
+    <edge source="1028234128" target="3740184063" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">48.758</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.4</data>
+    </edge>
+    <edge source="1028234128" target="7300205211" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">11.263</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="1028328180" target="942583207" id="0">
+      <data key="d7">74550971</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">6.475</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="1028328180" target="7300205230" id="0">
+      <data key="d7">74550971</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">36.424</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.3</data>
+    </edge>
+    <edge source="1106840096" target="1106840117" id="0">
+      <data key="d7">97934088</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">17.331</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.6</data>
+    </edge>
+    <edge source="1106840099" target="1106840096" id="0">
+      <data key="d7">97934088</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">15.419</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.4</data>
+    </edge>
+    <edge source="1106840101" target="1178227222" id="0">
+      <data key="d7">97934089</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">12.888</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="1106840103" target="1106840099" id="0">
+      <data key="d7">97934088</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">16.704</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.5</data>
+    </edge>
+    <edge source="1106840107" target="470263596" id="0">
+      <data key="d7">97934088</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">13.116</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="1106840112" target="6619790083" id="0">
+      <data key="d7">619452285</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">30.128</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.7</data>
+    </edge>
+    <edge source="1106840112" target="1255991299" id="0">
+      <data key="d7">619452285</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">6.683</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="1106840117" target="470263597" id="0">
+      <data key="d7">97934088</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">25.843</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.3</data>
+    </edge>
+    <edge source="1113969958" target="1444835205" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">10.465</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="1113969958" target="1444835206" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">7.904</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="1113969981" target="1106840101" id="0">
+      <data key="d7">97934089</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">15.197</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.4</data>
+    </edge>
+    <edge source="1113969984" target="1113969981" id="0">
+      <data key="d7">97934089</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">14.33</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.3</data>
+    </edge>
+    <edge source="1122348982" target="3687466489" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">31.014</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.8</data>
+    </edge>
+    <edge source="1122380405" target="903295729" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">14.732</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.3</data>
+    </edge>
+    <edge source="1122380405" target="2029641451" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">9.963</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="1127688433" target="7762406481" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">44.537</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.0</data>
+    </edge>
+    <edge source="1127688433" target="4095051938" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">3.471</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.3</data>
+    </edge>
+    <edge source="1127696026" target="5041062627" id="0">
+      <data key="d7">156094594</data>
+      <data key="d10">True</data>
+      <data key="d8">Верхне-Пролетарская улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">69.491</data>
+      <data key="d12">40.0</data>
+      <data key="d13">6.3</data>
+    </edge>
+    <edge source="1128055051" target="475709532" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">84.509</data>
+      <data key="d12">40.0</data>
+      <data key="d13">7.6</data>
+    </edge>
+    <edge source="1128055051" target="4663314801" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">30.984</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.8</data>
+    </edge>
+    <edge source="1137814881" target="903295633" id="0">
+      <data key="d7">156094594</data>
+      <data key="d10">True</data>
+      <data key="d8">Верхне-Пролетарская улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">18.661</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.7</data>
+    </edge>
+    <edge source="1140205915" target="4045864690" id="0">
+      <data key="d7">192288154</data>
+      <data key="d8">улица Яскино</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">6.91</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="1140205925" target="703572183" id="0">
+      <data key="d7">192288154</data>
+      <data key="d8">улица Яскино</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">10.145</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="1140205925" target="300424391" id="0">
+      <data key="d7">192288154</data>
+      <data key="d8">улица Яскино</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">12.46</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="1171237943" target="1232715151" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">21.112</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.9</data>
+    </edge>
+    <edge source="1171237943" target="4679760995" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">6.298</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="1171237971" target="475709534" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">7.054</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="1171237971" target="1232715151" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">18.765</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.7</data>
+    </edge>
+    <edge source="1171237981" target="980874796" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">8.057</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="1171237981" target="954628816" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">36.86</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.3</data>
+    </edge>
+    <edge source="1171238026" target="980874843" id="0">
+      <data key="d7">410609026</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">53.139</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.8</data>
+    </edge>
+    <edge source="1171238026" target="475709534" id="0">
+      <data key="d7">410609026</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">10.078</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="1178227211" target="1178227219" id="0">
+      <data key="d7">192402753</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d8">улица Маковского</data>
+      <data key="d9">secondary</data>
+      <data key="d11">21.051</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.9</data>
+    </edge>
+    <edge source="1178227219" target="470263563" id="0">
+      <data key="d7">192402753</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d8">улица Маковского</data>
+      <data key="d9">secondary</data>
+      <data key="d11">44.005</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.0</data>
+    </edge>
+    <edge source="1178227222" target="470263563" id="0">
+      <data key="d7">97934089</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">31.074</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.8</data>
+    </edge>
+    <edge source="1202307397" target="1202307406" id="0">
+      <data key="d7">156094594</data>
+      <data key="d10">True</data>
+      <data key="d8">Верхне-Пролетарская улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">52.386</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.7</data>
+    </edge>
+    <edge source="1202307406" target="1137814881" id="0">
+      <data key="d7">156094594</data>
+      <data key="d10">True</data>
+      <data key="d8">Верхне-Пролетарская улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">23.964</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.2</data>
+    </edge>
+    <edge source="1216667877" target="470263594" id="0">
+      <data key="d7">39248726</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">37.194</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.3</data>
+    </edge>
+    <edge source="1232715151" target="1171237971" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">18.765</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.7</data>
+    </edge>
+    <edge source="1232715151" target="1171237943" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">21.112</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.9</data>
+    </edge>
+    <edge source="1232715162" target="4679760995" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">6.065</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.5</data>
+    </edge>
+    <edge source="1232715162" target="980874796" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">40.979</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.7</data>
+    </edge>
+    <edge source="1239807627" target="899273920" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">12.974</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="1239807627" target="903418625" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">5.678</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.5</data>
+    </edge>
+    <edge source="1239807703" target="1792509684" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">8.058</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="1239807703" target="899220552" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">10.124</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="1239807735" target="842934716" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">22.538</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.0</data>
+    </edge>
+    <edge source="1239807735" target="470263598" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">37.57</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.4</data>
+    </edge>
+    <edge source="1239807754" target="260329700" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">13.363</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="1239807754" target="1425441694" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">10.713</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="1241364715" target="3739560736" id="0">
+      <data key="d7">983593821</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">37.966</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.4</data>
+    </edge>
+    <edge source="1241364715" target="475709532" id="0">
+      <data key="d7">983593821</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">93.66</data>
+      <data key="d12">40.0</data>
+      <data key="d13">8.4</data>
+    </edge>
+    <edge source="1255991250" target="1255991260" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">15.093</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.4</data>
+    </edge>
+    <edge source="1255991252" target="1255991290" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">29.391</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.6</data>
+    </edge>
+    <edge source="1255991253" target="1255991292" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">10.181</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="1255991255" target="2029641463" id="0">
+      <data key="d7">109805080</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">5.54</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.5</data>
+    </edge>
+    <edge source="1255991257" target="2029641469" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">5.481</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.5</data>
+    </edge>
+    <edge source="1255991258" target="2029641456" id="0">
+      <data key="d7">192402752</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d8">улица Маковского</data>
+      <data key="d9">secondary</data>
+      <data key="d11">13.056</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="1255991260" target="1255991252" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">43.01</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.9</data>
+    </edge>
+    <edge source="1255991274" target="1255991279" id="0">
+      <data key="d7">109805080</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">11.619</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="1255991277" target="2029641466" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">6.071</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.5</data>
+    </edge>
+    <edge source="1255991279" target="1255991282" id="0">
+      <data key="d7">109805080</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">9.447</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="1255991282" target="470263560" id="0">
+      <data key="d7">109805080</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">23.74</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.1</data>
+    </edge>
+    <edge source="1255991290" target="1255991253" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">13.382</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="1255991292" target="2029641470" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">7.29</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="1255991299" target="1255991250" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">13.856</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="1255991299" target="1106840112" id="0">
+      <data key="d7">619452285</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">6.683</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="1255991301" target="2029641461" id="0">
+      <data key="d7">109805080</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">7.763</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="1255991303" target="2029641468" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">6.245</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="1255991308" target="2029641467" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">7.847</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="1425441694" target="1239807754" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">10.713</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="1425441694" target="842934716" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">9.44</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="1444835205" target="260330240" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">8.816</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="1444835205" target="1113969958" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">10.465</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="1444835206" target="1113969958" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">7.904</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="1444835206" target="899221645" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">11.39</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="1444835207" target="899221645" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">12.889</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="1444835207" target="260330237" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">14.298</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.3</data>
+    </edge>
+    <edge source="1444835208" target="260330237" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">18.508</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.7</data>
+    </edge>
+    <edge source="1444835208" target="260330235" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">21.455</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.9</data>
+    </edge>
+    <edge source="1444835209" target="260330235" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">10.996</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="1444835209" target="1444835210" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">9.018</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="1444835210" target="1444835209" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">9.018</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="1444835210" target="1444835211" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">8.502</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="1444835211" target="1444835210" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">8.502</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="1444835211" target="1444835212" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">6.295</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="1444835212" target="1444835211" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">6.295</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="1444835212" target="1444835215" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">6.243</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="1444835215" target="1444835212" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">6.243</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="1444835215" target="260330234" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">8.002</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="1444835216" target="260330234" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">7.506</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="1444835216" target="1444835217" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">11.106</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="1444835217" target="1444835216" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">11.106</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="1444835217" target="260329860" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">10.492</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="1792509684" target="260329701" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">6.129</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="1792509684" target="1239807703" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">8.058</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="1792509686" target="1792509687" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">12.353</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="1792509686" target="2989051462" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">12.101</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="1792509687" target="1792509688" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">14.641</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.3</data>
+    </edge>
+    <edge source="1792509687" target="1792509686" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">12.353</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="1792509688" target="1792509690" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">16.836</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.5</data>
+    </edge>
+    <edge source="1792509688" target="1792509687" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">14.641</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.3</data>
+    </edge>
+    <edge source="1792509690" target="260329703" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">13.302</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="1792509690" target="1792509688" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">16.836</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.5</data>
+    </edge>
+    <edge source="2029641450" target="470263586" id="0">
+      <data key="d7">39248725</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d8">улица Маковского</data>
+      <data key="d9">secondary</data>
+      <data key="d11">20.784</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.9</data>
+    </edge>
+    <edge source="2029641451" target="1122380405" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">9.963</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="2029641451" target="860064473" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">9.5</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="2029641453" target="2029641454" id="0">
+      <data key="d7">39248726</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">10.82</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="2029641454" target="1216667877" id="0">
+      <data key="d7">39248726</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">10.372</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="2029641456" target="470263589" id="0">
+      <data key="d7">192402752</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d8">улица Маковского</data>
+      <data key="d9">secondary</data>
+      <data key="d11">23.316</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.1</data>
+    </edge>
+    <edge source="2029641458" target="470263652" id="0">
+      <data key="d7">192402753</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d8">улица Маковского</data>
+      <data key="d9">secondary</data>
+      <data key="d11">30.418</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.7</data>
+    </edge>
+    <edge source="2029641459" target="470263593" id="0">
+      <data key="d7">192402752</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d8">улица Маковского</data>
+      <data key="d9">secondary</data>
+      <data key="d11">61.856</data>
+      <data key="d12">40.0</data>
+      <data key="d13">5.6</data>
+    </edge>
+    <edge source="2029641461" target="1255991274" id="0">
+      <data key="d7">109805080</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">7.696</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="2029641462" target="470263595" id="0">
+      <data key="d7">39248726</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">19.23</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.7</data>
+    </edge>
+    <edge source="2029641463" target="1255991301" id="0">
+      <data key="d7">109805080</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">8.428</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="2029641464" target="1113969984" id="0">
+      <data key="d7">97934089</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">109.074</data>
+      <data key="d12">40.0</data>
+      <data key="d13">9.8</data>
+    </edge>
+    <edge source="2029641465" target="1255991255" id="0">
+      <data key="d7">109805080</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">6.993</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="2029641466" target="1255991308" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">6.356</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="2029641467" target="5297737827" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">9.976</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="2029641468" target="1255991277" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">5.699</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.5</data>
+    </edge>
+    <edge source="2029641469" target="1255991303" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">6.449</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="2029641470" target="1255991257" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">5.849</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.5</data>
+    </edge>
+    <edge source="2029641471" target="1106840103" id="0">
+      <data key="d7">97934088</data>
+      <data key="d10">True</data>
+      <data key="d15">1</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">12.855</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="2029641472" target="470263569" id="0">
+      <data key="d7">192402751</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">39.97</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.6</data>
+    </edge>
+    <edge source="2029641473" target="5282714460" id="0">
+      <data key="d7">192402750</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">39.556</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.6</data>
+    </edge>
+    <edge source="2029641474" target="6619791804" id="0">
+      <data key="d7">39248722</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">6.274</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="2029641474" target="260329860" id="0">
+      <data key="d7">39248722</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">22.197</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.0</data>
+    </edge>
+    <edge source="2029641475" target="5282714467" id="0">
+      <data key="d7">416940495</data>
+      <data key="d16">yes</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">32.081</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.9</data>
+    </edge>
+    <edge source="2989051462" target="1792509686" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">12.101</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="2989051462" target="260329702" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">12.14</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="3323106175" target="3323106176" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">3.602</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.3</data>
+    </edge>
+    <edge source="3323106175" target="260329703" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">3.676</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.3</data>
+    </edge>
+    <edge source="3323106176" target="260329704" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">72.002</data>
+      <data key="d12">40.0</data>
+      <data key="d13">6.5</data>
+    </edge>
+    <edge source="3323106176" target="3323106175" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">3.602</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.3</data>
+    </edge>
+    <edge source="3687466489" target="1122348982" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">31.014</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.8</data>
+    </edge>
+    <edge source="3687466489" target="6840028083" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">8.734</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="3739115804" target="3739565671" id="0">
+      <data key="d7">74550971</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">27.333</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.5</data>
+    </edge>
+    <edge source="3739115804" target="475709532" id="0">
+      <data key="d7">74550971</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">35.263</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.2</data>
+    </edge>
+    <edge source="3739387073" target="260329707" id="0">
+      <data key="d7">983593820</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">16.348</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.5</data>
+    </edge>
+    <edge source="3739387074" target="260329707" id="0">
+      <data key="d7">983593820</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">8.915</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="3739387074" target="3739387075" id="0">
+      <data key="d7">983593820</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">18.529</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.7</data>
+    </edge>
+    <edge source="3739387075" target="3739387074" id="0">
+      <data key="d7">983593820</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">18.529</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.7</data>
+    </edge>
+    <edge source="3739387075" target="3739387076" id="0">
+      <data key="d7">983593820</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">13.413</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="3739387076" target="3739387075" id="0">
+      <data key="d7">983593820</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">13.413</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="3739387076" target="260329706" id="0">
+      <data key="d7">983593820</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">13.928</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.3</data>
+    </edge>
+    <edge source="3739560736" target="475709531" id="0">
+      <data key="d7">983593821</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">8.824</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="3739560736" target="1241364715" id="0">
+      <data key="d7">983593821</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">37.966</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.4</data>
+    </edge>
+    <edge source="3739560746" target="7300205211" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">12.004</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="3739560746" target="3739560775" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">34.457</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.1</data>
+    </edge>
+    <edge source="3739560775" target="3739560746" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">34.457</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.1</data>
+    </edge>
+    <edge source="3739560775" target="3739560780" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">59.466</data>
+      <data key="d12">40.0</data>
+      <data key="d13">5.4</data>
+    </edge>
+    <edge source="3739560780" target="3739560775" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">59.466</data>
+      <data key="d12">40.0</data>
+      <data key="d13">5.4</data>
+    </edge>
+    <edge source="3739560780" target="4663314800" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">65.169</data>
+      <data key="d12">40.0</data>
+      <data key="d13">5.9</data>
+    </edge>
+    <edge source="3739565671" target="7300205230" id="0">
+      <data key="d7">74550971</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">4.761</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.4</data>
+    </edge>
+    <edge source="3739565671" target="3739115804" id="0">
+      <data key="d7">74550971</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">27.333</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.5</data>
+    </edge>
+    <edge source="3740184063" target="4663314801" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">6.151</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="3740184063" target="1028234128" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">48.758</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.4</data>
+    </edge>
+    <edge source="3740184070" target="475709531" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">29.553</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.7</data>
+    </edge>
+    <edge source="3740184070" target="4045841168" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">20.723</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.9</data>
+    </edge>
+    <edge source="4045841168" target="3740184070" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">20.723</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.9</data>
+    </edge>
+    <edge source="4045841168" target="260329705" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">7.713</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="4045852434" target="5282714428" id="0">
+      <data key="d7">101931111</data>
+      <data key="d10">True</data>
+      <data key="d8">Коммунальный проезд</data>
+      <data key="d9">unclassified</data>
+      <data key="d11">31.998</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.9</data>
+    </edge>
+    <edge source="4045864690" target="300424391" id="0">
+      <data key="d7">192288154</data>
+      <data key="d8">улица Яскино</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">21.284</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.9</data>
+    </edge>
+    <edge source="4045864690" target="1140205915" id="0">
+      <data key="d7">192288154</data>
+      <data key="d8">улица Яскино</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">6.91</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="4095051938" target="1127688433" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">3.471</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.3</data>
+    </edge>
+    <edge source="4095051938" target="899220552" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">24.556</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.2</data>
+    </edge>
+    <edge source="4176067556" target="5282714461" id="0">
+      <data key="d7">192402751</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">47.43</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.3</data>
+    </edge>
+    <edge source="4176067557" target="5282714462" id="0">
+      <data key="d7">416940492</data>
+      <data key="d16">yes</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">48.968</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.4</data>
+    </edge>
+    <edge source="4663314800" target="3739560780" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">65.169</data>
+      <data key="d12">40.0</data>
+      <data key="d13">5.9</data>
+    </edge>
+    <edge source="4663314800" target="475709534" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">36.909</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.3</data>
+    </edge>
+    <edge source="4663314801" target="1128055051" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">30.984</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.8</data>
+    </edge>
+    <edge source="4663314801" target="3740184063" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">6.151</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="4679760995" target="1171237943" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">6.298</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="4679760995" target="1232715162" id="0">
+      <data key="d7">656893141</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">6.065</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.5</data>
+    </edge>
+    <edge source="4679761016" target="1202307397" id="0">
+      <data key="d7">156094594</data>
+      <data key="d10">True</data>
+      <data key="d8">Верхне-Пролетарская улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">18.255</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.6</data>
+    </edge>
+    <edge source="5041062196" target="903418615" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">4.7</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.4</data>
+    </edge>
+    <edge source="5041062196" target="260329701" id="0">
+      <data key="d7">656893139</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d14">40</data>
+      <data key="d10">False</data>
+      <data key="d11">3.794</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.3</data>
+    </edge>
+    <edge source="5041062201" target="260329860" id="0">
+      <data key="d7">192288154</data>
+      <data key="d8">улица Яскино</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">7.893</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.7</data>
+    </edge>
+    <edge source="5041062201" target="703572183" id="0">
+      <data key="d7">192288154</data>
+      <data key="d8">улица Яскино</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">4.373</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.4</data>
+    </edge>
+    <edge source="5041062626" target="1127696026" id="0">
+      <data key="d7">156094594</data>
+      <data key="d10">True</data>
+      <data key="d8">Верхне-Пролетарская улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">6.155</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="5041062627" target="4679761016" id="0">
+      <data key="d7">156094594</data>
+      <data key="d10">True</data>
+      <data key="d8">Верхне-Пролетарская улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d11">68.69</data>
+      <data key="d12">40.0</data>
+      <data key="d13">6.2</data>
+    </edge>
+    <edge source="5282713807" target="5282714465" id="0">
+      <data key="d7">416940495</data>
+      <data key="d16">yes</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">39.466</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.6</data>
+    </edge>
+    <edge source="5282714428" target="579485831" id="0">
+      <data key="d7">101931111</data>
+      <data key="d10">True</data>
+      <data key="d8">Коммунальный проезд</data>
+      <data key="d9">unclassified</data>
+      <data key="d11">132.889</data>
+      <data key="d12">40.0</data>
+      <data key="d13">12.0</data>
+    </edge>
+    <edge source="5282714460" target="4176067557" id="0">
+      <data key="d7">192402750</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">47.413</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.3</data>
+    </edge>
+    <edge source="5282714461" target="2029641472" id="0">
+      <data key="d7">192402751</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">35.917</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.2</data>
+    </edge>
+    <edge source="5282714462" target="5282714471" id="0">
+      <data key="d7">416940492</data>
+      <data key="d16">yes</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">79.492</data>
+      <data key="d12">40.0</data>
+      <data key="d13">7.2</data>
+    </edge>
+    <edge source="5282714463" target="5282714464" id="0">
+      <data key="d7">416940492</data>
+      <data key="d16">yes</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">35.925</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.2</data>
+    </edge>
+    <edge source="5282714464" target="2029641476" id="0">
+      <data key="d7">416940492</data>
+      <data key="d16">yes</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">39.711</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.6</data>
+    </edge>
+    <edge source="5282714465" target="5282714466" id="0">
+      <data key="d7">416940495</data>
+      <data key="d16">yes</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">36.159</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.3</data>
+    </edge>
+    <edge source="5282714466" target="2029641475" id="0">
+      <data key="d7">416940495</data>
+      <data key="d16">yes</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">41.816</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.8</data>
+    </edge>
+    <edge source="5282714467" target="5282714468" id="0">
+      <data key="d7">416940495</data>
+      <data key="d16">yes</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">51.026</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.6</data>
+    </edge>
+    <edge source="5282714468" target="4176067556" id="0">
+      <data key="d7">416940495</data>
+      <data key="d16">yes</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">48.509</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.4</data>
+    </edge>
+    <edge source="5282714471" target="5282714463" id="0">
+      <data key="d7">416940492</data>
+      <data key="d16">yes</data>
+      <data key="d10">True</data>
+      <data key="d15">2</data>
+      <data key="d9">secondary</data>
+      <data key="d11">43.131</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.9</data>
+    </edge>
+    <edge source="5297737517" target="277545819" id="0">
+      <data key="d7">548377955</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">33.023</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.0</data>
+    </edge>
+    <edge source="5297737518" target="8396026456" id="0">
+      <data key="d7">548377957</data>
+      <data key="d10">True</data>
+      <data key="d8">Коммунальный проезд</data>
+      <data key="d9">unclassified</data>
+      <data key="d11">14.618</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.3</data>
+    </edge>
+    <edge source="5297737519" target="8396026454" id="0">
+      <data key="d7">548377957</data>
+      <data key="d10">True</data>
+      <data key="d8">Коммунальный проезд</data>
+      <data key="d9">unclassified</data>
+      <data key="d11">31.337</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.8</data>
+    </edge>
+    <edge source="5297737823" target="8396026452" id="0">
+      <data key="d7">548377957</data>
+      <data key="d10">True</data>
+      <data key="d8">Коммунальный проезд</data>
+      <data key="d9">unclassified</data>
+      <data key="d11">15.394</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.4</data>
+    </edge>
+    <edge source="5297737826" target="2029641465" id="0">
+      <data key="d7">109805080</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">9.463</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="5297737827" target="470263593" id="0">
+      <data key="d7">192402749</data>
+      <data key="d10">True</data>
+      <data key="d9">tertiary_link</data>
+      <data key="d11">14.433</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.3</data>
+    </edge>
+    <edge source="6619790083" target="470263598" id="0">
+      <data key="d7">619452285</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">25.91</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.3</data>
+    </edge>
+    <edge source="6619790083" target="1106840112" id="0">
+      <data key="d7">619452285</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">30.128</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.7</data>
+    </edge>
+    <edge source="6619791804" target="470263560" id="0">
+      <data key="d7">39248722</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">96.353</data>
+      <data key="d12">40.0</data>
+      <data key="d13">8.7</data>
+    </edge>
+    <edge source="6619791804" target="2029641474" id="0">
+      <data key="d7">39248722</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">6.274</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="6619791822" target="893156104" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">18.594</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.7</data>
+    </edge>
+    <edge source="6619791822" target="860064455" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">3.405</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.3</data>
+    </edge>
+    <edge source="6619791825" target="470263598" id="0">
+      <data key="d7">398938356</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">31.774</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.9</data>
+    </edge>
+    <edge source="6619791825" target="260329698" id="0">
+      <data key="d7">398938356</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">43.002</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.9</data>
+    </edge>
+    <edge source="6666488070" target="6666488071" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">40.972</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.7</data>
+    </edge>
+    <edge source="6666488070" target="956923505" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">54.845</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.9</data>
+    </edge>
+    <edge source="6666488071" target="956923489" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">16.91</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.5</data>
+    </edge>
+    <edge source="6666488071" target="6666488070" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">40.972</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.7</data>
+    </edge>
+    <edge source="6684305842" target="5297737519" id="0">
+      <data key="d7">548377957</data>
+      <data key="d10">True</data>
+      <data key="d8">Коммунальный проезд</data>
+      <data key="d9">unclassified</data>
+      <data key="d11">16.944</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.5</data>
+    </edge>
+    <edge source="6840028083" target="3687466489" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">8.734</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="6840028083" target="260330240" id="0">
+      <data key="d7">156094722</data>
+      <data key="d8">Транспортный проезд</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">11.824</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="6972740451" target="8396026453" id="0">
+      <data key="d7">101931111</data>
+      <data key="d10">True</data>
+      <data key="d8">Коммунальный проезд</data>
+      <data key="d9">unclassified</data>
+      <data key="d11">3.978</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.4</data>
+    </edge>
+    <edge source="7242613420" target="7762406480" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">18.87</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.7</data>
+    </edge>
+    <edge source="7242613420" target="7762406481" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">54.574</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.9</data>
+    </edge>
+    <edge source="7300205211" target="1028234128" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">11.263</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.0</data>
+    </edge>
+    <edge source="7300205211" target="3739560746" id="0">
+      <data key="d7">39678797</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">12.004</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="7300205230" target="1028328180" id="0">
+      <data key="d7">74550971</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">36.424</data>
+      <data key="d12">40.0</data>
+      <data key="d13">3.3</data>
+    </edge>
+    <edge source="7300205230" target="3739565671" id="0">
+      <data key="d7">74550971</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">4.761</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.4</data>
+    </edge>
+    <edge source="7350539064" target="475709534" id="0">
+      <data key="d7">410609027</data>
+      <data key="d8">Солнечная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">10.18</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="7350539068" target="903295726" id="0">
+      <data key="d7">72432185</data>
+      <data key="d8">Комсомольская улица</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">11.892</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.1</data>
+    </edge>
+    <edge source="7762406479" target="956923505" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">9.751</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.9</data>
+    </edge>
+    <edge source="7762406479" target="7762406480" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">9.428</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="7762406480" target="7762406479" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">9.428</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.8</data>
+    </edge>
+    <edge source="7762406480" target="7242613420" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">18.87</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.7</data>
+    </edge>
+    <edge source="7762406481" target="7242613420" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">54.574</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.9</data>
+    </edge>
+    <edge source="7762406481" target="1127688433" id="0">
+      <data key="d7">82188431</data>
+      <data key="d9">unclassified</data>
+      <data key="d10">False</data>
+      <data key="d11">44.537</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.0</data>
+    </edge>
+    <edge source="8396026452" target="5297737517" id="0">
+      <data key="d7">548377957</data>
+      <data key="d10">True</data>
+      <data key="d8">Коммунальный проезд</data>
+      <data key="d9">unclassified</data>
+      <data key="d11">7.147</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.6</data>
+    </edge>
+    <edge source="8396026453" target="4045852434" id="0">
+      <data key="d7">101931111</data>
+      <data key="d10">True</data>
+      <data key="d8">Коммунальный проезд</data>
+      <data key="d9">unclassified</data>
+      <data key="d11">15.053</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.4</data>
+    </edge>
+    <edge source="8396026454" target="5297737518" id="0">
+      <data key="d7">548377957</data>
+      <data key="d10">True</data>
+      <data key="d8">Коммунальный проезд</data>
+      <data key="d9">unclassified</data>
+      <data key="d11">13.462</data>
+      <data key="d12">40.0</data>
+      <data key="d13">1.2</data>
+    </edge>
+    <edge source="8396026456" target="5297737823" id="0">
+      <data key="d7">548377957</data>
+      <data key="d10">True</data>
+      <data key="d8">Коммунальный проезд</data>
+      <data key="d9">unclassified</data>
+      <data key="d11">23.318</data>
+      <data key="d12">40.0</data>
+      <data key="d13">2.1</data>
+    </edge>
+    <edge source="9018162099" target="942583207" id="0">
+      <data key="d7">74550971</data>
+      <data key="d9">residential</data>
+      <data key="d10">False</data>
+      <data key="d11">4.094</data>
+      <data key="d12">40.0</data>
+      <data key="d13">0.4</data>
+    </edge>
+    <edge source="9094242843" target="260329702" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">110.768</data>
+      <data key="d12">40.0</data>
+      <data key="d13">10.0</data>
+    </edge>
+    <edge source="9094242843" target="899273920" id="0">
+      <data key="d7">156094721</data>
+      <data key="d8">Союзная улица</data>
+      <data key="d9">tertiary</data>
+      <data key="d10">False</data>
+      <data key="d11">47.379</data>
+      <data key="d12">40.0</data>
+      <data key="d13">4.3</data>
+    </edge>
+    <data key="d0">2022-04-09 00:39:08</data>
+    <data key="d1">OSMnx 1.1.2</data>
+    <data key="d2">epsg:4326</data>
+  </graph>
+</graphml>

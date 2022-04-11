@@ -7,35 +7,39 @@ import org.springframework.stereotype.Component;
 @Component("com.nocmok.orp.orp_solver.service.request_management.mapper.ServiceRequestMapper")
 public class ServiceRequestMapper {
 
-    public ServiceRequestStorage.ServiceRequestDto mapServiceDtoToStorageDto(ServiceRequestStorageService.ServiceRequestDto serviceRequestDto) {
+    public ServiceRequestStorage.ServiceRequestDto mapServiceDtoToStorageDto(ServiceRequestStorageService.ServiceRequestDto serviceRequest) {
         return ServiceRequestStorage.ServiceRequestDto.builder()
-                .detourConstraint(serviceRequestDto.getDetourConstraint())
-                .requestId(serviceRequestDto.getRequestId())
-                .dropoffLat(serviceRequestDto.getDropoffLat())
-                .dropoffLon(serviceRequestDto.getDropoffLon())
-                .dropoffNodeId(serviceRequestDto.getDropoffNodeId())
-                .load(serviceRequestDto.getLoad())
-                .maxPickupDelaySeconds(serviceRequestDto.getMaxPickupDelaySeconds())
-                .pickupLat(serviceRequestDto.getPickupLat())
-                .pickupLon(serviceRequestDto.getPickupLon())
-                .requestedAt(serviceRequestDto.getRequestedAt())
-                .pickupNodeId(serviceRequestDto.getPickupNodeId())
+                .requestId(serviceRequest.getRequestId())
+                .recordedOriginLatitude(serviceRequest.getRecordedOriginLatitude())
+                .recordedOriginLongitude(serviceRequest.getRecordedOriginLongitude())
+                .recordedDestinationLatitude(serviceRequest.getRecordedDestinationLatitude())
+                .recordedDestinationLongitude(serviceRequest.getRecordedDestinationLongitude())
+                .pickupRoadSegmentStartNodeId(serviceRequest.getPickupRoadSegmentStartNodeId())
+                .pickupRoadSegmentEndNodeId(serviceRequest.getPickupRoadSegmentEndNodeId())
+                .dropOffRoadSegmentStartNodeId(serviceRequest.getDropOffRoadSegmentStartNodeId())
+                .dropOffRoadSegmentEndNodeId(serviceRequest.getDropOffRoadSegmentEndNodeId())
+                .load(serviceRequest.getLoad())
+                .detourConstraint(serviceRequest.getDetourConstraint())
+                .maxPickupDelaySeconds(serviceRequest.getMaxPickupDelaySeconds())
+                .requestedAt(serviceRequest.getRequestedAt())
                 .build();
     }
 
-    public ServiceRequestStorageService.ServiceRequestDto mapStorageDtoToServiceDto(ServiceRequestStorage.ServiceRequestDto serviceRequestDto) {
+    public ServiceRequestStorageService.ServiceRequestDto mapStorageDtoToServiceDto(ServiceRequestStorage.ServiceRequestDto serviceRequest) {
         return ServiceRequestStorageService.ServiceRequestDto.builder()
-                .detourConstraint(serviceRequestDto.getDetourConstraint())
-                .requestId(serviceRequestDto.getRequestId())
-                .dropoffLat(serviceRequestDto.getDropoffLat())
-                .dropoffLon(serviceRequestDto.getDropoffLon())
-                .dropoffNodeId(serviceRequestDto.getDropoffNodeId())
-                .load(serviceRequestDto.getLoad())
-                .maxPickupDelaySeconds(serviceRequestDto.getMaxPickupDelaySeconds())
-                .pickupLat(serviceRequestDto.getPickupLat())
-                .pickupLon(serviceRequestDto.getPickupLon())
-                .requestedAt(serviceRequestDto.getRequestedAt())
-                .pickupNodeId(serviceRequestDto.getPickupNodeId())
+                .requestId(serviceRequest.getRequestId())
+                .recordedOriginLatitude(serviceRequest.getRecordedOriginLatitude())
+                .recordedOriginLongitude(serviceRequest.getRecordedOriginLongitude())
+                .recordedDestinationLatitude(serviceRequest.getRecordedDestinationLatitude())
+                .recordedDestinationLongitude(serviceRequest.getRecordedDestinationLongitude())
+                .pickupRoadSegmentStartNodeId(serviceRequest.getPickupRoadSegmentStartNodeId())
+                .pickupRoadSegmentEndNodeId(serviceRequest.getPickupRoadSegmentEndNodeId())
+                .dropOffRoadSegmentStartNodeId(serviceRequest.getDropOffRoadSegmentStartNodeId())
+                .dropOffRoadSegmentEndNodeId(serviceRequest.getDropOffRoadSegmentEndNodeId())
+                .load(serviceRequest.getLoad())
+                .detourConstraint(serviceRequest.getDetourConstraint())
+                .maxPickupDelaySeconds(serviceRequest.getMaxPickupDelaySeconds())
+                .requestedAt(serviceRequest.getRequestedAt())
                 .build();
     }
 }

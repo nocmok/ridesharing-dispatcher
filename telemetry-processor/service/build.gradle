@@ -12,6 +12,8 @@ repositories {
     mavenCentral()
 }
 
+def grpcVersion = '1.45.1'
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.kafka:spring-kafka'
@@ -25,10 +27,12 @@ dependencies {
 
     implementation 'org.postgresql:postgresql:42.3.2'
 
-    implementation project(':core-api')
-    implementation project(':telemetry-processor:api')
-    implementation project(':state-keeper:postgres')
-    implementation project(':graph-index:mem-stub')
+    implementation "io.grpc:grpc-netty:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+
+    implementation project(':graph-index:api')
+    implementation project(':graph-index:mem-stub:client')
     implementation project(':kafka')
 
     implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'

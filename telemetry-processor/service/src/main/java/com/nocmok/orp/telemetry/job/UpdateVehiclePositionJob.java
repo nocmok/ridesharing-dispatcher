@@ -1,17 +1,11 @@
 package com.nocmok.orp.telemetry.job;
 
-import com.nocmok.orp.core_api.GCS;
-import com.nocmok.orp.core_api.GraphBinding;
-import com.nocmok.orp.core_api.GraphNode;
-import com.nocmok.orp.core_api.GraphRoad;
-import com.nocmok.orp.core_api.ScheduleNode;
-import com.nocmok.orp.core_api.StateKeeper;
-import com.nocmok.orp.core_api.Vehicle;
-import com.nocmok.orp.core_api.VehicleStatus;
+import com.nocmok.orp.graph.api.ObjectUpdater;
+import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
 import com.nocmok.orp.telemetry.service.TelemetryStorageService;
 import com.nocmok.orp.telemetry.service.dto.VehicleTelemetry;
-import com.nocmok.orp.telemetry.tracker.VehicleTracker;
-import lombok.Builder;
+import com.nocmok.orp.telemetry.tracker.LatLon;
+import com.nocmok.orp.telemetry.tracker.VehicleTrackMappingStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,11 +13,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -31,8 +20,8 @@ import java.util.stream.Collectors;
 public class UpdateVehiclePositionJob {
 
     private TelemetryStorageService telemetryStorageService;
-    private VehicleTracker vehicleTracker;
-    private StateKeeper<?> stateKeeper;
+    private VehicleTrackMappingStrategy vehicleTrackMapper;
+    private SpatialGraphObjectsStorage graphObjectsStorage;
 
     /**
      * Длина интервала за который берется батч последней телеметрия
@@ -41,16 +30,25 @@ public class UpdateVehiclePositionJob {
     private Integer timeIntervalToFetchLatestTelemetrySeconds;
 
     @Autowired
-    public UpdateVehiclePositionJob(TelemetryStorageService telemetryStorageService, VehicleTracker vehicleTracker,
-                                    StateKeeper<?> stateKeeper) {
+    public UpdateVehiclePositionJob(TelemetryStorageService telemetryStorageService, VehicleTrackMappingStrategy vehicleTracker,
+                                    SpatialGraphObjectsStorage graphObjectsStorage) {
         this.telemetryStorageService = telemetryStorageService;
-        this.vehicleTracker = vehicleTracker;
-        this.stateKeeper = stateKeeper;
+        this.vehicleTrackMapper = vehicleTracker;
+        this.graphObjectsStorage = graphObjectsStorage;
     }
 
+
+    /**
+     * Забираем телеметрию за последнюю минуту.
+     * Группируем телеметрию по машинам.
+     * Цикл по машинам:
+     * 1) Отправляем телеметрию машины в алгоритм привязки. Получаем последовательность ребер
+     * 2) Берем последнее ребро из привязки и объявляем его текущим ребром
+     * 3) Обновляем graphObjectStorage
+     */
     @Scheduled(fixedDelayString = "${com.nocmok.orp.telemetry.job.UpdateVehiclePositionJob.updateIntervalSeconds:5000}")
     public void updateVehiclePositions() {
-        log.info("start processing telemetry ...");
+        log.debug("start processing telemetry ...");
 
         var telemetryBySessionId =
                 telemetryStorageService.getLatestTelemetryForEachVehiclesAfterTimestamp(Instant.now().minusSeconds(timeIntervalToFetchLatestTelemetrySeconds))
@@ -58,158 +56,41 @@ public class UpdateVehiclePositionJob {
                         .collect(Collectors.groupingBy(VehicleTelemetry::getSessionId));
 
         if (telemetryBySessionId.isEmpty()) {
-            log.info("no telemetry to process, skip ...");
+            log.debug("no telemetry to process, skip ...");
             return;
         }
-
-        var vehicles = stateKeeper.getVehiclesByIds(new ArrayList<>(telemetryBySessionId.keySet())).stream()
-                .collect(Collectors.toMap(Vehicle::getId, Function.identity()));
-
-        var vehiclesToUpdate = new ArrayList<Vehicle>();
 
         for (var id : telemetryBySessionId.keySet()) {
             var telemetry = telemetryBySessionId.get(id);
             if (telemetry.isEmpty()) {
                 continue;
             }
-            var vehicle = vehicles.get(id);
-            if (vehicle == null) {
+            var vehicle = graphObjectsStorage.getObject(id);
+            if (vehicle.isEmpty()) {
                 log.warn("telemetry received for vehicle with id=" + id +
-                        ", but no vehicles in state keeper to apply telemetry. Skip telemetry for vehicle with id=" + id);
+                        ", but no vehicles in objects storage to apply telemetry. Skip telemetry for vehicle with id=" + id);
                 continue;
             }
 
-            var matchedTrack = vehicleTracker.matchTrackToGraph(telemetry.stream()
-                            .map(t -> new GCS(t.getLat(), t.getLon()))
-                            .collect(Collectors.toList()),
-                    getRouteRoadsByNodeSequence(vehicle.getRouteScheduled()));
+            var matchedTrack = vehicleTrackMapper.matchTrackToGraph(telemetry.stream()
+                    .map(t -> new LatLon(t.getLat(), t.getLon()))
+                    .collect(Collectors.toList()));
 
-            var currentRoad = matchedTrack.isEmpty()
-                    ? Optional.ofNullable(vehicle.getRoadBinding()).map(GraphBinding::getRoad)
-                    : Optional.of(matchedTrack.get(matchedTrack.size() - 1));
+            if (matchedTrack.isEmpty()) {
+                log.debug("track mapper returned empty mapping for vehicle with id " + id + ", skip this vehicle");
+                continue;
+            }
 
-            var currentRoadBinding = currentRoad
-                    .map(road -> vehicleTracker.getBinding(road,
-                            new GCS(telemetry.get(telemetry.size() - 1).getLat(), telemetry.get(telemetry.size() - 1).getLon())))
-                    .orElse(vehicle.getRoadBinding());
+            var currentRoadSegment = matchedTrack.get(matchedTrack.size() - 1);
+            var latestTelemetry = telemetry.get(telemetry.size() - 1);
 
-            vehiclesToUpdate.add(VehicleProjection.builder()
-                    .id(vehicle.getId())
-                    .graphBinding(currentRoadBinding)
-                    .routeScheduled(getUpdatedVehicleRoute(vehicle, matchedTrack))
-                    .build());
-        }
+            var updatedVehicle = new ObjectUpdater(vehicle.get());
+            updatedVehicle.setLatitude(latestTelemetry.getLat());
+            updatedVehicle.setLongitude(latestTelemetry.getLon());
+            updatedVehicle.setSegmentStartNodeId(currentRoadSegment.getStartNodeId());
+            updatedVehicle.setSegmentEndNodeId(currentRoadSegment.getEndNodeId());
 
-        stateKeeper.updateVehiclesBatch(vehiclesToUpdate);
-
-        log.info("updated states for " + vehiclesToUpdate.size() + " vehicles");
-        log.info("telemetry processed");
-    }
-
-    private List<GraphRoad> getRouteRoadsByNodeSequence(List<GraphNode> nodes) {
-        var routeRoads = new ArrayList<GraphRoad>();
-        for (int i = 1; i < nodes.size(); ++i) {
-            routeRoads.add(new GraphRoad(nodes.get(i - 1), nodes.get(i)));
-        }
-        return routeRoads;
-    }
-
-    private List<GraphNode> getNodeSequenceByRouteRoads(List<GraphRoad> roads) {
-        if (roads.isEmpty()) {
-            return Collections.emptyList();
-        }
-        var nodes = new ArrayList<GraphNode>();
-        nodes.add(roads.get(0).getStartNode());
-        nodes.addAll(roads.stream().map(GraphRoad::getEndNode).collect(Collectors.toList()));
-        return nodes;
-    }
-
-    private List<GraphNode> getUpdatedVehicleRoute(Vehicle vehicle, List<GraphRoad> latestTrack) {
-        if (vehicle.getSchedule().isEmpty()) {
-            log.warn("vehicle without schedule appeared to compute route");
-            return vehicle.getRouteScheduled();
-        }
-        if (vehicle.getRouteScheduled().size() < 2) {
-            return vehicle.getRouteScheduled();
-        }
-        if (latestTrack.size() < 1) {
-            return vehicle.getRouteScheduled();
-        }
-        var routeRoads = getRouteRoadsByNodeSequence(vehicle.getRouteScheduled());
-        int roadsPassed = routeRoads.indexOf(latestTrack.get(latestTrack.size() - 1));
-
-        if (roadsPassed == -1) {
-            log.info("deviation from scheduled route detected for vehicle with id=" + vehicle.getId() + ", will try to recompute route");
-            return computeRoute(latestTrack.get(latestTrack.size() - 1).getEndNode().getNodeId(), vehicle.getSchedule().get(0).getNodeId());
-        }
-        var updatedRouteRoads = routeRoads.subList(roadsPassed, routeRoads.size());
-
-        return getNodeSequenceByRouteRoads(updatedRouteRoads);
-    }
-
-    private List<GraphNode> computeRoute(Integer startNodeId, Integer endNodeId) {
-        log.info("road recomputing initiated, but not implemented");
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-    /**
-     * Реализация интерфейса Vehicle,
-     * которая хранит только часть полей, связанную с позиционированием тс
-     */
-    @Builder
-    private static class VehicleProjection implements Vehicle {
-        private String id;
-        private GraphBinding graphBinding;
-        private List<GraphNode> routeScheduled;
-
-        public VehicleProjection(String id, GraphBinding graphBinding, List<GraphNode> routeScheduled) {
-            this.id = id;
-            this.graphBinding = graphBinding;
-            this.routeScheduled = routeScheduled;
-        }
-
-        @Override public String getId() {
-            return id;
-        }
-
-        @Override public VehicleStatus getStatus() {
-            return null;
-        }
-
-        @Override public void setStatus(VehicleStatus status) {
-            throw new UnsupportedOperationException("illegal update call on stub object");
-        }
-
-        @Override public List<ScheduleNode> getSchedule() {
-            return null;
-        }
-
-        @Override public void setSchedule(List<ScheduleNode> schedule) {
-            throw new UnsupportedOperationException("illegal update call on stub object");
-        }
-
-        @Override public Integer getCapacity() {
-            return null;
-        }
-
-        @Override public Integer getResidualCapacity() {
-            return null;
-        }
-
-        @Override public void setResidualCapacity(int capacity) {
-            throw new UnsupportedOperationException("illegal update call on stub object");
-        }
-
-        @Override public GraphBinding getRoadBinding() {
-            return graphBinding;
-        }
-
-        @Override public List<GraphNode> getRouteScheduled() {
-            return routeScheduled;
-        }
-
-        @Override public void setRouteScheduled(List<GraphNode> route) {
-            this.routeScheduled = route;
+            graphObjectsStorage.updateObject(updatedVehicle);
         }
     }
 }

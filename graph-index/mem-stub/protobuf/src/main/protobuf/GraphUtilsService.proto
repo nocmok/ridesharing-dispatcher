@@ -1,0 +1,19 @@
+syntax = "proto3";
+option java_package = "com.nocmok.orp.road_index.mem_stub.server.grpc";
+
+import "GraphApiModels.proto";
+
+service GraphUtilsService {
+  rpc getRoadSegmentsWithinCircleArea(GetRoadSegmentsWithinCircleAreaRequest) returns (GetRoadSegmentsWithinCircleAreaResponse);
+}
+
+message GetRoadSegmentsWithinCircleAreaRequest {
+  double centerLatitude = 1;
+  double centerLongitude = 2;
+  double radius = 3;
+}
+
+message GetRoadSegmentsWithinCircleAreaResponse {
+  repeated Segment segments = 1;
+}
+

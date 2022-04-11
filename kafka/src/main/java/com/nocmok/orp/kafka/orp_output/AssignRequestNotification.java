@@ -1,8 +1,8 @@
 package com.nocmok.orp.kafka.orp_output;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nocmok.orp.core_api.GraphNode;
-import com.nocmok.orp.core_api.ScheduleNode;
+import com.nocmok.orp.solver.api.RouteNode;
+import com.nocmok.orp.solver.api.ScheduleNode;
 import lombok.Builder;
 
 import java.util.List;
@@ -26,10 +26,10 @@ public class AssignRequestNotification {
     private List<ScheduleNode> schedule;
 
     @JsonProperty("routeScheduled")
-    private List<GraphNode> routeScheduled;
+    private List<RouteNode> routeScheduled;
 
     public AssignRequestNotification(String sessionId, String serviceRequestId, List<ScheduleNode> schedule,
-                                     List<GraphNode> routeScheduled) {
+                                     List<RouteNode> routeScheduled) {
         this.sessionId = sessionId;
         this.serviceRequestId = serviceRequestId;
         this.schedule = schedule;
@@ -48,7 +48,7 @@ public class AssignRequestNotification {
         return schedule;
     }
 
-    public List<GraphNode> getRouteScheduled() {
+    public List<RouteNode> getRouteScheduled() {
         return routeScheduled;
     }
 

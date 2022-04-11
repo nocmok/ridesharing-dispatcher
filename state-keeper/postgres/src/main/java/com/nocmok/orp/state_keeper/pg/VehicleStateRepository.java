@@ -1,7 +1,8 @@
 package com.nocmok.orp.state_keeper.pg;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nocmok.orp.core_api.VehicleStatus;
+import com.nocmok.orp.state_keeper.api.VehicleState;
+import com.nocmok.orp.state_keeper.api.VehicleStatus;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -26,8 +27,6 @@ class VehicleStateRepository {
     private final PlatformTransactionManager transactionManager;
     private final TransactionTemplate transactionTemplate;
     private final ScheduleJsonMapper scheduleJsonMapper;
-    private final RouteJsonMapper routeJsonMapper;
-    private final GeotagJsonMapper geotagJsonMapper;
 
     public VehicleStateRepository(DataSource dataSource, ObjectMapper objectMapper) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -35,26 +34,20 @@ class VehicleStateRepository {
         this.transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.setTimeout(-1);
         this.scheduleJsonMapper = new ScheduleJsonMapper(objectMapper);
-        this.routeJsonMapper = new RouteJsonMapper(objectMapper);
-        this.geotagJsonMapper = new GeotagJsonMapper(objectMapper);
     }
 
-    private Vehicle parseVehicleFromResultSet(ResultSet rs, int nRow) throws SQLException {
+    private VehicleDto parseVehicleFromResultSet(ResultSet rs, int nRow) throws SQLException {
         var schedule = scheduleJsonMapper.decodeSchedule(rs.getString("schedule_json"));
-        var routeScheduled = routeJsonMapper.decodeRoute(rs.getString("route_json"));
-        var geotag = geotagJsonMapper.decodeGeotag(rs.getString("geotag_json"));
-        return Vehicle.builder()
+        return VehicleDto.builder()
                 .id(Objects.toString(rs.getLong("session_id")))
                 .status(VehicleStatus.valueOf(rs.getString("status")))
                 .capacity(rs.getInt("total_capacity"))
                 .residualCapacity(rs.getInt("residual_capacity"))
                 .schedule(schedule)
-                .routeScheduled(routeScheduled)
-                .roadBinding(Optional.ofNullable(geotag).map(Geotag::getGraphBinding).orElse(null))
                 .build();
     }
 
-    public List<Vehicle> getVehiclesByIds(List<Long> ids) {
+    public List<VehicleDto> getVehiclesByIds(List<Long> ids) {
         if (ids.isEmpty()) {
             return Collections.emptyList();
         }
@@ -66,9 +59,7 @@ class VehicleStateRepository {
                         " status, " +
                         " total_capacity," +
                         " residual_capacity, " +
-                        " schedule_json, " +
-                        " route_json, " +
-                        " geotag_json " +
+                        " schedule_json " +
                         " from vehicle_session " +
                         " where session_id in (:ids)",
                 params,
@@ -76,7 +67,7 @@ class VehicleStateRepository {
         return vehicles;
     }
 
-    public void updateVehiclesBatch(List<? extends com.nocmok.orp.core_api.Vehicle> vehicles) {
+    public void updateVehiclesBatch(List<? extends VehicleState> vehicles) {
         if (vehicles.isEmpty()) {
             return;
         }
@@ -87,9 +78,7 @@ class VehicleStateRepository {
                         " status = coalesce(cast(? as vehicle_status), status), " +
                         " total_capacity = coalesce(?, total_capacity), " +
                         " residual_capacity = coalesce(?, residual_capacity), " +
-                        " schedule_json = coalesce(?, schedule_json), " +
-                        " route_json = coalesce(?, route_json), " +
-                        " geotag_json = coalesce(?, geotag_json) " +
+                        " schedule_json = coalesce(?, schedule_json) " +
                         " where session_id = ? ",
                 new BatchPreparedStatementSetter() {
                     @Override public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -98,9 +87,7 @@ class VehicleStateRepository {
                         ps.setObject(2, vehicle.getCapacity(), Types.BIGINT);
                         ps.setObject(3, vehicle.getResidualCapacity(), Types.BIGINT);
                         ps.setString(4, Optional.ofNullable(vehicle.getSchedule()).map(scheduleJsonMapper::encodeSchedule).orElse(null));
-                        ps.setString(5, Optional.ofNullable(vehicle.getRouteScheduled()).map(routeJsonMapper::encodeRoute).orElse(null));
-                        ps.setString(6, geotagJsonMapper.encodeGeotag(new Geotag(vehicle.getRoadBinding())));
-                        ps.setLong(7, Long.parseLong(vehicle.getId()));
+                        ps.setLong(5, Long.parseLong(vehicle.getId()));
                     }
 
                     @Override public int getBatchSize() {
@@ -114,16 +101,14 @@ class VehicleStateRepository {
                 (rs, rowNum) -> Objects.toString(rs.getLong("session_ids")));
     }
 
-    public List<Vehicle> getActiveVehicles() {
+    public List<VehicleDto> getActiveVehicles() {
         var vehicles = jdbcTemplate.query(
                 " select " +
                         " session_id, " +
                         " status, " +
                         " total_capacity," +
                         " residual_capacity, " +
-                        " schedule_json, " +
-                        " route_json, " +
-                        " geotag_json " +
+                        " schedule_json " +
                         " from vehicle_session " +
                         " where completed_at is null",
                 this::parseVehicleFromResultSet);

@@ -1,0 +1,17 @@
+syntax = "proto3";
+option java_package = "com.nocmok.orp.road_index.mem_stub.server.grpc";
+
+import "GraphApiModels.proto";
+
+service ShortestRouteSolverService {
+  rpc getShortestRoute(GetShortestRouteRequest) returns (GetShortestRouteResponse) {}
+}
+
+message GetShortestRouteRequest {
+  string originNodeId = 1;
+  string destinationNodeId = 2;
+}
+
+message GetShortestRouteResponse {
+  Route route = 1;
+}
