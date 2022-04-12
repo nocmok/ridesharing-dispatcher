@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>3d maps</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script type="importmap">
+			{ 
+				"imports" : {
+					"three" : "http://localhost:8080/node_modules/three/build/three.module.js",
+					"three/OBJLoader" : "http://localhost:8080/node_modules/three/examples/jsm/loaders/OBJLoader.js",
+					"three/MTLLoader" : "http://localhost:8080/node_modules/three/examples/jsm/loaders/MTLLoader.js"
+				} 
+			}
+		</script>
+		<script type="module" src="js/Application.js"></script>
+	</body>
+</html>
