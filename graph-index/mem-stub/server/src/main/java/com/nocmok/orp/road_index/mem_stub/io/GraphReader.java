@@ -10,4 +10,6 @@ public interface GraphReader {
      * @param files список файлов относящихся к одному графу
      */
     Graph readGraph(File... files);
+
+    boolean canReadFiles(File... files);
 }

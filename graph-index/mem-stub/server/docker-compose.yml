@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  graph_index:
+    image: nyusafonov/graph_index:latest
+    container_name: graph-index
+    environment:
+      GRPC_PORT: 8083
+      GRAPH_DIRECTORY: /opt/graph
+    networks:
+      - orp-network
+    volumes:
+      - ./src/main/resources/odintsovo-graphml.xml:/opt/graph/odintsovo.xml
+networks:
+  orp-network:
+    name: orp-network
+    driver: bridge
