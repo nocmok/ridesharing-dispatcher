@@ -1,7 +1,6 @@
 package com.nocmok.orp.road_index.mem_stub.io;
 
 import com.nocmok.orp.road_index.mem_stub.solver.Graph;
-import com.nocmok.orp.road_index.mem_stub.solver.InMemoryGraph;
 
 import java.io.BufferedReader;
 import java.io.File;

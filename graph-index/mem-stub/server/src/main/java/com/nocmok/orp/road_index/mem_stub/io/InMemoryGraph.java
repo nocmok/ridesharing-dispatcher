@@ -1,12 +1,9 @@
-package com.nocmok.orp.road_index.mem_stub.solver;
+package com.nocmok.orp.road_index.mem_stub.io;
 
-import com.nocmok.orp.graph.api.Node;
-import com.nocmok.orp.graph.api.Segment;
+import com.nocmok.orp.road_index.mem_stub.solver.Graph;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 public class InMemoryGraph implements Graph {
