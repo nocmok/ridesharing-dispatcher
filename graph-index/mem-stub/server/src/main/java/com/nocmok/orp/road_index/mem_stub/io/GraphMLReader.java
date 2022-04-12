@@ -21,6 +21,10 @@ import java.util.stream.Collectors;
 
 public class GraphMLReader implements GraphReader {
 
+    @Override public boolean canReadFiles(File... files) {
+        return !locateGraphMlFiles(files).isEmpty();
+    }
+
     private List<File> locateGraphMlFiles(File... files) {
         return Arrays.stream(files)
                 .filter(file -> file.getName().matches(".*\\.xml"))

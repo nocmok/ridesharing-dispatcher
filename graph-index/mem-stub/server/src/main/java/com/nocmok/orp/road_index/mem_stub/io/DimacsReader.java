@@ -18,9 +18,25 @@ import java.util.stream.Collectors;
 
 public class DimacsReader implements GraphReader {
 
+    @Override public boolean canReadFiles(File... files) {
+        return !locateCoFiles(files).isEmpty() && !locateGrFiles(files).isEmpty();
+    }
+
+    private List<File> locateCoFiles(File... files) {
+        return Arrays.stream(files)
+                .filter(file -> file.getName().matches(".*\\.co"))
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    private List<File> locateGrFiles(File... files) {
+        return Arrays.stream(files)
+                .filter(file -> file.getName().matches(".*\\.gr"))
+                .collect(Collectors.toUnmodifiableList());
+    }
+
     @Override public InMemoryGraph readGraph(File... files) {
-        var coFile = Arrays.stream(files).filter(file -> file.getName().matches(".*\\.co")).findFirst();
-        var grFile = Arrays.stream(files).filter(file -> file.getName().matches(".*\\.gr")).findFirst();
+        var coFile = locateCoFiles(files).stream().findFirst();
+        var grFile = locateGrFiles(files).stream().findFirst();
         if (coFile.isEmpty()) {
             throw new RuntimeException(".co file missed");
         }
