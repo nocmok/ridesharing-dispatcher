@@ -27,6 +27,7 @@ class VehicleStateRepository {
     private final PlatformTransactionManager transactionManager;
     private final TransactionTemplate transactionTemplate;
     private final ScheduleJsonMapper scheduleJsonMapper;
+    private final SessionIdSequence sessionIdSequence;
 
     public VehicleStateRepository(DataSource dataSource, ObjectMapper objectMapper) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -34,6 +35,7 @@ class VehicleStateRepository {
         this.transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.setTimeout(-1);
         this.scheduleJsonMapper = new ScheduleJsonMapper(objectMapper);
+        this.sessionIdSequence = new SessionIdSequence(jdbcTemplate);
     }
 
     private VehicleDto parseVehicleFromResultSet(ResultSet rs, int nRow) throws SQLException {
@@ -113,5 +115,27 @@ class VehicleStateRepository {
                         " where completed_at is null",
                 this::parseVehicleFromResultSet);
         return vehicles;
+    }
+
+    public VehicleState createVehicle(VehicleState vehicle) {
+        vehicle.setId(Long.toString(sessionIdSequence.nextId()));
+        vehicle.setSchedule(Objects.requireNonNullElse(vehicle.getSchedule(), Collections.emptyList()));
+
+        var params = new HashMap<String, Object>();
+        params.put("sessionId", Long.parseLong(vehicle.getId()));
+        params.put("status", Objects.requireNonNullElse(vehicle.getStatus(), VehicleStatus.PENDING).name());
+        params.put("totalCapacity", vehicle.getCapacity());
+        params.put("residualCapacity", vehicle.getResidualCapacity());
+        params.put("schedule", scheduleJsonMapper.encodeSchedule(vehicle.getSchedule()));
+
+        int rowsAffected =
+                jdbcTemplate.update("insert into vehicle_session (session_id, created_at, status, total_capacity, residual_capacity, schedule_json) " +
+                        "values(:sessionId, now(), cast(:status as vehicle_status), :totalCapacity, :residualCapacity, :schedule)", params);
+
+        if (rowsAffected != 1) {
+            throw new RuntimeException("failed to insert vehicle");
+        }
+
+        return vehicle;
     }
 }
