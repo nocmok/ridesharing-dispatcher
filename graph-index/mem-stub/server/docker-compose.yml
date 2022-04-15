@@ -11,6 +11,8 @@ services:
       - orp-network
     volumes:
       - ./src/main/resources/odintsovo-graphml.xml:/opt/graph/odintsovo.xml
+    ports:
+      - "8083:8083"
 networks:
   orp-network:
     name: orp-network

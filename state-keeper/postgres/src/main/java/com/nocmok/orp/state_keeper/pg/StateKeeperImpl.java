@@ -33,4 +33,8 @@ public class StateKeeperImpl implements StateKeeper<VehicleDto> {
     @Override public void updateVehiclesBatch(List<? extends VehicleState> vehicle) {
         vehicleStateRepository.updateVehiclesBatch(vehicle);
     }
+
+    @Override public VehicleState createVehicle(VehicleState vehicle) {
+        return vehicleStateRepository.createVehicle(vehicle);
+    }
 }

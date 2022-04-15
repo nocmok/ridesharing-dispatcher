@@ -11,4 +11,6 @@ public interface StateKeeper<V extends VehicleState> {
     List<V> getVehiclesByIds(List<String> ids);
 
     void updateVehiclesBatch(List<? extends VehicleState> vehicle);
+
+    VehicleState createVehicle(VehicleState vehicle);
 }
