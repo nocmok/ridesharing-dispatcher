@@ -1,19 +1,15 @@
-package com.nocmok.orp.api.controller.driver_api.dto;
+package com.nocmok.orp.api.controller.common_dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@Getter
-@Setter
-@ToString
 @Schema(description = "Координаты в формате WGS84")
 public class Coordinates {
 

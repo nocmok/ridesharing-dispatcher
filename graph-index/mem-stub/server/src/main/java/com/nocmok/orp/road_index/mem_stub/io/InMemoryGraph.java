@@ -5,6 +5,7 @@ import com.nocmok.orp.road_index.mem_stub.solver.Graph;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 public class InMemoryGraph implements Graph {
 
@@ -34,6 +35,6 @@ public class InMemoryGraph implements Graph {
 
     @Override
     public Map<String, Link> getOutboundLinksMap(String nodeId) {
-        return adjacencyList.get(nodeId);
+        return Objects.requireNonNullElse(adjacencyList.get(nodeId), Collections.emptyMap());
     }
 }

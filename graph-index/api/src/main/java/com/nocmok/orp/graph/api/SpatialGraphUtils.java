@@ -15,4 +15,6 @@ public interface SpatialGraphUtils {
      * @return
      */
     List<Segment> getRoadSegmentsWithinCircleArea(double centerLatitude, double centerLongitude, double radius);
+
+    Segment getClosestRoadSegment(double latitude, double longitude, boolean rightHandTraffic);
 }

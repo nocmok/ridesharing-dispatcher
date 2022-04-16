@@ -27,4 +27,13 @@ public class GraphUtilsImpl implements SpatialGraphUtils {
                 .map(graphApiMapper::mapProtobufSegmentToInternalSegment)
                 .collect(Collectors.toUnmodifiableList());
     }
+
+    @Override public Segment getClosestRoadSegment(double latitude, double longitude, boolean rightHandTraffic) {
+        return graphApiMapper.mapProtobufSegmentToInternalSegment(
+                blockingStub.getClosestRoadSegment(GraphUtilsServiceOuterClass.GetClosestRoadSegmentRequest.newBuilder()
+                        .setLatitude(latitude)
+                        .setLongitude(longitude)
+                        .setRightHandTraffic(rightHandTraffic)
+                        .build()).getClosestSegment());
+    }
 }

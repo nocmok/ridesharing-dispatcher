@@ -26,4 +26,13 @@ public class GraphUtilsService extends GraphUtilsServiceGrpc.GraphUtilsServiceIm
                 .build());
         responseObserver.onCompleted();
     }
+
+    @Override public void getClosestRoadSegment(GraphUtilsServiceOuterClass.GetClosestRoadSegmentRequest request,
+                                                StreamObserver<GraphUtilsServiceOuterClass.GetClosestRoadSegmentResponse> responseObserver) {
+        var internalSegment = graphUtils.getClosestRoadSegment(request.getLatitude(), request.getLongitude(), request.getRightHandTraffic());
+        responseObserver.onNext(GraphUtilsServiceOuterClass.GetClosestRoadSegmentResponse.newBuilder()
+                .setClosestSegment(graphApiMapper.mapInternalSegmentToServiceSegment(internalSegment))
+                .build());
+        responseObserver.onCompleted();
+    }
 }
