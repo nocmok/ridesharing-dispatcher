@@ -39,6 +39,6 @@ public class CreateSessionResponse {
 
     @Schema(description = "Время создания сессии",
             example = "2022-04-15T13:11:21.639114Z")
-    @JsonProperty("created_at")
+    @JsonProperty("createdAt")
     private Instant createdAt;
 }
