@@ -5,6 +5,7 @@ import "GraphApiModels.proto";
 
 service GraphUtilsService {
   rpc getRoadSegmentsWithinCircleArea(GetRoadSegmentsWithinCircleAreaRequest) returns (GetRoadSegmentsWithinCircleAreaResponse);
+  rpc getClosestRoadSegment(GetClosestRoadSegmentRequest) returns (GetClosestRoadSegmentResponse);
 }
 
 message GetRoadSegmentsWithinCircleAreaRequest {
@@ -15,5 +16,15 @@ message GetRoadSegmentsWithinCircleAreaRequest {
 
 message GetRoadSegmentsWithinCircleAreaResponse {
   repeated Segment segments = 1;
+}
+
+message GetClosestRoadSegmentRequest {
+  double latitude = 1;
+  double longitude = 2;
+  bool rightHandTraffic = 4;
+}
+
+message GetClosestRoadSegmentResponse {
+  Segment closestSegment = 1;
 }
 

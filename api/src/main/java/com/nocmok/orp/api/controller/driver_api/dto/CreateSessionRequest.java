@@ -1,22 +1,20 @@
 package com.nocmok.orp.api.controller.driver_api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nocmok.orp.api.controller.common_dto.Coordinates;
+import com.nocmok.orp.api.controller.common_dto.RoadSegment;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 import java.time.Instant;
 
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@Getter
-@Setter
-@ToString
 @Schema(description = "Начальные параметры для создания новой сессии")
 public class CreateSessionRequest {
 

@@ -5,7 +5,10 @@ import com.nocmok.orp.graph.api.Segment;
 import com.nocmok.orp.graph.api.SpatialGraphUtils;
 import com.nocmok.orp.graph.tools.EarthMath;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class GraphUtilsImpl implements SpatialGraphUtils {
@@ -85,11 +88,77 @@ public class GraphUtilsImpl implements SpatialGraphUtils {
 
     @Override public List<Segment> getRoadSegmentsWithinCircleArea(double centerLatitude, double centerLongitude, double radius) {
         return graph.getAllNodes().stream()
-                .flatMap(node -> graph.getOutboundLinksMap(node.getId()).values().stream())
+                .flatMap(node -> graph.getOutboundLinksMap(node.getId()).values()
+                        .stream())
                 .filter(road -> checkRoadSegmentInsideCircleArea(centerLatitude, centerLongitude, radius, road))
                 .map(this::mapInternalLinkToGraphApiSegment)
                 .collect(Collectors.toUnmodifiableList());
 
+    }
+
+    private boolean pointInsideSegment(double latitude, double longitude, Segment segment) {
+        return latitude >= segment.getStartNode().getLatitude() && latitude <= segment.getEndNode().getLatitude()
+                || latitude >= segment.getEndNode().getLatitude() && latitude <= segment.getStartNode().getLatitude();
+    }
+
+    private double getDistanceToRoadSegment(double latitude, double longitude, Segment segment) {
+        var source = new LatLon(segment.getStartNode().getLatitude(), segment.getStartNode().getLongitude());
+        var target = new LatLon(segment.getEndNode().getLatitude(), segment.getEndNode().getLongitude());
+        var projection = getPointOnLineProjection(new LatLon(latitude, longitude), source, target);
+
+        if (pointInsideSegment(projection.getLatitude(), projection.getLongitude(), segment)) {
+            return EarthMath.spheroidalDistanceDegrees(latitude, longitude, projection.getLatitude(), projection.getLongitude());
+        } else {
+            double sourceDistance = EarthMath.spheroidalDistanceDegrees(latitude, longitude, source.getLatitude(), source.getLongitude());
+            double targetDistance = EarthMath.spheroidalDistanceDegrees(latitude, longitude, target.getLatitude(), target.getLongitude());
+            return Double.min(sourceDistance, targetDistance);
+        }
+    }
+
+    private boolean isLatLonInRightSemiPlane(double latitude, double longitude, Segment segment) {
+        // Берем вектор от source до target = a.
+        // Берем вектор от source до latLon = b.
+        // Вычисляем векторное произведение векторов a x b
+
+        // затем берем координату z полученного вектора
+        // если Z > 0 то наша точка в левой полуплоскости, иначе в правой
+
+        double ax = segment.getEndNode().getLongitude() - segment.getStartNode().getLongitude();
+        double ay = segment.getEndNode().getLatitude() - segment.getStartNode().getLatitude();
+
+        double bx = longitude - segment.getStartNode().getLongitude();
+        double by = latitude - segment.getEndNode().getLatitude();
+
+        return (ax * by - ay * bx) <= 0;
+    }
+
+    private boolean linkHasReversedLink(Graph.Link link) {
+        return Objects.requireNonNullElse(graph.getOutboundLinksMap(link.getEndNodeId()), Collections.emptyMap())
+                .containsKey(link.getStartNodeId());
+    }
+
+    @Override public Segment getClosestRoadSegment(double latitude, double longitude, boolean rightHandTraffic) {
+        // Если есть две дороги с одинаковым расстоянием, то
+        // Выбирается дорога относительно которой указанная точка находится в правильной полуплоскости
+        // с точки зрения направления движения
+        // Если все равно есть несколько подходящий дорог, то выбирается любая
+
+        return graph.getAllNodes().stream()
+                .flatMap(node -> graph.getOutboundLinksMap(node.getId()).values()
+                        .stream())
+                .filter(link -> {
+                    if (!linkHasReversedLink(link)) {
+                        return true;
+                    }
+                    if (rightHandTraffic) {
+                        return isLatLonInRightSemiPlane(latitude, longitude, mapInternalLinkToGraphApiSegment(link));
+                    } else {
+                        return !isLatLonInRightSemiPlane(latitude, longitude, mapInternalLinkToGraphApiSegment(link));
+                    }
+                })
+                .map(this::mapInternalLinkToGraphApiSegment)
+                .min(Comparator.comparingDouble(segment -> getDistanceToRoadSegment(latitude, longitude, segment)))
+                .orElse(null);
     }
 
     private static class LatLon {

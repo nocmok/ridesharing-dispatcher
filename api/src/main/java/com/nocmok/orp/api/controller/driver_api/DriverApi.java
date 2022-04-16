@@ -1,9 +1,9 @@
 package com.nocmok.orp.api.controller.driver_api;
 
-import com.nocmok.orp.api.controller.driver_api.dto.Coordinates;
+import com.nocmok.orp.api.controller.common_dto.Coordinates;
 import com.nocmok.orp.api.controller.driver_api.dto.CreateSessionRequest;
 import com.nocmok.orp.api.controller.driver_api.dto.CreateSessionResponse;
-import com.nocmok.orp.api.controller.driver_api.dto.RoadSegment;
+import com.nocmok.orp.api.controller.common_dto.RoadSegment;
 import com.nocmok.orp.api.service.session_management.SessionManagementService;
 import com.nocmok.orp.api.service.session_management.dto.SessionDto;
 import org.springframework.beans.factory.annotation.Autowired;
