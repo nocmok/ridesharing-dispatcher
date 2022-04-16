@@ -1,0 +1,16 @@
+.TextButton {
+    width: fit-content;
+    height: fit-content;
+
+    font-size: 12px;
+    font-weight: normal;
+    text-decoration-line: underline;
+    text-underline-position: under;
+
+    border-style: none;
+    background-color: transparent;
+}
+
+.TextButton:hover {
+    text-decoration-line: none;
+}

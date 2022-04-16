@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import {PerspectiveCamera} from "./cameras/PerspectiveCamera";
-import {OSM2WorldProjection} from "./projections/OSM2WorldProjection";
+import {MercatorProjection} from "./projections/MercatorProjection";
+import {AxesHelper} from "three";
 
 export class Map {
 
@@ -10,7 +11,7 @@ export class Map {
 
     constructor() {
         this.#scene = new THREE.Scene();
-        this.#camera = new PerspectiveCamera(new OSM2WorldProjection());
+        this.#camera = new PerspectiveCamera(new MercatorProjection());
         this.#renderer = new THREE.WebGLRenderer({antialias: true});
 
         Map.#setUpScene(this.scene)
@@ -40,6 +41,12 @@ export class Map {
         })
     }
 
+    removeObject(object) {
+        object.getModel().then(model => {
+            this.scene.remove(model)
+        })
+    }
+
     get renderer() {
         return this.#renderer;
     }
@@ -58,6 +65,7 @@ export class Map {
 
     resize(newWidth, newHeight) {
         this.threeCamera.aspect = newWidth / newHeight;
+
         this.threeCamera.updateProjectionMatrix();
         this.renderer.setSize(newWidth, newHeight);
     }

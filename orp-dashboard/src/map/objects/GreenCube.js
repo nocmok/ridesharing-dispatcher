@@ -1,15 +1,20 @@
 import * as THREE from "three";
-import {OSM2WorldProjection} from "../projections/OSM2WorldProjection";
+import {MercatorProjection} from "../projections/MercatorProjection";
+import {MapObject} from "./MapObject";
 
-export class GreenCube {
+export class GreenCube extends MapObject {
 
-    constructor() {
-        this.latitude = 0
-        this.longitude = 0
-        this.projection = new OSM2WorldProjection();
+    constructor(position) {
+        super()
+
+        this.latitude = (position === undefined ? 0 : position.latitude) || 0
+        this.longitude = (position === undefined ? 0 : position.longitude) || 0
+        this.projection = new MercatorProjection();
 
         this.model = new Promise((resolve, error) => {
-            let model = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshBasicMaterial({color: 0x00ff00}))
+            let model = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshBasicMaterial({color: 0x00ff00}))
+            let {x: x, y: z} = this.projection.getProjection(this.latitude, this.longitude)
+            model.position.set(x, 0, -z)
             resolve(model)
         })
     }
@@ -19,8 +24,8 @@ export class GreenCube {
         this.longitude = longitude
 
         this.model.then(model => {
-            let {x, z} = this.projection.getLocalProjection(0, 0, this.latitude, this.longitude)
-            model.position.set(x, 0, z)
+            let {x: x, y: z} = this.projection.getProjection(this.latitude, this.longitude)
+            model.position.set(x, 0, -z)
         })
     }
 
