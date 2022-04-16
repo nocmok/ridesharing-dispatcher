@@ -4,9 +4,9 @@ export class DragCameraAction {
         this.map = map
         this.isDragging = false
 
-        window.addEventListener('mousemove', this.onMouseMove.bind(this))
-        window.addEventListener('mousedown', this.onMouseDown.bind(this))
-        window.addEventListener('mouseup', this.onMouseUp.bind(this))
+        this.map.renderer.domElement.addEventListener('mousemove', this.onMouseMove.bind(this))
+        this.map.renderer.domElement.addEventListener('mousedown', this.onMouseDown.bind(this))
+        this.map.renderer.domElement.addEventListener('mouseup', this.onMouseUp.bind(this))
     }
 
     onMouseDown() {

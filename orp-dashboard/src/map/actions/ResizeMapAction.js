@@ -6,6 +6,6 @@ export class ResizeMapAction {
     }
 
     onWindowResize() {
-        this.map.resize(window.innerWidth, window.innerHeight)
+        this.map.resize(this.map.renderer.domElement.width, this.map.renderer.domElement.height)
     }
 }

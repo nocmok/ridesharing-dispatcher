@@ -1,0 +1,16 @@
+.Button {
+    font-size: 14px;
+    font-weight: bold;
+    min-height: 40px;
+
+    border-style: none;
+}
+
+.Button:hover {
+    filter: brightness(95%);
+}
+
+.Button:active {
+    filter: brightness(105%);
+    /*transform: scale(0.98);*/
+}

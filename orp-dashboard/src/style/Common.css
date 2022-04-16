@@ -1,0 +1,19 @@
+* {
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+}
+
+.Heading1 {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.Heading2 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.Heading3 {
+    font-size: 14px;
+    font-weight: bold;
+}
