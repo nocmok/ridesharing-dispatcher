@@ -5,6 +5,10 @@ public class RoadSegment {
     private String startNodeId;
     private String endNodeId;
 
+    public RoadSegment() {
+
+    }
+
     public RoadSegment(String startNodeId, String endNodeId) {
         this.startNodeId = startNodeId;
         this.endNodeId = endNodeId;

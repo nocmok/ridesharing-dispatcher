@@ -28,6 +28,10 @@ dependencies {
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.1'
 
 	implementation project(':kafka')
+	implementation project(':orp-solver:api')
+	implementation project(':graph-index:api')
+	implementation project(':graph-index:mem-stub:client')
+	implementation project(':graph-index:tools')
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'

@@ -1,5 +1,6 @@
 package com.nocmok.orp.orp_solver.job;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nocmok.orp.kafka.orp_output.OrpOutputMessage;
 import com.nocmok.orp.orp_solver.storage.notification.OrpOutputOutboxStorage;
 import com.nocmok.orp.orp_solver.storage.notification.dto.OrpOutputOutboxRecord;
@@ -28,6 +29,7 @@ public class OrpOutputOutboxKafkaExportingJob {
     private TransactionTemplate transactionTemplate;
     private OrpOutputOutboxStorage orpOutputOutboxStorage;
     private KafkaTemplate<String, Object> kafkaTemplate;
+    private ObjectMapper objectMapper;
 
     @Value("${orp.orp_solver.job.OrpOutputOutboxKafkaExportingJob.maxBatchSize:1000}")
     private Integer maxBatchSize;
@@ -35,10 +37,11 @@ public class OrpOutputOutboxKafkaExportingJob {
     @Autowired
     public OrpOutputOutboxKafkaExportingJob(TransactionTemplate transactionTemplate,
                                             OrpOutputOutboxStorage orpOutputOutboxStorage,
-                                            KafkaTemplate<String, Object> kafkaTemplate) {
+                                            KafkaTemplate<String, Object> kafkaTemplate, ObjectMapper objectMapper) {
         this.transactionTemplate = transactionTemplate;
         this.orpOutputOutboxStorage = orpOutputOutboxStorage;
         this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @Scheduled(fixedDelayString = "${orp.orp_solver.job.OrpOutputOutboxKafkaExportingJob.exportIntervalSeconds:5000}")
@@ -72,13 +75,21 @@ public class OrpOutputOutboxKafkaExportingJob {
                 .build();
     }
 
+    private Object getPayloadAsObject(OrpOutputMessage message) {
+        try {
+            return objectMapper.readValue(message.getPayload(), Class.forName(message.getMessageKind()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void sendNotificationsBatch(List<OrpOutputMessage> notificationBatch) {
         for (var message : notificationBatch) {
             kafkaTemplate.send(new ProducerRecord<>(
                     "orp.output",
                     null,
                     message.getPartitionKey(),
-                    message.getPayload(),
+                    getPayloadAsObject(message),
                     List.of(new RecordHeader("__TypeId__", message.getMessageKind().getBytes(StandardCharsets.UTF_8)))
             ));
         }

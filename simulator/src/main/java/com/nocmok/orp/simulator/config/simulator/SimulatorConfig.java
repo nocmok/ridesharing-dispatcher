@@ -1,7 +1,10 @@
 package com.nocmok.orp.simulator.config.simulator;
 
+import com.nocmok.orp.graph.api.SpatialGraphMetadataStorage;
+import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
 import com.nocmok.orp.simulator.event_bus.EventBus;
 import com.nocmok.orp.simulator.event_listeners.driver.VirtualDriver;
+import com.nocmok.orp.simulator.service.api.DriverApi;
 import com.nocmok.orp.simulator.service.telemetry.TelemetrySender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -23,7 +26,10 @@ public class SimulatorConfig {
 
     @Bean("virtualDriverFactory")
     @Autowired
-    public Function<String, VirtualDriver> virtualDriverFactory(EventBus eventBus, TelemetrySender telemetrySender) {
-        return (sessionId) -> new VirtualDriver(sessionId, eventBus, telemetrySender);
+    public Function<String, VirtualDriver> virtualDriverFactory(EventBus eventBus, TelemetrySender telemetrySender,
+                                                                SpatialGraphObjectsStorage graphObjectsStorage,
+                                                                SpatialGraphMetadataStorage graphMetadataStorage,
+                                                                DriverApi driverApi) {
+        return (sessionId) -> new VirtualDriver(sessionId, eventBus, telemetrySender, graphMetadataStorage, graphObjectsStorage, driverApi);
     }
 }

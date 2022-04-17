@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class TicTac implements Event {
+public class TicTacEvent implements Event {
 
     private Long milliseconds;
 

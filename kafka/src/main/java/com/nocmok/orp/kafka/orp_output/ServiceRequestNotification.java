@@ -3,25 +3,33 @@ package com.nocmok.orp.kafka.orp_output;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nocmok.orp.solver.api.RouteNode;
 import com.nocmok.orp.solver.api.ScheduleNode;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 /**
  * Сообщение, которое отправляется
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ServiceRequestNotification {
 
     /**
      * Идентификатор тс которому будет отправлено уведомление
      */
     @JsonProperty("sessionId")
-    private final String sessionId;
+    private String sessionId;
 
     /**
      * Идентификатор запроса с которым придет уведомление тс
      */
     @JsonProperty("requestId")
-    private final String requestId;
+    private String requestId;
 
     /**
      * Идентификатор резервации тс в рамках которой отправляется запрос на обслуживание.
@@ -30,50 +38,11 @@ public class ServiceRequestNotification {
      * На тс реально назначается запрос, только если запись с резервацией не истекла
      */
     @JsonProperty("reservationId")
-    private final String reservationId;
+    private String reservationId;
 
     @JsonProperty("augmentedSchedule")
-    private final List<ScheduleNode> augmentedSchedule;
+    private List<ScheduleNode> augmentedSchedule;
 
     @JsonProperty("augmentedRoute")
-    private final List<RouteNode> augmentedRoute;
-
-    public ServiceRequestNotification(String sessionId, String requestId, String reservationId,
-                                      List<ScheduleNode> augmentedSchedule, List<RouteNode> augmentedRoute) {
-        this.sessionId = sessionId;
-        this.requestId = requestId;
-        this.reservationId = reservationId;
-        this.augmentedSchedule = augmentedSchedule;
-        this.augmentedRoute = augmentedRoute;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public String getReservationId() {
-        return reservationId;
-    }
-
-    public List<ScheduleNode> getAugmentedSchedule() {
-        return augmentedSchedule;
-    }
-
-    public List<RouteNode> getAugmentedRoute() {
-        return augmentedRoute;
-    }
-
-    @Override public String toString() {
-        return "ServiceRequestNotificationDto{" +
-                "vehicleId='" + sessionId + '\'' +
-                ", requestId='" + requestId + '\'' +
-                ", reservationId='" + reservationId + '\'' +
-                ", augmentedSchedule=" + augmentedSchedule +
-                ", augmentedRoute=" + augmentedRoute +
-                '}';
-    }
+    private List<RouteNode> augmentedRoute;
 }
