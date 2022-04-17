@@ -21,3 +21,5 @@ include 'orp-service'
 include 'notifier'
 
 include 'kafka'
+
+include 'simulator'
