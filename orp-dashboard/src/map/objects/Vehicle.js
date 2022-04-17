@@ -27,12 +27,6 @@ export class Vehicle extends MapObject {
         })
     }
 
-    setPlainCoordinates(x, y, z) {
-        this.model.then(model => {
-            model.position.set(x, y, z)
-        })
-    }
-
     getModel() {
         return this.model
     }
