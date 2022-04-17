@@ -2,18 +2,18 @@ package com.nocmok.orp.kafka.orp_input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
  * Подтверждение запроса от клиента, отправленное водителем
  */
-@Getter
-@ToString
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssignRequestMessage {
+@Builder
+public class RequestConfirmationMessage {
 
     @JsonProperty("reservationId")
     private String reservationId;

@@ -31,7 +31,6 @@ public class SessionEventSource {
         // В первый раз вычитывает всю таблицу vehicle_session запоминает самое большое время в createdAt
         var newSessions = vehicleSessionStorage.readActiveVehiclesCreatedAfterTimestampOrderedByCreationTime(latestKnownSessionCreatedAt);
         if (newSessions.isEmpty()) {
-            log.info("no new sessions, skip ...");
             return;
         }
 
@@ -41,7 +40,5 @@ public class SessionEventSource {
         newSessions.forEach(session -> eventBus.emit(NewSessionEvent.builder()
                 .sessionId(session.getSessionId())
                 .build()));
-
-        log.info("registered " + newSessions.size() + " new sessions");
     }
 }

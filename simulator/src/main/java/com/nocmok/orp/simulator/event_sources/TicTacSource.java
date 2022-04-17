@@ -1,7 +1,7 @@
 package com.nocmok.orp.simulator.event_sources;
 
 import com.nocmok.orp.simulator.event_bus.EventBus;
-import com.nocmok.orp.simulator.event_bus.event.TicTac;
+import com.nocmok.orp.simulator.event_bus.event.TicTacEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class TicTacSource {
 
     private final EventBus eventBus;
-    private final TicTac ticTac = TicTac.builder()
+    private final TicTacEvent ticTac = TicTacEvent.builder()
             .milliseconds(1000L)
             .build();
 

@@ -2,6 +2,8 @@ package com.nocmok.orp.kafka.orp_input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -11,10 +13,10 @@ import java.time.Instant;
 /**
  * Запрос поступивший от клиента на обработку
  */
-@Getter
-@ToString
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ServiceRequestMessage {
 
     @JsonProperty("requestId")

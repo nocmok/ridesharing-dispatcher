@@ -4,11 +4,15 @@ import java.util.Objects;
 
 public class RouteNode {
 
-    private final String nodeId;
+    private String nodeId;
 
-    private final Double latitude;
+    private Double latitude;
 
-    private final Double longitude;
+    private Double longitude;
+
+    public RouteNode() {
+
+    }
 
     public RouteNode(String nodeId, Double latitude, Double longitude) {
         this.nodeId = nodeId;

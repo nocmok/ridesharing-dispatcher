@@ -1,6 +1,6 @@
 package com.nocmok.orp.orp_solver.kafka.orp_input;
 
-import com.nocmok.orp.kafka.orp_input.AssignRequestMessage;
+import com.nocmok.orp.kafka.orp_input.RequestConfirmationMessage;
 import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
 import com.nocmok.orp.orp_solver.kafka.orp_input.mapper.AssignRequestMessageMapper;
 import com.nocmok.orp.orp_solver.kafka.orp_input.mapper.ServiceRequestMessageMapper;
@@ -57,7 +57,7 @@ public class OrpInputListener {
     }
 
     @KafkaHandler
-    public void receiveAcceptRequestMessage(@Payload AssignRequestMessage message) {
+    public void receiveAcceptRequestMessage(@Payload RequestConfirmationMessage message) {
         var errors = assignRequestValidator.validateAssignRequest(message);
         if (!errors.isEmpty()) {
             log.error("invalid assign request received: " + message + "\nErrors: " + errors);

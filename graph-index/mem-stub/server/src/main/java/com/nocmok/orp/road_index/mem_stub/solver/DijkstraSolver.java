@@ -38,15 +38,15 @@ public class DijkstraSolver implements ShortestRouteSolver {
                 link.getCost());
     }
 
-    private Route mapSegmentsToRoute(List<Segment> segments) {
-        if (segments.isEmpty()) {
-            return new Route(Collections.emptyList(), Double.POSITIVE_INFINITY);
-        }
-        double routeCost = segments.stream().map(Segment::getCost).reduce(0d, Double::sum);
-        return new Route(segments, routeCost);
+    private Route mapInternalRouteToGraphApiRoute(RouteAndCost internalRoute) {
+        var segmentRoute = internalRoute.route.stream().map(this::mapInternalLinkToGraphApiSegment).collect(Collectors.toUnmodifiableList());
+        return new Route(segmentRoute, internalRoute.cost);
     }
 
-    private List<Graph.Link> dijkstra(String originNodeId, String destinationNodeId) {
+    private RouteAndCost dijkstra(String originNodeId, String destinationNodeId) {
+        if (Objects.equals(originNodeId, destinationNodeId)) {
+            return new RouteAndCost(Collections.emptyList(), 0d);
+        }
         // Список вершин до которых известно минимальное расстояние
         var processedNodes = new HashSet<String>();
         var nodesToProcess = new HashSet<String>();
@@ -116,7 +116,7 @@ public class DijkstraSolver implements ShortestRouteSolver {
             node = link.getStartNodeId();
         }
 
-        return new ArrayList<>(route);
+        return new RouteAndCost(new ArrayList<>(route), knownShortestDistances.get(destinationNodeId));
     }
 
     /**
@@ -129,9 +129,16 @@ public class DijkstraSolver implements ShortestRouteSolver {
         if (!graph.containsNode(destinationNodeId)) {
             throw new NoSuchElementException("node with id " + destinationNodeId + " doesn't present in graph");
         }
-        return mapSegmentsToRoute(dijkstra(originNodeId, destinationNodeId)
-                .stream()
-                .map(this::mapInternalLinkToGraphApiSegment)
-                .collect(Collectors.toList()));
+        return mapInternalRouteToGraphApiRoute(dijkstra(originNodeId, destinationNodeId));
+    }
+
+    private static class RouteAndCost {
+        private List<Graph.Link> route;
+        private double cost;
+
+        public RouteAndCost(List<Graph.Link> route, double cost) {
+            this.route = route;
+            this.cost = cost;
+        }
     }
 }

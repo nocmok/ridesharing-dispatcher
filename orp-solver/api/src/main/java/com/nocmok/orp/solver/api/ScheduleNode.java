@@ -1,64 +1,31 @@
 package com.nocmok.orp.solver.api;
 
 import java.time.Instant;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ScheduleNode {
 
+    @JsonProperty("deadline")
     private Instant deadline;
+    @JsonProperty("load")
     private Integer load;
+    @JsonProperty("nodeId")
     private String nodeId;
+    @JsonProperty("latitude")
     private Double latitude;
+    @JsonProperty("longitude")
     private Double longitude;
+    @JsonProperty("kind")
     private ScheduleNodeKind kind;
+    @JsonProperty("orderId")
     private String orderId;
 
-    public ScheduleNode(Instant deadline, Integer load, String nodeId, Double latitude, Double longitude, ScheduleNodeKind kind, String orderId) {
-        this.deadline = deadline;
-        this.load = load;
-        this.nodeId = nodeId;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.kind = kind;
-        this.orderId = orderId;
-    }
-
-    public Instant getDeadline() {
-        return deadline;
-    }
-
-    public Integer getLoad() {
-        return load;
-    }
-
-    public String getNodeId() {
-        return nodeId;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public ScheduleNodeKind getKind() {
-        return kind;
-    }
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    @Override public String toString() {
-        return "ScheduleNode{" +
-                "deadline=" + deadline +
-                ", load=" + load +
-                ", nodeId='" + nodeId + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", kind=" + kind +
-                ", orderId='" + orderId + '\'' +
-                '}';
-    }
 }

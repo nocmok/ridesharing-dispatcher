@@ -1,9 +1,9 @@
-package com.nocmok.orp.orp_solver.config.graph_index;
+package com.nocmok.orp.simulator.config.graph;
 
-import com.nocmok.orp.graph.api.SpatialGraphMetadataStorage;
-import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
 import com.nocmok.orp.graph.api.ObjectUpdater;
 import com.nocmok.orp.graph.api.ShortestRouteSolver;
+import com.nocmok.orp.graph.api.SpatialGraphMetadataStorage;
+import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
 import com.nocmok.orp.graph.mem_stub.client.GraphMetadataStorageImpl;
 import com.nocmok.orp.graph.mem_stub.client.GraphObjectStorageImpl;
 import com.nocmok.orp.graph.mem_stub.client.ShortestRouteSolverImpl;
@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class GraphIndexConfig {
+public class GraphConfig {
 
     @Value("${graph_index.server.host}")
     private String host;
