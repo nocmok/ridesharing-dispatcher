@@ -7,8 +7,22 @@ import {Map} from "./map/Map";
 
 // global dependency container
 const di = {};
+
 di.map = new Map()
-di.sessions = {}
+
+/**
+ * {
+ *     sessionId: {
+ *         sessionListener: ,
+ *         mapObject: ,
+ *
+ *     }
+ * }
+ */
+di.sessions = {
+
+}
+di.sessionListeners = {}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

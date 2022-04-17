@@ -6,12 +6,14 @@ import {TextInput} from "../../ui/text_input/TextInput";
 import {Button} from "../../ui/buttion/Button";
 import {Separator} from "../../ui/separator/Separator";
 import * as DriverApi from "../../../api/DriverApi"
-import {Session} from "../../../session/Session";
 import {UpdateSelectedRoadAction} from "./UpdateSelectedRoadAction";
 import {ShowSelectedCoordinatesAction} from "./ShowSelectedCoordinatesAction";
 import {UpdateSelectedCoordinatesAction} from "./UpdateSelectedCoordinatesAction";
 import {ShowSelectedRoadAction} from "./ShowSelectedRoadAction";
 import {DragMapAction} from "../../../map/actions/DragMapAction";
+import {SessionListener} from "../../../session/SessionListener";
+import {Vehicle} from "../../../map/objects/Vehicle";
+import {MapObjectPositionUpdater} from "../../../session/event_handlers/MapObjectPositionUpdater";
 
 export class CreateSessionPanel extends Component {
 
@@ -89,14 +91,21 @@ export class CreateSessionPanel extends Component {
             road: session.road,
             createdAt: session.createdAt
         }).then(response => {
-            // Делегируем оставшуюся работу классу Session
-            this.di.sessions[response.sessionId] = new Session({
-                sessionId: response.sessionId,
-                capacity: response.capacity,
-                coordinates: response.coordinates,
-                road: response.road,
-                createdAt: response.createdAt
-            })
+
+            let mapObject = new Vehicle()
+            let sessionListener = new SessionListener(response.sessionId)
+
+            this.di.sessions[response.sessionId] = {
+                mapObject: mapObject,
+                sessionListener: sessionListener
+            }
+
+            sessionListener.addTelemetryEventHandler(telemetry => new MapObjectPositionUpdater(mapObject).handleTelemetry(telemetry))
+
+            mapObject.setCoordinates(response.coordinates.latitude, response.coordinates.longitude)
+            this.map.addObject(mapObject)
+
+            sessionListener.connect()
         })
     }
 

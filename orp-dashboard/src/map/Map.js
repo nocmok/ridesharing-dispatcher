@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import {PerspectiveCamera} from "./cameras/PerspectiveCamera";
 import {MercatorProjection} from "./projections/MercatorProjection";
-import {AxesHelper} from "three";
 
 export class Map {
 

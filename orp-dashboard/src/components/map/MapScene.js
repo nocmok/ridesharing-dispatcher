@@ -3,7 +3,6 @@ import {OdintsovoMapTile} from "../../map/objects/OdintsovoMapTile";
 import {DragCameraAction} from "../../map/actions/DragCameraAction";
 import classes from "./MapScene.module.css";
 import {ResizeMapAction} from "../../map/actions/ResizeMapAction";
-import {GreenCube} from "../../map/objects/GreenCube";
 
 export class MapScene extends Component {
 
