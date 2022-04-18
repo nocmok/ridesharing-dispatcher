@@ -7,6 +7,7 @@ import {Button} from "../../ui/buttion/Button";
 import {CoordinatesPicker} from "../coordinates_picker/CoordinatesPicker";
 import * as GeoApi from '../../../api/GeoApi'
 import * as RiderApi from '../../../api/RiderApi'
+import {Link} from "react-router-dom";
 
 
 export class CreateRequestPanel extends Component {
@@ -78,11 +79,13 @@ export class CreateRequestPanel extends Component {
         return (
             <div className={classes.CreateRequestPanel}>
 
-                <TextButton style={
-                    {
-                        color: "#7C7C7C"
-                    }
-                }>Назад</TextButton>
+                {/*<TextButton style={*/}
+                {/*    {*/}
+                {/*        color: "#7C7C7C"*/}
+                {/*    }*/}
+                {/*}>Назад</TextButton>*/}
+
+                <Link to="/dashboard">Назад</Link>
 
                 <div className="Heading1" style={
                     {

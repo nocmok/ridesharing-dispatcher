@@ -4,6 +4,7 @@ import './index.css';
 import {App} from './App';
 import 'typeface-roboto'
 import {Map} from "./map/Map";
+import {BrowserRouter, Router} from "react-router-dom";
 
 // global dependency container
 const di = {};
@@ -19,12 +20,13 @@ di.map = new Map()
  *     }
  * }
  */
-di.sessions = {
-
-}
+di.sessions = {}
 di.sessionListeners = {}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
-    <App di={di}/>
+    <BrowserRouter>
+        <App di={di}/>
+    </BrowserRouter>
 );
