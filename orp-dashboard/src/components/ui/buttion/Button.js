@@ -7,7 +7,10 @@ export class Button extends Component {
         return (
             <button className={classes.Button}
                     style={this.props.style}
-                    onClick={this.props.onClick}>
+                    onClick={this.props.onClick}
+                    onFocus={this.props.onFocus}
+                    onBlur={this.props.onBlur}
+                    hidden={this.props.hidden}>
                 {this.props.children}
             </button>
         )

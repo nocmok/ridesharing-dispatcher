@@ -70,6 +70,8 @@ export class Map {
     }
 
     lookAt(latitude, longitude) {
+
+
         this.camera.lookAt(latitude, longitude)
     }
 

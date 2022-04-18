@@ -4,13 +4,15 @@ import {CreateSessionPanel} from "./components/operation/create_session_panel/Cr
 import './App.css'
 import './style/Common.css'
 import React, {Component} from "react";
+import {CreateRequestPanel} from "./components/operation/create_request_panel/CreateRequestPanel";
 
 export class App extends Component {
 
     render() {
         return (
             <div className="App">
-                <CreateSessionPanel di={this.props.di}></CreateSessionPanel>
+                {/*<CreateSessionPanel di={this.props.di}></CreateSessionPanel>*/}
+                <CreateRequestPanel di={this.props.di}></CreateRequestPanel>
                 <MapScene di={this.props.di}></MapScene>
             </div>
         )
