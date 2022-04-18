@@ -24,5 +24,6 @@ export class UpdateSelectedRoadAction {
         this.component.roadPromise = roadPromise
 
         roadPromise.then(road => this.component.setState({road: road}))
+        roadPromise.then(road => console.log(road))
     }
 }

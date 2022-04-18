@@ -8,7 +8,8 @@ export class TextInput extends Component {
             <input className={classes.TextInput}
                    value={this.props.value}
                    style={this.props.style}
-                   onInput={this.props.onInput}>
+                   onInput={this.props.onInput}
+                   onChange={this.props.onChange}>
                 {this.props.children}
             </input>
         )

@@ -22,8 +22,17 @@ export class PerspectiveCamera extends SpatialCamera {
         return this.#threeCamera;
     }
 
+    getCameraPositionByLookAt(latitude, longitude) {
+        let {x: x, y: z} = this.projection.getProjection(latitude, longitude);
+        let y = this.threeCamera.position.y
+        let {x: xr, y: yr, z: zr} = this.threeCamera.rotation
+        x = x - Math.tan(zr) * y
+        z = z + Math.tan(xr) * y
+        return {x: x, y: y, z: -z}
+    }
+
     lookAt(latitude, longitude) {
-        let {x: x, y: z} = this.projection.getProjection(latitude, longitude)
-        this.threeCamera.position.set(x, this.threeCamera.position.y, -z);
+        let {x, y, z} = this.getCameraPositionByLookAt(latitude, longitude)
+        this.threeCamera.position.set(x, y, z)
     }
 }
