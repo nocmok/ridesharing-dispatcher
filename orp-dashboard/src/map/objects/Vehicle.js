@@ -1,6 +1,8 @@
 import {MapObject} from "./MapObject";
 import {MercatorProjection} from "../projections/MercatorProjection";
-import * as THREE from "three";
+import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
+
+const loader = new GLTFLoader()
 
 export class Vehicle extends MapObject {
 
@@ -11,10 +13,7 @@ export class Vehicle extends MapObject {
         this.longitude = 0
         this.projection = new MercatorProjection();
 
-        this.model = new Promise((resolve, error) => {
-            let model = new THREE.Mesh(new THREE.BoxGeometry(10,10,10), new THREE.MeshBasicMaterial({color: 0xff0000}))
-            resolve(model)
-        })
+        this.model = loader.loadAsync("/models/vehicle/vehicle.gl.glb").then(glb => glb.scene)
     }
 
     setCoordinates(latitude, longitude) {
@@ -22,8 +21,10 @@ export class Vehicle extends MapObject {
         this.longitude = longitude
 
         this.model.then(model => {
+            model.scale.set(10, 10, 10)
+            model.rotation.set(0, 0, 0)
             let {x: x, y: z} = this.projection.getProjection(this.latitude, this.longitude)
-            model.position.set(x, 0, -z)
+            model.position.set(x, 10, -z)
         })
     }
 
