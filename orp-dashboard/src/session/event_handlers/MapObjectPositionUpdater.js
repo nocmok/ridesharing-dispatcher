@@ -13,7 +13,6 @@ export class MapObjectPositionUpdater {
         this.animationController = new AnimationController(object)
     }
 
-    // TODO Сделать плавную анимацию
     handleTelemetry(message) {
         if (!this.animationController) {
             return

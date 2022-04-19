@@ -13,8 +13,9 @@ import {ShowSelectedRoadAction} from "./ShowSelectedRoadAction";
 import {DragMapAction} from "../../../map/actions/DragMapAction";
 import {SessionListener} from "../../../session/SessionListener";
 import {Vehicle} from "../../../map/objects/Vehicle";
-import {MapObjectPositionUpdater} from "../../../session/event_handlers/vehicle_animator/MapObjectPositionUpdater";
+import {MapObjectPositionUpdater} from "../../../session/event_handlers/MapObjectPositionUpdater";
 import {Link} from "react-router-dom";
+import {ShowVehicleRouteHandler} from "../../../session/event_handlers/ShowVehicleRouteHandler";
 
 export class CreateSessionPanel extends Component {
 
@@ -103,6 +104,9 @@ export class CreateSessionPanel extends Component {
 
             let positionUpdater = new MapObjectPositionUpdater(mapObject)
             sessionListener.addTelemetryEventHandler(telemetry => positionUpdater.handleTelemetry(telemetry))
+
+            let routeRenderer = new ShowVehicleRouteHandler(this.map);
+            sessionListener.addAssignRequestNotificationHandler(notification => routeRenderer.handleRequestAssignment(notification))
 
             mapObject.setCoordinates(response.coordinates.latitude, response.coordinates.longitude)
             this.map.addObject(mapObject)
