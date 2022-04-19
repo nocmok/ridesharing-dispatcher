@@ -3,6 +3,35 @@ import {TWEEN} from "three/examples/jsm/libs/tween.module.min";
 
 const projection = new MercatorProjection()
 
+function coordinatesEquals(a, b) {
+    return a.x === b.x && a.y === b.y && a.z === b.z
+}
+
+// + если вектор2 справа от вектора 1
+// иначе минус
+function getRadiansBetweenVectors(vec1, vec2) {
+    let sign = Math.sign(vec1.z * vec2.x - vec1.x * vec2.z)
+    let cos = (vec1.x * vec2.x + vec1.z * vec2.z) / Math.sqrt(vec1.x ** 2 + vec1.z ** 2) / Math.sqrt(vec2.x ** 2 + vec2.z ** 2)
+    return sign * Math.acos(cos)
+}
+
+function getRotationToFollowDirection(baseRotation, directionVector) {
+    // baseRotation - вектор ротаций если объект ориентирован по оси x
+
+    // найти угол между двумя векторами через скалярное произведение. Второй вектор = (1,0,0)
+    // считаем что объект лежит в плоскости xz поэтому полученный угол устанавливается в y
+
+    let angle = getRadiansBetweenVectors({x: 1, y: 0, z: 0}, directionVector)
+
+    console.log("angle", angle)
+
+    let rotation = { x: baseRotation.x, y: baseRotation.y + angle, z: baseRotation.z  }
+
+    console.log("rotation", rotation)
+
+    return rotation
+}
+
 export class AnimationController {
 
     constructor(vehicle) {
@@ -11,16 +40,17 @@ export class AnimationController {
         this.lastAnimationPromise = new Promise(resolve => resolve())
     }
 
-    coordinatesEquals(a, b) {
-        return a.x === b.x && a.y === b.y && a.z === b.z
-    }
-
     update(telemetry) {
         let sourcePosition = this.vehicle.position
         let {x: x, y: z} = projection.getProjection(telemetry.latitude, telemetry.longitude)
         let targetPosition = {x: x, y: this.vehicle.position.y, z: -z}
+        let direction = {
+            x: targetPosition.x - sourcePosition.x,
+            y: targetPosition.y - sourcePosition.y,
+            z: targetPosition.z - sourcePosition.z
+        }
 
-        if (this.coordinatesEquals(sourcePosition, targetPosition)) {
+        if (coordinatesEquals(sourcePosition, targetPosition)) {
             return
         }
 
@@ -41,15 +71,19 @@ export class AnimationController {
 
             if (this.lastAnimationPromise) {
                 this.lastAnimationPromise.then(() => {
+                    let rotation = getRotationToFollowDirection({x: 0, y: 0, z: 0}, direction)
+                    this.vehicle.rotation.set(rotation.x, rotation.y, rotation.z)
                     animation.start()
                 })
                 this.lastAnimationPromise = newAnimationPromise
             } else {
                 this.lastAnimationPromise = newAnimationPromise
+                let rotation = getRotationToFollowDirection({x: 0, y: 0, z: 0}, direction)
+                this.vehicle.rotation.set(rotation.x, rotation.y, rotation.z)
                 animation.start()
             }
         } else {
-            if(Date.parse(this.telemetries[this.telemetries.length - 1].recordedAt).valueOf() > Date.parse(telemetry.recordedAt).valueOf()) {
+            if (Date.parse(this.telemetries[this.telemetries.length - 1].recordedAt).valueOf() > Date.parse(telemetry.recordedAt).valueOf()) {
                 return;
             }
 
@@ -74,11 +108,15 @@ export class AnimationController {
 
             if (this.lastAnimationPromise) {
                 this.lastAnimationPromise.then(() => {
+                    let rotation = getRotationToFollowDirection({x: 0, y: 0, z: 0}, direction)
+                    this.vehicle.rotation.set(rotation.x, rotation.y, rotation.z)
                     animation.start()
                 })
                 this.lastAnimationPromise = newAnimationPromise
             } else {
                 this.lastAnimationPromise = newAnimationPromise
+                let rotation = getRotationToFollowDirection({x: 0, y: 0, z: 0}, direction)
+                this.vehicle.rotation.set(rotation.x, rotation.y, rotation.z)
                 animation.start()
             }
         }
