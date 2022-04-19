@@ -7,11 +7,15 @@ export class ObjLoader {
         let objLoader = new OBJLoader()
         let mtlLoader = new MTLLoader()
 
-        return mtlLoader
-            .loadAsync(mtlPath)
-            .then(mtl => {
-                objLoader.setMaterials(mtl)
-                return objLoader.loadAsync(objPath)
-            })
+        if (mtlPath == null) {
+            return objLoader.loadAsync(objPath)
+        } else {
+            return mtlLoader
+                .loadAsync(mtlPath)
+                .then(mtl => {
+                    objLoader.setMaterials(mtl)
+                    return objLoader.loadAsync(objPath)
+                })
+        }
     }
 }

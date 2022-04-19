@@ -8,6 +8,7 @@ export class SessionListener {
     constructor(sessionId) {
         this.sessionId = sessionId
         this.stompClient = NotifierApi.getStompClient()
+        this.stompClient.debug = null
 
         this.telemetryEventHandlers = []
         this.disconnectEventHandler = []

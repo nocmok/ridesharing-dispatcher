@@ -3,6 +3,7 @@ import {OdintsovoMapTile} from "../../map/objects/OdintsovoMapTile";
 import {DragCameraAction} from "../../map/actions/DragCameraAction";
 import classes from "./MapScene.module.css";
 import {ResizeMapAction} from "../../map/actions/ResizeMapAction";
+import {TWEEN} from "three/examples/jsm/libs/tween.module.min";
 
 export class MapScene extends Component {
 
@@ -40,6 +41,7 @@ export class MapScene extends Component {
 
     startAnimationLoop = () => {
         window.requestAnimationFrame(this.startAnimationLoop);
+        TWEEN.update()
         this.map.render()
     }
 
