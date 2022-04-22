@@ -25,7 +25,7 @@ export class Vehicle extends MapObject {
                 0, -1, 0, 0,
                 0, 0, 0, 1)
 
-            model.children[0].material = new THREE.MeshPhongMaterial({color: 0xA0A0A0, opacity: 0});
+            model.children[0].material = new THREE.MeshPhongMaterial({color: 0x4290ff, opacity: 0});
             model.children[0].geometry.applyMatrix4(rotationMatrix)
             return model
         })

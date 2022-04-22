@@ -6,6 +6,7 @@ function resolve(path) {
 }
 
 export function createSession(request) {
+    console.log(request)
     return fetch(resolve("/create_session"), {
         method: "POST",
         headers: {
