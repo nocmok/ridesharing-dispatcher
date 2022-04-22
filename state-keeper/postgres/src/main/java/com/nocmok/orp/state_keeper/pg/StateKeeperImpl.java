@@ -1,19 +1,21 @@
 package com.nocmok.orp.state_keeper.pg;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import com.nocmok.orp.state_keeper.api.VehicleState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class StateKeeperImpl implements StateKeeper<VehicleDto> {
 
     private final VehicleStateRepository vehicleStateRepository;
 
-    public StateKeeperImpl(DataSource dataSource, ObjectMapper objectMapper) {
-        this.vehicleStateRepository = new VehicleStateRepository(dataSource, objectMapper);
+    @Autowired
+    public StateKeeperImpl(VehicleStateRepository vehicleStateRepository) {
+        this.vehicleStateRepository = vehicleStateRepository;
     }
 
     @Override public List<String> getActiveVehiclesIds() {
@@ -36,5 +38,11 @@ public class StateKeeperImpl implements StateKeeper<VehicleDto> {
 
     @Override public VehicleState createVehicle(VehicleState vehicle) {
         return vehicleStateRepository.createVehicle(vehicle);
+    }
+
+    @Override public List<VehicleDto> getActiveVehiclesByIdsForUpdate(List<String> ids) {
+        return vehicleStateRepository.getVehiclesByIdsForUpdate(ids.stream()
+                .map(Long::parseLong)
+                .collect(Collectors.toList()));
     }
 }

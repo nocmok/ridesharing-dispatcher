@@ -1,9 +1,10 @@
 package com.nocmok.orp.api.controller.driver_api;
 
 import com.nocmok.orp.api.controller.common_dto.Coordinates;
+import com.nocmok.orp.api.controller.common_dto.RoadSegment;
 import com.nocmok.orp.api.controller.driver_api.dto.CreateSessionRequest;
 import com.nocmok.orp.api.controller.driver_api.dto.CreateSessionResponse;
-import com.nocmok.orp.api.controller.common_dto.RoadSegment;
+import com.nocmok.orp.api.controller.driver_api.dto.UpdateScheduleRequest;
 import com.nocmok.orp.api.service.session_management.SessionManagementService;
 import com.nocmok.orp.api.service.session_management.dto.SessionDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +48,16 @@ public class DriverApi {
                 .build();
     }
 
+    @PostMapping("/update_order_status")
+    public @ResponseBody String completeScheduleCheckpoint(@RequestBody UpdateScheduleRequest request) {
+        sessionManagementService.updateOrderStatus(request.getSessionId(), request.getOrderId(), request.getUpdatedStatus());
+        return "{}";
+    }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
     public @ResponseBody String unknownExceptionHandler(Exception exception) {
         return exception.getMessage();
     }
 
-    // completeScheduleCheckpoint(requestId)
-    //
 }

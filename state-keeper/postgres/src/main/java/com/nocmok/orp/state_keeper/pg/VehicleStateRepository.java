@@ -1,15 +1,14 @@
 package com.nocmok.orp.state_keeper.pg;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nocmok.orp.state_keeper.api.VehicleState;
 import com.nocmok.orp.state_keeper.api.VehicleStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Repository
 class VehicleStateRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -29,13 +29,15 @@ class VehicleStateRepository {
     private final ScheduleJsonMapper scheduleJsonMapper;
     private final SessionIdSequence sessionIdSequence;
 
-    public VehicleStateRepository(DataSource dataSource, ObjectMapper objectMapper) {
-        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        this.transactionManager = new DataSourceTransactionManager(dataSource);
-        this.transactionTemplate = new TransactionTemplate(transactionManager);
-        transactionTemplate.setTimeout(-1);
-        this.scheduleJsonMapper = new ScheduleJsonMapper(objectMapper);
-        this.sessionIdSequence = new SessionIdSequence(jdbcTemplate);
+    @Autowired
+    public VehicleStateRepository(NamedParameterJdbcTemplate jdbcTemplate, PlatformTransactionManager transactionManager,
+                                  TransactionTemplate transactionTemplate, ScheduleJsonMapper scheduleJsonMapper,
+                                  SessionIdSequence sessionIdSequence) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.transactionManager = transactionManager;
+        this.transactionTemplate = transactionTemplate;
+        this.scheduleJsonMapper = scheduleJsonMapper;
+        this.sessionIdSequence = sessionIdSequence;
     }
 
     private VehicleDto parseVehicleFromResultSet(ResultSet rs, int nRow) throws SQLException {
@@ -63,7 +65,28 @@ class VehicleStateRepository {
                         " residual_capacity, " +
                         " schedule_json " +
                         " from vehicle_session " +
-                        " where session_id in (:ids)",
+                        " where session_id in (:ids) and completed_at is null",
+                params,
+                this::parseVehicleFromResultSet);
+        return vehicles;
+    }
+
+    public List<VehicleDto> getVehiclesByIdsForUpdate(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        var params = new HashMap<String, Object>();
+        params.put("ids", ids);
+        var vehicles = jdbcTemplate.query(
+                " select " +
+                        " session_id, " +
+                        " status, " +
+                        " total_capacity," +
+                        " residual_capacity, " +
+                        " schedule_json " +
+                        " from vehicle_session " +
+                        " where session_id in (:ids) and completed_at is null " +
+                        " for update ",
                 params,
                 this::parseVehicleFromResultSet);
         return vehicles;
@@ -138,4 +161,6 @@ class VehicleStateRepository {
 
         return vehicle;
     }
+
+
 }

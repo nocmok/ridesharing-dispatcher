@@ -5,17 +5,15 @@ import com.nocmok.orp.state_keeper.api.VehicleState;
 import com.nocmok.orp.state_keeper.api.VehicleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
-@Getter
-@Setter
-@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class VehicleDto implements VehicleState {
 
     private String id;
