@@ -30,7 +30,6 @@ public class OrpTelemetryListener {
 
     @KafkaHandler
     public void receiveVehicleTelemetry(@Payload VehicleTelemetryMessage telemetryMessage) {
-        log.info("received " + telemetryMessage);
         vehicleGPSStreamingService.sendGPS(vehicleTelemetryMapper.mapVehicleTelemetryMessageToVehicleGPSMessageServiceDto(telemetryMessage));
     }
 

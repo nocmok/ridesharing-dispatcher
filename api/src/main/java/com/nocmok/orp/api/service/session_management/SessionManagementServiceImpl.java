@@ -10,6 +10,9 @@ import com.nocmok.orp.state_keeper.pg.VehicleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class SessionManagementServiceImpl implements SessionManagementService {
 
@@ -50,5 +53,22 @@ public class SessionManagementServiceImpl implements SessionManagementService {
 
     @Override public SessionInfo getSessionInfo(String sessionId) {
         throw new UnsupportedOperationException("not implemented");
+    }
+
+    // TODO добавить completedAt, createdAt
+    @Override public List<SessionInfo> getActiveSessions() {
+        var activeVehicles = stateKeeper.getActiveVehicles();
+        return activeVehicles.stream().map(session -> SessionInfo.builder()
+                        .id(session.getId())
+                        .status(session.getStatus())
+                        .capacity(session.getCapacity())
+                        .residualCapacity(session.getResidualCapacity())
+                        .schedule(session.getSchedule())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override public List<String> getActiveSessionsIds() {
+        return stateKeeper.getActiveVehiclesIds();
     }
 }

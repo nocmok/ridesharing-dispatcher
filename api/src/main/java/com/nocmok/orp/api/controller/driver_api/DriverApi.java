@@ -52,4 +52,7 @@ public class DriverApi {
     public @ResponseBody String unknownExceptionHandler(Exception exception) {
         return exception.getMessage();
     }
+
+    // completeScheduleCheckpoint(requestId)
+    //
 }

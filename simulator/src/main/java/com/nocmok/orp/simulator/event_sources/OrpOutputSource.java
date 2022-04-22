@@ -31,6 +31,7 @@ public class OrpOutputSource {
 
     @KafkaHandler
     public void listenAssignConfirmationNotification(@Payload AssignRequestNotification assignRequestNotification) {
+        log.info("emit " + assignRequestNotification);
         eventBus.emit(RequestAssignConfirmationEvent.builder()
                 .sessionId(assignRequestNotification.getSessionId())
                 .serviceRequestId(assignRequestNotification.getServiceRequestId())
@@ -41,6 +42,7 @@ public class OrpOutputSource {
 
     @KafkaHandler
     public void listenServiceRequestNotification(@Payload ServiceRequestNotification serviceRequestNotification) {
+        log.info("emit " + serviceRequestNotification);
         eventBus.emit(ServiceRequestEvent.builder()
                 .sessionId(serviceRequestNotification.getSessionId())
                 .requestId(serviceRequestNotification.getRequestId())
