@@ -100,7 +100,7 @@ class VehicleStateRepository {
 
     public List<String> getActiveVehiclesIds() {
         return jdbcTemplate.query("select session_id from vehicle_session where completed_at is null",
-                (rs, rowNum) -> Objects.toString(rs.getLong("session_ids")));
+                (rs, rowNum) -> Objects.toString(rs.getLong("session_id")));
     }
 
     public List<VehicleDto> getActiveVehicles() {

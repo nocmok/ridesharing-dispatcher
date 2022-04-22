@@ -3,9 +3,11 @@ package com.nocmok.orp.orp_solver.service.notification;
 import com.nocmok.orp.orp_solver.service.notification.dto.AssignRequestNotification;
 import com.nocmok.orp.orp_solver.service.notification.mapper.AssignRequestNotificationMapper;
 import com.nocmok.orp.orp_solver.storage.notification.OrpOutputOutboxStorage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class AssignRequestNotificationService {
 
@@ -24,6 +26,7 @@ public class AssignRequestNotificationService {
      */
     public void sendNotification(AssignRequestNotification assignRequestNotification) {
         var record = assignRequestNotificationMapper.mapAssignRequestNotificationToOrpOutputOutboxRecord(assignRequestNotification);
+        log.info("notification scheduled " + record.getPayload());
         orpOutputOutboxStorage.insertOneRecord(record);
     }
 }

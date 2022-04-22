@@ -15,6 +15,7 @@ import com.nocmok.orp.simulator.service.telemetry.WalkStrategy;
 import com.nocmok.orp.solver.api.RouteNode;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -61,8 +62,8 @@ public class VirtualDriver {
 
     private void registerCallbacks() {
         eventBus.subscribe(TicTacEvent.class, this::onTimePassed);
-        eventBus.subscribe(ServiceRequestEvent.class, this::onServiceRequest);
-        eventBus.subscribe(RequestAssignConfirmationEvent.class, this::onRequestAssigningConfirmation);
+        eventBus.subscribe(ServiceRequestEvent.class, sessionId, this::onServiceRequest);
+        eventBus.subscribe(RequestAssignConfirmationEvent.class, sessionId, this::onRequestAssigningConfirmation);
     }
 
     private void onTimePassed(TicTacEvent event) {
@@ -73,7 +74,11 @@ public class VirtualDriver {
     }
 
     private void onServiceRequest(ServiceRequestEvent event) {
-        log.info("received service request, send confirmation ...");
+        if(!Objects.equals(sessionId, event.getSessionId())) {
+            log.warn("received event with invalid session id. skip ...");
+            return;
+        }
+        log.info("received service request " + event + ", send confirmation ...");
         // отправить подтверждение
         driverApi.confirmRequest(ServiceRequestConfirmation.builder()
                 .sessionId(event.getSessionId())
@@ -84,6 +89,10 @@ public class VirtualDriver {
     }
 
     private void onRequestAssigningConfirmation(RequestAssignConfirmationEvent event) {
+        if(!Objects.equals(sessionId, event.getSessionId())) {
+            log.warn("received event with invalid session id. skip ...");
+            return;
+        }
         // Обновить маршрут в генераторе телеметрии
         if (event.getRouteScheduled().size() < 2) {
             log.warn("received invalid route in request assignment confirmation message");
@@ -96,7 +105,7 @@ public class VirtualDriver {
                 routeNodeIds.subList(0, routeNodeIds.size() - 1),
                 routeNodeIds.subList(1, routeNodeIds.size())
         );
-        log.info("received request assignment confirmation, switch walk strategy");
+        log.info("received request assignment confirmation " + event + ", switch walk strategy");
         this.walkStrategy = new FollowScheduleWalk(sessionId, segmentRoute, currentLatitude, currentLongitude);
     }
 }

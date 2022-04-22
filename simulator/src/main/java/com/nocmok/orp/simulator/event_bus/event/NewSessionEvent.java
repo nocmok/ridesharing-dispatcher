@@ -12,6 +12,6 @@ public class NewSessionEvent implements Event {
     private String sessionId;
 
     @Override public String getKey() {
-        return null;
+        return sessionId;
     }
 }

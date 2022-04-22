@@ -44,7 +44,7 @@ public class OrpOutputOutboxKafkaExportingJob {
         this.objectMapper = objectMapper;
     }
 
-    @Scheduled(fixedDelayString = "${orp.orp_solver.job.OrpOutputOutboxKafkaExportingJob.exportIntervalSeconds:5000}")
+    @Scheduled(fixedDelayString = "${orp.orp_solver.job.OrpOutputOutboxKafkaExportingJob.exportIntervalSeconds:1000}")
     public void exportOutboxEntriesToKafkaBatch() {
         transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
         var batchSent = transactionTemplate.execute(transactionStatus -> {
@@ -62,9 +62,10 @@ public class OrpOutputOutboxKafkaExportingJob {
         });
         if (!CollectionUtils.isEmpty(batchSent)) {
             log.info("sent " + batchSent.size() + " notifications");
-        } else {
-            log.info("sent 0 notifications");
         }
+//        else {
+//            log.info("sent 0 notifications");
+//        }
     }
 
     private OrpOutputMessage mapOrpOutputOutboxRecordToOrpOutputMessage(OrpOutputOutboxRecord<String> orpOutputOutboxRecord) {

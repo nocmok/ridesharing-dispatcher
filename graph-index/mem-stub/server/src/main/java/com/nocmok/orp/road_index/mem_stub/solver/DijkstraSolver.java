@@ -104,6 +104,10 @@ public class DijkstraSolver implements ShortestRouteSolver {
             }
         }
 
+        if (knownShortestDistances.get(destinationNodeId) == null) {
+            return new RouteAndCost(Collections.emptyList(), Double.POSITIVE_INFINITY);
+        }
+
         var route = new ArrayDeque<Graph.Link>();
         var node = destinationNodeId;
 

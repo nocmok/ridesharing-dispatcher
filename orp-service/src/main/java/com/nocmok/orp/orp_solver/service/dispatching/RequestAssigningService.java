@@ -86,7 +86,7 @@ public class RequestAssigningService {
 
             if (vehicleReservation.getExpiredAt() != null) {
                 transactionStatus.setRollbackOnly();
-                log.info("cannot assign request " + request + " as vehicle reservation already expired");
+                log.info("failed to assign request " + request + "as reservation expired " + vehicleReservation);
                 handleVehicleReservationExpiration(request);
                 return;
             }
@@ -125,7 +125,8 @@ public class RequestAssigningService {
 
     // TODO отправить сообщение об истечении срока резервирования
     private void handleVehicleReservationExpiration(AssignRequest request) {
-        throw new UnsupportedOperationException("not implemented");
+//        log.info("failed to assign request as reservation expired " + request);
+//        throw new UnsupportedOperationException("not implemented");
     }
 
     private void handleVehicleOutOfServiceZone(AssignRequest request) {
