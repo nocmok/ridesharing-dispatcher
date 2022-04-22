@@ -15,21 +15,14 @@ function getRadiansBetweenVectors(vec1, vec2) {
     return sign * Math.acos(cos)
 }
 
-function getRotationToFollowDirection(baseRotation, directionVector) {
+function getRotationToFollowDirection(directionVector) {
     // baseRotation - вектор ротаций если объект ориентирован по оси x
 
     // найти угол между двумя векторами через скалярное произведение. Второй вектор = (1,0,0)
     // считаем что объект лежит в плоскости xz поэтому полученный угол устанавливается в y
 
     let angle = getRadiansBetweenVectors({x: 1, y: 0, z: 0}, directionVector)
-
-    console.log("angle", angle)
-
-    let rotation = { x: baseRotation.x, y: baseRotation.y + angle, z: baseRotation.z  }
-
-    console.log("rotation", rotation)
-
-    return rotation
+    return {x: 0, y: angle, z: 0}
 }
 
 export class AnimationController {
@@ -44,6 +37,7 @@ export class AnimationController {
         let sourcePosition = this.vehicle.position
         let {x: x, y: z} = projection.getProjection(telemetry.latitude, telemetry.longitude)
         let targetPosition = {x: x, y: this.vehicle.position.y, z: -z}
+
         let direction = {
             x: targetPosition.x - sourcePosition.x,
             y: targetPosition.y - sourcePosition.y,
@@ -71,14 +65,14 @@ export class AnimationController {
 
             if (this.lastAnimationPromise) {
                 this.lastAnimationPromise.then(() => {
-                    let rotation = getRotationToFollowDirection({x: 0, y: 0, z: 0}, direction)
+                    let rotation = getRotationToFollowDirection(direction)
                     this.vehicle.rotation.set(rotation.x, rotation.y, rotation.z)
                     animation.start()
                 })
                 this.lastAnimationPromise = newAnimationPromise
             } else {
                 this.lastAnimationPromise = newAnimationPromise
-                let rotation = getRotationToFollowDirection({x: 0, y: 0, z: 0}, direction)
+                let rotation = getRotationToFollowDirection(direction)
                 this.vehicle.rotation.set(rotation.x, rotation.y, rotation.z)
                 animation.start()
             }
@@ -108,14 +102,14 @@ export class AnimationController {
 
             if (this.lastAnimationPromise) {
                 this.lastAnimationPromise.then(() => {
-                    let rotation = getRotationToFollowDirection({x: 0, y: 0, z: 0}, direction)
+                    let rotation = getRotationToFollowDirection(direction)
                     this.vehicle.rotation.set(rotation.x, rotation.y, rotation.z)
                     animation.start()
                 })
                 this.lastAnimationPromise = newAnimationPromise
             } else {
                 this.lastAnimationPromise = newAnimationPromise
-                let rotation = getRotationToFollowDirection({x: 0, y: 0, z: 0}, direction)
+                let rotation = getRotationToFollowDirection(direction)
                 this.vehicle.rotation.set(rotation.x, rotation.y, rotation.z)
                 animation.start()
             }
