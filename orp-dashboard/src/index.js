@@ -5,6 +5,8 @@ import {App} from './App';
 import 'typeface-roboto'
 import {Map} from "./map/Map";
 import {BrowserRouter, Router} from "react-router-dom";
+import {Bootstrapper} from "./Bootstrapper";
+import {BootstrapperComponent} from "./BootstrapperComponent";
 
 // global dependency container
 const di = {};
@@ -27,6 +29,6 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
     <BrowserRouter>
-        <App di={di}/>
+        <BootstrapperComponent di={di}/>
     </BrowserRouter>
 );
