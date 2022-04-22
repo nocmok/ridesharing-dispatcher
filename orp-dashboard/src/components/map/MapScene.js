@@ -4,7 +4,6 @@ import {DragCameraAction} from "../../map/actions/DragCameraAction";
 import classes from "./MapScene.module.css";
 import {ResizeMapAction} from "../../map/actions/ResizeMapAction";
 import {TWEEN} from "three/examples/jsm/libs/tween.module.min";
-import {Route} from '../../map/objects/Route'
 
 export class MapScene extends Component {
 
@@ -33,26 +32,6 @@ export class MapScene extends Component {
         this.map.addObject(odintsovo)
 
         this.mount.appendChild(this.map.renderer.domElement)
-
-        // let route = new Route([
-        //     {
-        //         latitude: 55.6703933,
-        //         longitude: 37.2813826
-        //     },
-        //     {
-        //         latitude: 55.6702733,
-        //         longitude: 37.2815007
-        //     },
-        //     {
-        //         latitude: 55.6698002,
-        //         longitude: 37.2819947
-        //     },
-        //     {
-        //         latitude: 55.669213,
-        //         longitude: 37.2826038
-        //     },
-        // ]);
-        // this.map.addObject(route)
     }
 
     setupActions = () => {

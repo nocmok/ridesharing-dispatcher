@@ -23,8 +23,8 @@ export class Map {
     }
 
     static #setUpScene(scene) {
-        let ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
-        let directionalLight = new THREE.DirectionalLight(0xffffff, 0.1, 100);
+        let ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        let directionalLight = new THREE.DirectionalLight(0xffffff, 0.3, 100);
 
         directionalLight.shadow.radius = 100
         directionalLight.position.set(1, 1, 0);

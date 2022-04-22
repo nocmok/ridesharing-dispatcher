@@ -63,7 +63,7 @@ export class CreateRequestPanel extends Component {
                     },
                     detourConstraint: this.request.detourConstraint,
                     maxPickupDelaySeconds: this.request.maxPickupDelaySeconds,
-                    requestedAt: "2022-04-18T14:36:14.324Z",
+                    requestedAt: new Date(Date.now()).toISOString(),
                     load: this.request.load
                 }
             })

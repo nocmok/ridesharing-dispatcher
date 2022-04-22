@@ -77,8 +77,7 @@ export class CreateSessionPanel extends Component {
                 sourceId: this.state.road.source.id,
                 targetId: this.state.road.target.id
             },
-            // TODO
-            createdAt: "2022-04-15T14:49:12.484389Z"
+            createdAt: new Date(Date.now()).toISOString()
         }
     }
 
