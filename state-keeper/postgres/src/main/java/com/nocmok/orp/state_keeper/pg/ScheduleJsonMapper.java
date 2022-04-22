@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.nocmok.orp.state_keeper.api.ScheduleEntry;
 import com.nocmok.orp.state_keeper.api.ScheduleEntryKind;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Component
 class ScheduleJsonMapper {
 
     private final ObjectMapper objectMapper;

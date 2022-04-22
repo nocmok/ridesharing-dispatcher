@@ -1,6 +1,7 @@
 package com.nocmok.orp.state_keeper.api;
 
 import java.time.Instant;
+import java.util.Objects;
 
 public class ScheduleEntry {
 
@@ -81,5 +82,20 @@ public class ScheduleEntry {
                 ", kind=" + kind +
                 ", orderId='" + orderId + '\'' +
                 '}';
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ScheduleEntry that = (ScheduleEntry) o;
+        return Objects.equals(nodeId, that.nodeId) && kind == that.kind && Objects.equals(orderId, that.orderId);
+    }
+
+    @Override public int hashCode() {
+        return Objects.hash(nodeId, kind, orderId);
     }
 }
