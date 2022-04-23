@@ -12,9 +12,7 @@ public interface SessionManagementService {
 
     void stopSession(String sessionId);
 
-    SessionInfo getSessionInfo(String sessionId);
-
-    List<SessionInfo> getActiveSessions();
+    SessionInfo getActiveSessionInfo(String sessionId);
 
     List<String> getActiveSessionsIds();
 

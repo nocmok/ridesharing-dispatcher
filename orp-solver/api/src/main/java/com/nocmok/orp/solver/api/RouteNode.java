@@ -1,13 +1,18 @@
 package com.nocmok.orp.solver.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public class RouteNode {
 
+    @JsonProperty("nodeId")
     private String nodeId;
 
+    @JsonProperty("latitude")
     private Double latitude;
 
+    @JsonProperty("longitude")
     private Double longitude;
 
     public RouteNode() {
