@@ -4,6 +4,7 @@ import com.nocmok.orp.graph.api.Segment;
 import com.nocmok.orp.graph.tools.EarthMath;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,8 +30,8 @@ public class FollowScheduleWalk implements WalkStrategy {
             currentLongitude = routeToFollow.get(0).getStartNode().getLongitude();
         }
         this.sessionId = sessionId;
-        this.routeToFollow = routeToFollow;
-        this.nextSegment = routeToFollow.iterator();
+        this.routeToFollow = new ArrayList<>(routeToFollow);
+        this.nextSegment = this.routeToFollow.iterator();
         this.currentSegment = nextSegment.next();
         this.progressOnCurrentSegment = currentSegment.getCost() * getRelativeProgressOnRoadSegment(latitude, longitude, currentSegment);
         this.latitude = currentLatitude;
