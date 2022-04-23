@@ -1,5 +1,6 @@
 package com.nocmok.orp.api.service.session_management.dto;
 
+import com.nocmok.orp.api.storage.route_cache.RouteNode;
 import com.nocmok.orp.state_keeper.api.ScheduleEntry;
 import com.nocmok.orp.state_keeper.api.VehicleStatus;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ public class SessionInfo {
     private String id;
     private VehicleStatus status;
     private List<ScheduleEntry> schedule;
+    private List<RouteNode> routeScheduled;
     private Integer capacity;
     private Integer residualCapacity;
     private Instant createdAt;

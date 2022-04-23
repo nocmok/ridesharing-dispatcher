@@ -3,6 +3,7 @@ package com.nocmok.orp.api.service.session_management;
 import com.nocmok.orp.api.service.session_management.dto.RequestStatus;
 import com.nocmok.orp.api.service.session_management.dto.SessionDto;
 import com.nocmok.orp.api.service.session_management.dto.SessionInfo;
+import com.nocmok.orp.api.storage.route_cache.RouteCacheStorage;
 import com.nocmok.orp.graph.api.ObjectUpdater;
 import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
 import com.nocmok.orp.kafka.orp_input.OrderStatus;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SessionManagementServiceImpl implements SessionManagementService {
@@ -26,13 +26,15 @@ public class SessionManagementServiceImpl implements SessionManagementService {
     private SpatialGraphObjectsStorage graphObjectsStorage;
     private StateKeeper<?> stateKeeper;
     private KafkaTemplate<String, Object> kafkaTemplate;
+    private RouteCacheStorage routeCacheStorage;
 
     @Autowired
     public SessionManagementServiceImpl(SpatialGraphObjectsStorage graphObjectsStorage, StateKeeper<?> stateKeeper,
-                                        KafkaTemplate<String, Object> kafkaTemplate) {
+                                        KafkaTemplate<String, Object> kafkaTemplate, RouteCacheStorage routeCacheStorage) {
         this.graphObjectsStorage = graphObjectsStorage;
         this.stateKeeper = stateKeeper;
         this.kafkaTemplate = kafkaTemplate;
+        this.routeCacheStorage = routeCacheStorage;
     }
 
     @Override public SessionDto createSession(SessionDto sessionDto) {
@@ -61,21 +63,23 @@ public class SessionManagementServiceImpl implements SessionManagementService {
         throw new UnsupportedOperationException("not implemented");
     }
 
-    @Override public SessionInfo getSessionInfo(String sessionId) {
-        throw new UnsupportedOperationException("not implemented");
-    }
+    @Override public SessionInfo getActiveSessionInfo(String sessionId) {
+        var sessions = stateKeeper.getVehiclesByIds(List.of(sessionId));
+        if (sessions.isEmpty()) {
+            throw new RuntimeException("cannot found active sessions with id " + sessionId);
+        }
 
-    // TODO добавить completedAt, createdAt
-    @Override public List<SessionInfo> getActiveSessions() {
-        var activeVehicles = stateKeeper.getActiveVehicles();
-        return activeVehicles.stream().map(session -> SessionInfo.builder()
-                        .id(session.getId())
-                        .status(session.getStatus())
-                        .capacity(session.getCapacity())
-                        .residualCapacity(session.getResidualCapacity())
-                        .schedule(session.getSchedule())
-                        .build())
-                .collect(Collectors.toList());
+        var session = sessions.get(0);
+        var route = routeCacheStorage.getRouteCacheBySessionId(sessionId);
+
+        return SessionInfo.builder()
+                .id(sessionId)
+                .schedule(session.getSchedule())
+                .capacity(session.getCapacity())
+                .status(session.getStatus())
+                .residualCapacity(session.getResidualCapacity())
+                .routeScheduled(route)
+                .build();
     }
 
     @Override public List<String> getActiveSessionsIds() {

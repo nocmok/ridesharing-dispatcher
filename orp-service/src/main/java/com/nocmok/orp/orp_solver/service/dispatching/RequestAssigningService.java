@@ -8,6 +8,7 @@ import com.nocmok.orp.orp_solver.service.notification.AssignRequestNotificationS
 import com.nocmok.orp.orp_solver.service.notification.dto.AssignRequestNotification;
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
+import com.nocmok.orp.orp_solver.service.route_cache.RouteCache;
 import com.nocmok.orp.solver.api.OrpSolver;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import com.nocmok.orp.state_keeper.api.VehicleState;
@@ -34,6 +35,7 @@ public class RequestAssigningService {
     private AssignRequestNotificationService assignRequestNotificationService;
     private ServiceRequestMapper serviceRequestMapper;
     private VehicleStateMapper vehicleStateMapper;
+    private RouteCache routeCache;
 
     @Autowired
     public RequestAssigningService(OrpSolver orpSolver, StateKeeper<?> stateKeeper, TransactionTemplate transactionTemplate,
@@ -41,7 +43,7 @@ public class RequestAssigningService {
                                    VehicleReservationService vehicleReservationService,
                                    AssignRequestNotificationService assignRequestNotificationService,
                                    ServiceRequestMapper serviceRequestMapper,
-                                   VehicleStateMapper vehicleStateMapper) {
+                                   VehicleStateMapper vehicleStateMapper, RouteCache routeCache) {
         this.orpSolver = orpSolver;
         this.stateKeeper = stateKeeper;
         this.transactionTemplate = transactionTemplate;
@@ -50,6 +52,7 @@ public class RequestAssigningService {
         this.assignRequestNotificationService = assignRequestNotificationService;
         this.serviceRequestMapper = serviceRequestMapper;
         this.vehicleStateMapper = vehicleStateMapper;
+        this.routeCache = routeCache;
     }
 
     private VehicleState getVehicleStateFromAssignRequest(AssignRequest request) {
@@ -99,6 +102,8 @@ public class RequestAssigningService {
                 handleVehicleOutOfServiceZone(request);
                 return;
             }
+
+            routeCache.updateRouteCacheBySessionId(requestMatching.get().getServingVehicleId(), requestMatching.get().getServingRoute());
 
             vehicleState.setStatus(VehicleStatus.SERVING);
             vehicleState.setSchedule(requestMatching.get().getServingPlan().stream()
