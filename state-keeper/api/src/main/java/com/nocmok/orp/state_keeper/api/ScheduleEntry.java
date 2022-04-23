@@ -1,88 +1,56 @@
 package com.nocmok.orp.state_keeper.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.Instant;
 import java.util.Objects;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ScheduleEntry {
 
     /**
      * Крайнее время прибытия в контрольную точку
      */
+    @JsonProperty("deadline")
     private Instant deadline;
     /**
      * Дельта нагрузки на тс при прохождении контрольной точки
      */
+    @JsonProperty("load")
     private Integer load;
     /**
      * Идентификатор вершины в графе к которой прикреплена контрольная точка
      */
+    @JsonProperty("nodeId")
     private String nodeId;
     /**
      * Широта координаты контрольной точки
      */
+    @JsonProperty("latitude")
     private Double latitude;
     /**
      * Долгота координаты контрольной точки
      */
+    @JsonProperty("longitude")
     private Double longitude;
     /**
      * Тип контрольной точки
      */
+    @JsonProperty("kind")
     private ScheduleEntryKind kind;
     /**
      * Идентификатор заказа прикрепленного к контрольной точке
      */
+    @JsonProperty("orderId")
     private String orderId;
 
-    public ScheduleEntry(Instant deadline, Integer load, String nodeId, Double latitude, Double longitude, ScheduleEntryKind kind, String orderId) {
-        this.deadline = deadline;
-        this.load = load;
-        this.nodeId = nodeId;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.kind = kind;
-        this.orderId = orderId;
-    }
-
-    public Instant getDeadline() {
-        return deadline;
-    }
-
-    public Integer getLoad() {
-        return load;
-    }
-
-    public String getNodeId() {
-        return nodeId;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public ScheduleEntryKind getKind() {
-        return kind;
-    }
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    @Override public String toString() {
-        return "ScheduleEntry{" +
-                "deadline=" + deadline +
-                ", load=" + load +
-                ", nodeId='" + nodeId + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", kind=" + kind +
-                ", orderId='" + orderId + '\'' +
-                '}';
-    }
 
     @Override public boolean equals(Object o) {
         if (this == o) {

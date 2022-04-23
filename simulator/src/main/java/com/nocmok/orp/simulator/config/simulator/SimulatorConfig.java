@@ -6,6 +6,7 @@ import com.nocmok.orp.simulator.event_bus.EventBus;
 import com.nocmok.orp.simulator.event_listeners.driver.VirtualDriver;
 import com.nocmok.orp.simulator.service.api.DriverApi;
 import com.nocmok.orp.simulator.service.telemetry.TelemetrySender;
+import com.nocmok.orp.simulator.storage.VehicleSessionStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +30,8 @@ public class SimulatorConfig {
     public Function<String, VirtualDriver> virtualDriverFactory(EventBus eventBus, TelemetrySender telemetrySender,
                                                                 SpatialGraphObjectsStorage graphObjectsStorage,
                                                                 SpatialGraphMetadataStorage graphMetadataStorage,
-                                                                DriverApi driverApi) {
-        return (sessionId) -> new VirtualDriver(sessionId, eventBus, telemetrySender, graphMetadataStorage, graphObjectsStorage, driverApi);
+                                                                DriverApi driverApi, VehicleSessionStorage vehicleSessionStorage) {
+        return (sessionId) -> new VirtualDriver(sessionId, eventBus, telemetrySender, graphMetadataStorage, graphObjectsStorage, driverApi,
+                vehicleSessionStorage);
     }
 }

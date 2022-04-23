@@ -53,7 +53,7 @@ public class RequestAssigningService {
     }
 
     private VehicleState getVehicleStateFromAssignRequest(AssignRequest request) {
-        return stateKeeper.getVehiclesByIds(List.of(request.getVehicleId())).stream().findFirst()
+        return stateKeeper.getActiveVehiclesByIdsForUpdate(List.of(request.getVehicleId())).stream().findFirst()
                 .orElseGet(() -> {
                     log.error("received assigning request with invalid vehicle id. Request\n" + request);
                     throw new RuntimeException("invalid vehicle id");
@@ -101,7 +101,6 @@ public class RequestAssigningService {
             }
 
             vehicleState.setStatus(VehicleStatus.SERVING);
-            vehicleState.setResidualCapacity(vehicleState.getResidualCapacity() - serviceRequest.getLoad());
             vehicleState.setSchedule(requestMatching.get().getServingPlan().stream()
                     .map(vehicleStateMapper::mapScheduleNodeToScheduleEntry)
                     .collect(Collectors.toUnmodifiableList()));

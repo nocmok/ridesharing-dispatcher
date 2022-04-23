@@ -4,6 +4,7 @@ import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorag
 import com.nocmok.orp.state_keeper.api.ScheduleEntryKind;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import com.nocmok.orp.state_keeper.api.VehicleState;
+import com.nocmok.orp.state_keeper.api.VehicleStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -134,6 +135,9 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
             } else if (OrderStatus.SERVED.equals(updatedStatus)) {
                 updatedSession = handleServedStatus(session, orderId);
                 updatedSession.setResidualCapacity(session.getResidualCapacity() + requestDetails.getLoad());
+                if (CollectionUtils.isEmpty(updatedSession.getSchedule())) {
+                    updatedSession.setStatus(VehicleStatus.PENDING);
+                }
             } else {
                 throw new RuntimeException("cannot update to status " + updatedStatus + " as its not implemented yet");
             }
