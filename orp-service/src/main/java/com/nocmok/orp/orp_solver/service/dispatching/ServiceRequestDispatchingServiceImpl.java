@@ -5,6 +5,8 @@ import com.nocmok.orp.orp_solver.service.dispatching.mapper.ServiceRequestMapper
 import com.nocmok.orp.orp_solver.service.dispatching.mapper.VehicleStateMapper;
 import com.nocmok.orp.orp_solver.service.notification.ServiceRequestNotificationService;
 import com.nocmok.orp.orp_solver.service.notification.dto.ServiceRequestNotification;
+import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
+import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
 import com.nocmok.orp.solver.api.OrpSolver;
 import com.nocmok.orp.solver.api.RequestMatching;
 import com.nocmok.orp.solver.api.ScheduleNode;
@@ -36,6 +38,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
     private ServiceRequestNotificationService serviceRequestNotificationService;
     private ServiceRequestMapper serviceRequestMapper;
     private VehicleStateMapper vehicleStateMapper;
+    private ServiceRequestStorageService serviceRequestStorageService;
 
     @Value("${orp.orp_dispatcher.service.ServiceRequestDispatchingService.candidatesToFetch:5}")
     private Integer candidatesToFetch;
@@ -45,13 +48,15 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
                                                 StateKeeper<?> stateKeeper,
                                                 ServiceRequestNotificationService serviceRequestNotificationService,
                                                 ServiceRequestMapper serviceRequestMapper,
-                                                VehicleStateMapper vehicleStateMapper) {
+                                                VehicleStateMapper vehicleStateMapper,
+                                                ServiceRequestStorageService serviceRequestStorageService) {
         this.solver = solver;
         this.vehicleReservationService = vehicleReservationService;
         this.stateKeeper = stateKeeper;
         this.serviceRequestNotificationService = serviceRequestNotificationService;
         this.serviceRequestMapper = serviceRequestMapper;
         this.vehicleStateMapper = vehicleStateMapper;
+        this.serviceRequestStorageService = serviceRequestStorageService;
     }
 
     @Override
@@ -60,6 +65,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
                 solver.getTopKCandidateVehicles(serviceRequestMapper.mapServiceDtoToRequest(serviceRequest), candidatesToFetch);
         if (candidates.isEmpty()) {
             log.info("no candidates to serve request\n" + serviceRequest);
+            serviceRequestStorageService.updateRequestStatus(serviceRequest.getRequestId(), OrderStatus.DENIED);
             // TODO сделать отправку сообщения об отказе
             return;
         }
@@ -161,6 +167,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
     }
 
     private void initiateRetry(ServiceRequestDto serviceRequestServiceDto) {
+        serviceRequestStorageService.updateRequestStatus(serviceRequestServiceDto.getRequestId(), OrderStatus.DENIED);
         log.debug("request retry initiated, but not implemented yet ...");
     }
 }

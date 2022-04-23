@@ -22,6 +22,7 @@ public class ServiceRequestMapper {
                 .detourConstraint(serviceRequest.getDetourConstraint())
                 .maxPickupDelaySeconds(serviceRequest.getMaxPickupDelaySeconds())
                 .requestedAt(serviceRequest.getRequestedAt())
+                .status(serviceRequest.getStatus())
                 .build();
     }
 
@@ -40,6 +41,7 @@ public class ServiceRequestMapper {
                 .detourConstraint(serviceRequest.getDetourConstraint())
                 .maxPickupDelaySeconds(serviceRequest.getMaxPickupDelaySeconds())
                 .requestedAt(serviceRequest.getRequestedAt())
+                .status(serviceRequest.getStatus())
                 .build();
     }
 }

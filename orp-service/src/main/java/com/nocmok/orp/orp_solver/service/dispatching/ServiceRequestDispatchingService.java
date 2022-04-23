@@ -1,5 +1,6 @@
 package com.nocmok.orp.orp_solver.service.dispatching;
 
+import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,5 +43,7 @@ public interface ServiceRequestDispatchingService {
         private Integer maxPickupDelaySeconds;
 
         private Integer load;
+
+        private OrderStatus status;
     }
 }

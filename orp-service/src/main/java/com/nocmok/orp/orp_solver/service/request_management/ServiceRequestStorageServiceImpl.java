@@ -1,5 +1,6 @@
 package com.nocmok.orp.orp_solver.service.request_management;
 
+import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
 import com.nocmok.orp.orp_solver.service.request_management.mapper.ServiceRequestMapper;
 import com.nocmok.orp.orp_solver.storage.request_management.ServiceRequestStorage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +32,13 @@ public class ServiceRequestStorageServiceImpl implements ServiceRequestStorageSe
     @Override
     public void storeRequest(ServiceRequestDto request) {
         serviceRequestStorage.insertRequest(serviceRequestMapper.mapServiceDtoToStorageDto(request));
+    }
+
+    @Override public Optional<ServiceRequestDto> getRequestByIdForUpdate(String id) {
+        return serviceRequestStorage.getRequestByIdForUpdate(id).map(serviceRequestMapper::mapStorageDtoToServiceDto);
+    }
+
+    @Override public void updateRequestStatus(String requestId, OrderStatus status) {
+        serviceRequestStorage.updateRequestStatus(requestId, status);
     }
 }

@@ -1,5 +1,6 @@
 package com.nocmok.orp.orp_solver.storage.request_management;
 
+import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,11 @@ public interface ServiceRequestStorage {
 
     Optional<ServiceRequestDto> getRequestById(String id);
 
+    Optional<ServiceRequestDto> getRequestByIdForUpdate(String id);
+
     void insertRequest(ServiceRequestDto request);
+
+    void updateRequestStatus(String requestId, OrderStatus updatedStatus);
 
     @Getter
     @Builder
@@ -44,5 +49,7 @@ public interface ServiceRequestStorage {
         private Integer maxPickupDelaySeconds;
 
         private Integer load;
+
+        private OrderStatus status;
     }
 }

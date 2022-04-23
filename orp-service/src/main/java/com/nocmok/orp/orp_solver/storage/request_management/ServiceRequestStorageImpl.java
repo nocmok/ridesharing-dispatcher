@@ -1,5 +1,6 @@
 package com.nocmok.orp.orp_solver.storage.request_management;
 
+import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -35,7 +37,8 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
                         .orElseThrow(() -> new NullPointerException("requested_at not expected to be null")),
                 rs.getDouble("detour_constraint"),
                 rs.getInt("max_pickup_delay_seconds"),
-                rs.getInt("load")
+                rs.getInt("load"),
+                OrderStatus.valueOf(rs.getString("status"))
         );
     }
 
@@ -57,7 +60,8 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
                         " detour_constraint," +
                         " max_pickup_delay_seconds," +
                         " requested_at," +
-                        " load " +
+                        " load," +
+                        " status " +
                         " from service_request " +
                         " where request_id = :requestId",
                 params, this::mapResultSetToServiceRequest);
@@ -81,6 +85,7 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
         params.put("requested_at", Optional.ofNullable(request.getRequestedAt()).map(Timestamp::from)
                 .orElseThrow(() -> new NullPointerException("requested_at not expected to be null")));
         params.put("load", request.getLoad());
+        params.put("status", Objects.requireNonNullElse(request.getStatus(), OrderStatus.PENDING).name());
         jdbcTemplate.update(" insert into service_request " +
                         " ( " +
                         " request_id," +
@@ -95,7 +100,8 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
                         " detour_constraint," +
                         " max_pickup_delay_seconds," +
                         " requested_at," +
-                        " load " +
+                        " load," +
+                        " status " +
                         " ) " +
                         " values " +
                         " ( " +
@@ -111,8 +117,45 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
                         "   :detour_constraint, " +
                         "   :max_pickup_delay_seconds, " +
                         "   :requested_at, " +
-                        "   :load " +
+                        "   :load," +
+                        "   cast(:status as service_request_status) " +
                         " ) ",
                 params);
+    }
+
+    @Override public Optional<ServiceRequestDto> getRequestByIdForUpdate(String id) {
+        var params = new HashMap<String, Object>();
+        params.put("requestId", Long.parseLong(id));
+        var requests = jdbcTemplate.query(
+                " select " +
+                        " request_id," +
+                        " recorded_origin_latitude," +
+                        " recorded_origin_longitude," +
+                        " recorded_destination_latitude," +
+                        " recorded_destination_longitude," +
+                        " pickup_road_segment_start_node_id," +
+                        " pickup_road_segment_end_node_id," +
+                        " dropoff_road_segment_start_node_id," +
+                        " dropoff_road_segment_end_node_id," +
+                        " detour_constraint," +
+                        " max_pickup_delay_seconds," +
+                        " requested_at," +
+                        " load," +
+                        " status " +
+                        " from service_request " +
+                        " where request_id = :requestId " +
+                        " for update ",
+                params, this::mapResultSetToServiceRequest);
+        return requests.stream().findFirst();
+    }
+
+    @Override public void updateRequestStatus(String requestId, OrderStatus updatedStatus) {
+        var params = new HashMap<String, Object>();
+        params.put("status", updatedStatus.name());
+        params.put("requestId", Long.parseLong(requestId));
+        jdbcTemplate.update(
+                " update service_request " +
+                        " set status = cast(:status as service_request_status) " +
+                        " where request_id = :requestId ", params);
     }
 }

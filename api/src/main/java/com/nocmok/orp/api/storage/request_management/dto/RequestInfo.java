@@ -24,4 +24,5 @@ public class RequestInfo {
     private Integer maxPickupDelaySeconds;
     private Instant requestedAt;
     private Integer load;
+    private OrderStatus status;
 }

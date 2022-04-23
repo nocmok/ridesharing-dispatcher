@@ -103,14 +103,18 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
     }
 
     @Override public void updateOrderStatus(String sessionId, String orderId, OrderStatus updatedStatus) {
-        // Те поля запроса которые нужны далее иммутабельны. Поэтому можно вытащить их вне транзакции
-        var requestDetailsOptional = serviceRequestStorageService.getRequestById(orderId);
-        if (requestDetailsOptional.isEmpty()) {
-            throw new RuntimeException("request with id " + orderId + " not present in request storage");
-        }
-        var requestDetails = requestDetailsOptional.get();
-
         transactionTemplate.executeWithoutResult(status -> {
+
+            var requestDetailsOptional = serviceRequestStorageService.getRequestByIdForUpdate(orderId);
+            if (requestDetailsOptional.isEmpty()) {
+                throw new RuntimeException("request with id " + orderId + " not present in request storage");
+            }
+            var requestDetails = requestDetailsOptional.get();
+
+            if (!validateStatusTransition(requestDetails.getStatus(), updatedStatus)) {
+                throw new IllegalRequestExecution("cannot update request from status " + requestDetails.getStatus() + " to status " + updatedStatus);
+            }
+
             var sessions = stateKeeper.getActiveVehiclesByIdsForUpdate(List.of(sessionId));
             if (sessions.isEmpty()) {
                 throw new RuntimeException("no session found with id " + sessionId);
@@ -119,10 +123,6 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
                 log.warn("found duplicate sessions " + sessions);
             }
             var session = sessions.get(0);
-
-//        TODO Добавить валидацию перехода
-//        if (validateStatusTransition(...)) {
-//        }
 
             VehicleState updatedSession;
 
@@ -143,6 +143,7 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
             }
 
             stateKeeper.updateVehiclesBatch(List.of(updatedSession));
+            serviceRequestStorageService.updateRequestStatus(orderId, updatedStatus);
         });
 
     }

@@ -54,7 +54,7 @@ public class DispatchingServiceImpl implements DispatchingService {
     }
 
     @Override public RequestInfo dispatchRequest(RequestInfo requestInfo) {
-        requestInfo = requestInfoStorage.insertRequest(requestInfo);
+        requestInfo.setRequestId(requestInfoStorage.getIdForRequest());
         sendRequestToOrpInput(requestInfo);
         return requestInfo;
     }
