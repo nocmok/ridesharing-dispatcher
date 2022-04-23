@@ -2,6 +2,7 @@ package com.nocmok.orp.orp_solver.kafka.orp_input.mapper;
 
 import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
 import com.nocmok.orp.orp_solver.service.dispatching.ServiceRequestDispatchingService;
+import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
 
 public class ServiceRequestMessageMapper {
@@ -21,6 +22,7 @@ public class ServiceRequestMessageMapper {
                 .detourConstraint(message.getDetourConstraint())
                 .maxPickupDelaySeconds(message.getMaxPickupDelaySeconds())
                 .requestedAt(message.getRequestedAt())
+                .status(OrderStatus.PENDING)
                 .build();
 
     }
@@ -40,6 +42,7 @@ public class ServiceRequestMessageMapper {
                 .detourConstraint(message.getDetourConstraint())
                 .maxPickupDelaySeconds(message.getMaxPickupDelaySeconds())
                 .requestedAt(message.getRequestedAt())
+                .status(OrderStatus.PENDING)
                 .build();
     }
 }

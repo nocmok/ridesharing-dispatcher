@@ -5,6 +5,8 @@ import com.nocmok.orp.api.controller.common_dto.Node;
 import com.nocmok.orp.api.controller.common_dto.RoadSegmentWithGeodata;
 import com.nocmok.orp.api.controller.common_dto.ScheduleNode;
 import com.nocmok.orp.api.controller.common_dto.SessionInfo;
+import com.nocmok.orp.api.controller.god_api.dto.GetActiveRequestIdsRequest;
+import com.nocmok.orp.api.controller.god_api.dto.GetActiveRequestIdsResponse;
 import com.nocmok.orp.api.controller.god_api.dto.GetActiveSessionsIdsRequest;
 import com.nocmok.orp.api.controller.god_api.dto.GetActiveSessionsIdsResponse;
 import com.nocmok.orp.api.controller.god_api.dto.GetActiveSessionsRequest;
@@ -13,6 +15,7 @@ import com.nocmok.orp.api.controller.god_api.dto.GetSessionsGeodataRequest;
 import com.nocmok.orp.api.controller.god_api.dto.GetSessionsGeodataResponse;
 import com.nocmok.orp.api.controller.god_api.dto.SessionGeodata;
 import com.nocmok.orp.api.service.geo.GeolocationService;
+import com.nocmok.orp.api.service.request_management.RequestService;
 import com.nocmok.orp.api.service.session_management.SessionManagementService;
 import com.nocmok.orp.graph.api.Segment;
 import com.nocmok.orp.state_keeper.api.ScheduleEntry;
@@ -31,11 +34,14 @@ public class GodApiController {
 
     private SessionManagementService sessionManagementService;
     private GeolocationService geolocationService;
+    private RequestService requestService;
 
     @Autowired
-    public GodApiController(SessionManagementService sessionManagementService, GeolocationService geolocationService) {
+    public GodApiController(SessionManagementService sessionManagementService, GeolocationService geolocationService,
+                            RequestService requestService) {
         this.sessionManagementService = sessionManagementService;
         this.geolocationService = geolocationService;
+        this.requestService = requestService;
     }
 
     private ScheduleNode mapInternalScheduleNodeToApiScheduleNode(ScheduleEntry scheduleEntry) {
@@ -93,6 +99,13 @@ public class GodApiController {
                                 .roadSegment(mapInternalRoadSegmentToApiRoadSegment(graphObject.getSegment()))
                                 .build())
                         .collect(Collectors.toList()))
+                .build();
+    }
+
+    @PostMapping("/request/active_request/ids")
+    public @ResponseBody GetActiveRequestIdsResponse getActiveRequestIds(@RequestBody GetActiveRequestIdsRequest request) {
+        return GetActiveRequestIdsResponse.builder()
+                .requestIds(requestService.getActiveRequestIds())
                 .build();
     }
 }
