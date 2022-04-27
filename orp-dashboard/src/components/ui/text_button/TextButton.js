@@ -5,7 +5,7 @@ export class TextButton extends Component {
 
     render() {
         return (
-            <button className={classes.TextButton} style={this.props.style}>
+            <button className={classes.TextButton} style={this.props.style} onClick={this.props.onClick}>
                 {this.props.children}
             </button>
         )

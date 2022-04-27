@@ -6,24 +6,20 @@ export class VehicleDisplayComponent extends Component {
 
     constructor(props) {
         super(props)
-        this.state = {
-            title: this.props.title || "Транспортное средство",
-            id: 0
-        }
     }
 
     render() {
         return (<div className={classes.VehicleDisplayComponent}>
             <div className="Heading3" style={{
                 marginBottom: "10px"
-            }}>{this.state.title}</div>
+            }}>{this.props.title}</div>
             <div className={classes.KeyValue}>
                 <div className="Heading3">ID</div>
-                <div>{this.state.coordinates.latitude}</div>
+                <div>{this.props.id}</div>
             </div>
             <div className={classes.KeyValue}>
                 <img src="/icons/car.svg" alt=""/>
-                <TextButton style={{color: "#7c7c7c"}}>Показать на карте</TextButton>
+                <TextButton style={{color: "#7c7c7c"}}>Подробнее</TextButton>
             </div>
         </div>)
     }
