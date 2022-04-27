@@ -1,6 +1,7 @@
 import {Component} from "react";
 import {TextButton} from "../../ui/text_button/TextButton";
 import classes from "./VehicleDisplayComponent.module.css"
+import {Link} from "react-router-dom";
 
 export class VehicleDisplayComponent extends Component {
 
@@ -19,7 +20,7 @@ export class VehicleDisplayComponent extends Component {
             </div>
             <div className={classes.KeyValue}>
                 <img src="/icons/car.svg" alt=""/>
-                <TextButton style={{color: "#7c7c7c"}}>Подробнее</TextButton>
+                <Link to={"/session/" + this.props.id} style={{color: "#7c7c7c"}}>Подробнее</Link>
             </div>
         </div>)
     }

@@ -26,7 +26,7 @@ export function getSessionGeodata(request) {
 }
 
 export function getSessionInfo(request) {
-    return fetch(resolve("/sessions/info"), {
+    return fetch(resolve("/session/info"), {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
