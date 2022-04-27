@@ -24,3 +24,23 @@ export function getSessionGeodata(request) {
         body: JSON.stringify(request)
     }).then(response => response.json());
 }
+
+export function getSessionInfo(request) {
+    return fetch(resolve("/session/info"), {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(request)
+    }).then(response => response.json());
+}
+
+export function getRequestInfo(request) {
+    return fetch(resolve("/request/info"), {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(request)
+    }).then(response => response.json());
+}

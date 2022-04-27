@@ -7,6 +7,8 @@ import React, {Component, Fragment} from "react";
 import {CreateRequestPanel} from "./components/operation/create_request_panel/CreateRequestPanel";
 import {OperationPanel} from "./components/operation/operation_panel/OperationPanel";
 import {Route, Routes, Navigate} from "react-router-dom";
+import {RequestInfoPanel} from "./components/operation/request_info_panel/RequestInfoPanel";
+import {SessionInfoPanel} from "./components/operation/session_info_panel/SessionInfoPanel";
 
 export class App extends Component {
 
@@ -24,6 +26,8 @@ export class App extends Component {
 
                     <Route path="*" element={<Navigate to="/dashboard"/>}/>
 
+                    <Route path="/order/:orderId" element={<RequestInfoPanel di={this.props.di}></RequestInfoPanel>}/>
+                    <Route path="/session/:sessionId" element={<SessionInfoPanel di={this.props.di}></SessionInfoPanel>}/>
                 </Routes>
 
                 <MapScene di={this.props.di}></MapScene>

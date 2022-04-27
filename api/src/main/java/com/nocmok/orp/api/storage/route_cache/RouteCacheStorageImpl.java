@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +32,11 @@ public class RouteCacheStorageImpl implements RouteCacheStorage {
     }
 
     @Override public List<RouteNode> getRouteCacheBySessionId(String sessionId) {
-        var json = jdbcTemplate.queryForObject("select route_json from session_route_cache where session_id = :sessionId",
-                Map.of("sessionId", Long.parseLong(sessionId)), String.class);
-        return parseRouteFromJson(json);
+        List<String> jsons = jdbcTemplate.query("select route_json from session_route_cache where session_id = :sessionId",
+                Map.of("sessionId", Long.parseLong(sessionId)), (rs, nRow) -> rs.getString("route_json"));
+        if (jsons.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return parseRouteFromJson(jsons.get(0));
     }
 }
