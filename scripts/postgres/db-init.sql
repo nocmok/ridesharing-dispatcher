@@ -42,6 +42,13 @@ create table service_request
     load bigint not null
 );
 
+drop table if exist session_route_cache cascade;
+create table session_route_cache
+(
+    session_id bigint primary key,
+    route_json text
+);
+
 drop table if exists vehicle_reservation cascade;
 create table vehicle_reservation
 (
