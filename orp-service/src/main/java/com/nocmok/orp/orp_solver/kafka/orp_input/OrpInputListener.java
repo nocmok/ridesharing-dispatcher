@@ -11,7 +11,7 @@ import com.nocmok.orp.orp_solver.service.dispatching.RequestAssigningService;
 import com.nocmok.orp.orp_solver.service.dispatching.ServiceRequestDispatchingService;
 import com.nocmok.orp.orp_solver.service.request_execution.OrderExecutionService;
 import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
-import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
+import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;
@@ -30,7 +30,7 @@ public class OrpInputListener {
     private final ServiceRequestMessageMapper serviceRequestMessageMapper = new ServiceRequestMessageMapper();
     private final AssignRequestMessageMapper assignRequestMessageMapper = new AssignRequestMessageMapper();
     private final ServiceRequestDispatchingService requestProcessingService;
-    private final ServiceRequestStorageService serviceRequestService;
+    private final ServiceRequestStorageServiceImpl serviceRequestService;
     private final RequestAssigningService requestAssigningService;
     private final ServiceRequestValidator serviceRequestValidator;
     private final AssignRequestValidator assignRequestValidator;
@@ -38,7 +38,7 @@ public class OrpInputListener {
 
     @Autowired
     public OrpInputListener(ServiceRequestDispatchingService requestProcessingService,
-                            ServiceRequestStorageService serviceRequestService,
+                            ServiceRequestStorageServiceImpl serviceRequestService,
                             RequestAssigningService requestAssigningService,
                             ServiceRequestValidator serviceRequestValidator,
                             AssignRequestValidator assignRequestValidator,

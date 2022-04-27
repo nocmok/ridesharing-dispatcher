@@ -3,7 +3,7 @@ package com.nocmok.orp.orp_solver.kafka.orp_input.mapper;
 import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
 import com.nocmok.orp.orp_solver.service.dispatching.ServiceRequestDispatchingService;
 import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
-import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
+import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
 
 public class ServiceRequestMessageMapper {
 
@@ -27,8 +27,8 @@ public class ServiceRequestMessageMapper {
 
     }
 
-    public ServiceRequestStorageService.ServiceRequestDto mapMessageToServiceRequestStorageServiceDto(ServiceRequestMessage message) {
-        return ServiceRequestStorageService.ServiceRequestDto.builder()
+    public ServiceRequestStorageServiceImpl.ServiceRequestDto mapMessageToServiceRequestStorageServiceDto(ServiceRequestMessage message) {
+        return ServiceRequestStorageServiceImpl.ServiceRequestDto.builder()
                 .requestId(message.getRequestId())
                 .recordedOriginLatitude(message.getRecordedOriginLatitude())
                 .recordedOriginLongitude(message.getRecordedOriginLongitude())

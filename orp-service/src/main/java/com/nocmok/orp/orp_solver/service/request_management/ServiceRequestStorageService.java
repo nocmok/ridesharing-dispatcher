@@ -19,6 +19,8 @@ public interface ServiceRequestStorageService {
 
     void updateRequestStatus(String requestId, OrderStatus status);
 
+    void updateServingSessionId(String requestId, String sessionId);
+
     @Getter
     @Builder
     @AllArgsConstructor

@@ -1,13 +1,13 @@
 package com.nocmok.orp.orp_solver.service.request_management.mapper;
 
-import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
+import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
 import com.nocmok.orp.orp_solver.storage.request_management.ServiceRequestStorage;
 import org.springframework.stereotype.Component;
 
 @Component("com.nocmok.orp.orp_solver.service.request_management.mapper.ServiceRequestMapper")
 public class ServiceRequestMapper {
 
-    public ServiceRequestStorage.ServiceRequestDto mapServiceDtoToStorageDto(ServiceRequestStorageService.ServiceRequestDto serviceRequest) {
+    public ServiceRequestStorage.ServiceRequestDto mapServiceDtoToStorageDto(ServiceRequestStorageServiceImpl.ServiceRequestDto serviceRequest) {
         return ServiceRequestStorage.ServiceRequestDto.builder()
                 .requestId(serviceRequest.getRequestId())
                 .recordedOriginLatitude(serviceRequest.getRecordedOriginLatitude())
@@ -26,8 +26,8 @@ public class ServiceRequestMapper {
                 .build();
     }
 
-    public ServiceRequestStorageService.ServiceRequestDto mapStorageDtoToServiceDto(ServiceRequestStorage.ServiceRequestDto serviceRequest) {
-        return ServiceRequestStorageService.ServiceRequestDto.builder()
+    public ServiceRequestStorageServiceImpl.ServiceRequestDto mapStorageDtoToServiceDto(ServiceRequestStorage.ServiceRequestDto serviceRequest) {
+        return ServiceRequestStorageServiceImpl.ServiceRequestDto.builder()
                 .requestId(serviceRequest.getRequestId())
                 .recordedOriginLatitude(serviceRequest.getRecordedOriginLatitude())
                 .recordedOriginLongitude(serviceRequest.getRecordedOriginLongitude())

@@ -7,7 +7,6 @@ import com.nocmok.orp.orp_solver.service.dispatching.mapper.VehicleStateMapper;
 import com.nocmok.orp.orp_solver.service.notification.AssignRequestNotificationService;
 import com.nocmok.orp.orp_solver.service.notification.dto.AssignRequestNotification;
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
-import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
 import com.nocmok.orp.orp_solver.service.route_cache.RouteCache;
 import com.nocmok.orp.solver.api.OrpSolver;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
@@ -30,7 +29,7 @@ public class RequestAssigningService {
     private OrpSolver orpSolver;
     private StateKeeper<?> stateKeeper;
     private TransactionTemplate transactionTemplate;
-    private ServiceRequestStorageServiceImpl serviceRequestService;
+    private ServiceRequestStorageService serviceRequestService;
     private VehicleReservationService vehicleReservationService;
     private AssignRequestNotificationService assignRequestNotificationService;
     private ServiceRequestMapper serviceRequestMapper;
@@ -39,7 +38,7 @@ public class RequestAssigningService {
 
     @Autowired
     public RequestAssigningService(OrpSolver orpSolver, StateKeeper<?> stateKeeper, TransactionTemplate transactionTemplate,
-                                   ServiceRequestStorageServiceImpl serviceRequestService,
+                                   ServiceRequestStorageService serviceRequestService,
                                    VehicleReservationService vehicleReservationService,
                                    AssignRequestNotificationService assignRequestNotificationService,
                                    ServiceRequestMapper serviceRequestMapper,
@@ -104,6 +103,7 @@ public class RequestAssigningService {
             }
 
             routeCache.updateRouteCacheBySessionId(requestMatching.get().getServingVehicleId(), requestMatching.get().getServingRoute());
+            serviceRequestService.updateServingSessionId(serviceRequest.getRequestId(), request.getVehicleId());
 
             vehicleState.setStatus(VehicleStatus.SERVING);
             vehicleState.setSchedule(requestMatching.get().getServingPlan().stream()

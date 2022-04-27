@@ -38,7 +38,8 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
                 rs.getDouble("detour_constraint"),
                 rs.getInt("max_pickup_delay_seconds"),
                 rs.getInt("load"),
-                OrderStatus.valueOf(rs.getString("status"))
+                OrderStatus.valueOf(rs.getString("status")),
+                Long.toString(rs.getLong("serving_session_id"))
         );
     }
 
@@ -61,7 +62,8 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
                         " max_pickup_delay_seconds," +
                         " requested_at," +
                         " load," +
-                        " status " +
+                        " status," +
+                        " serving_session_id " +
                         " from service_request " +
                         " where request_id = :requestId",
                 params, this::mapResultSetToServiceRequest);
@@ -86,6 +88,7 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
                 .orElseThrow(() -> new NullPointerException("requested_at not expected to be null")));
         params.put("load", request.getLoad());
         params.put("status", Objects.requireNonNullElse(request.getStatus(), OrderStatus.PENDING).name());
+        params.put("serving_session_id", request.getServingSessionId() == null ? null : Long.parseLong(request.getServingSessionId()));
         jdbcTemplate.update(" insert into service_request " +
                         " ( " +
                         " request_id," +
@@ -101,7 +104,8 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
                         " max_pickup_delay_seconds," +
                         " requested_at," +
                         " load," +
-                        " status " +
+                        " status," +
+                        " serving_session_id " +
                         " ) " +
                         " values " +
                         " ( " +
@@ -118,7 +122,8 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
                         "   :max_pickup_delay_seconds, " +
                         "   :requested_at, " +
                         "   :load," +
-                        "   cast(:status as service_request_status) " +
+                        "   cast(:status as service_request_status)," +
+                        "   :serving_session_id " +
                         " ) ",
                 params);
     }
@@ -141,7 +146,8 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
                         " max_pickup_delay_seconds," +
                         " requested_at," +
                         " load," +
-                        " status " +
+                        " status," +
+                        " serving_session_id " +
                         " from service_request " +
                         " where request_id = :requestId " +
                         " for update ",
@@ -156,6 +162,16 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
         jdbcTemplate.update(
                 " update service_request " +
                         " set status = cast(:status as service_request_status) " +
+                        " where request_id = :requestId ", params);
+    }
+
+    @Override public void updateServingSessionId(String requestId, String sessionId) {
+        var params = new HashMap<String, Object>();
+        params.put("servingSessionId", Long.parseLong(sessionId));
+        params.put("requestId", Long.parseLong(requestId));
+        jdbcTemplate.update(
+                " update service_request " +
+                        " set serving_session_id = :servingSessionId " +
                         " where request_id = :requestId ", params);
     }
 }

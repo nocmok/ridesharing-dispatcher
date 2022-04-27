@@ -19,6 +19,8 @@ public interface ServiceRequestStorage {
 
     void updateRequestStatus(String requestId, OrderStatus updatedStatus);
 
+    void updateServingSessionId(String requestId, String sessionId);
+
     @Getter
     @Builder
     @AllArgsConstructor
@@ -51,5 +53,7 @@ public interface ServiceRequestStorage {
         private Integer load;
 
         private OrderStatus status;
+
+        private String servingSessionId;
     }
 }
