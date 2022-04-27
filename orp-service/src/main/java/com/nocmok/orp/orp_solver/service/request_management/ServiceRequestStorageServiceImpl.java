@@ -25,20 +25,24 @@ public class ServiceRequestStorageServiceImpl implements ServiceRequestStorageSe
     }
 
     @Override
-    public Optional<ServiceRequestDto> getRequestById(String id) {
+    public Optional<ServiceRequestStorageService.ServiceRequestDto> getRequestById(String id) {
         return serviceRequestStorage.getRequestById(id).map(serviceRequestMapper::mapStorageDtoToServiceDto);
     }
 
     @Override
-    public void storeRequest(ServiceRequestDto request) {
+    public void storeRequest(ServiceRequestStorageService.ServiceRequestDto request) {
         serviceRequestStorage.insertRequest(serviceRequestMapper.mapServiceDtoToStorageDto(request));
     }
 
-    @Override public Optional<ServiceRequestDto> getRequestByIdForUpdate(String id) {
+    @Override public Optional<ServiceRequestStorageService.ServiceRequestDto> getRequestByIdForUpdate(String id) {
         return serviceRequestStorage.getRequestByIdForUpdate(id).map(serviceRequestMapper::mapStorageDtoToServiceDto);
     }
 
     @Override public void updateRequestStatus(String requestId, OrderStatus status) {
         serviceRequestStorage.updateRequestStatus(requestId, status);
+    }
+
+    @Override public void updateServingSessionId(String requestId, String sessionId) {
+        serviceRequestStorage.updateServingSessionId(requestId, sessionId);
     }
 }

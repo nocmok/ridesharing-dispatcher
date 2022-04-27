@@ -2,6 +2,7 @@ package com.nocmok.orp.orp_solver.service.dispatching.mapper;
 
 import com.nocmok.orp.orp_solver.service.dispatching.ServiceRequestDispatchingService;
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
+import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
 import com.nocmok.orp.solver.api.Request;
 import com.nocmok.orp.solver.api.RoadSegment;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package com.nocmok.orp.orp_solver.service.request_execution;
 
-import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
+import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
 import com.nocmok.orp.state_keeper.api.ScheduleEntryKind;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import com.nocmok.orp.state_keeper.api.VehicleState;
@@ -34,13 +34,13 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
     private StateKeeper<?> stateKeeper;
     private OutOfOrderExecutionHandler outOfOrderExecutionHandler;
     private TransactionTemplate transactionTemplate;
-    private ServiceRequestStorageService serviceRequestStorageService;
+    private ServiceRequestStorageServiceImpl serviceRequestStorageService;
 
     @Autowired
     public OrderExecutionServiceImpl(StateKeeper<?> stateKeeper,
                                      OutOfOrderExecutionHandler outOfOrderExecutionHandler,
                                      TransactionTemplate transactionTemplate,
-                                     ServiceRequestStorageService serviceRequestStorageService) {
+                                     ServiceRequestStorageServiceImpl serviceRequestStorageService) {
         this.stateKeeper = stateKeeper;
         this.outOfOrderExecutionHandler = outOfOrderExecutionHandler;
         this.transactionTemplate = transactionTemplate;

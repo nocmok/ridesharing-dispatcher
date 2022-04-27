@@ -6,7 +6,7 @@ import com.nocmok.orp.orp_solver.service.dispatching.mapper.VehicleStateMapper;
 import com.nocmok.orp.orp_solver.service.notification.ServiceRequestNotificationService;
 import com.nocmok.orp.orp_solver.service.notification.dto.ServiceRequestNotification;
 import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
-import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
+import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
 import com.nocmok.orp.solver.api.OrpSolver;
 import com.nocmok.orp.solver.api.RequestMatching;
 import com.nocmok.orp.solver.api.ScheduleNode;
@@ -38,7 +38,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
     private ServiceRequestNotificationService serviceRequestNotificationService;
     private ServiceRequestMapper serviceRequestMapper;
     private VehicleStateMapper vehicleStateMapper;
-    private ServiceRequestStorageService serviceRequestStorageService;
+    private ServiceRequestStorageServiceImpl serviceRequestStorageService;
 
     @Value("${orp.orp_dispatcher.service.ServiceRequestDispatchingService.candidatesToFetch:5}")
     private Integer candidatesToFetch;
@@ -49,7 +49,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
                                                 ServiceRequestNotificationService serviceRequestNotificationService,
                                                 ServiceRequestMapper serviceRequestMapper,
                                                 VehicleStateMapper vehicleStateMapper,
-                                                ServiceRequestStorageService serviceRequestStorageService) {
+                                                ServiceRequestStorageServiceImpl serviceRequestStorageService) {
         this.solver = solver;
         this.vehicleReservationService = vehicleReservationService;
         this.stateKeeper = stateKeeper;

@@ -2,6 +2,8 @@ package com.nocmok.orp.api.controller.god_api;
 
 import com.nocmok.orp.api.controller.common_dto.Coordinates;
 import com.nocmok.orp.api.controller.common_dto.Node;
+import com.nocmok.orp.api.controller.common_dto.RequestInfo;
+import com.nocmok.orp.api.controller.common_dto.RoadSegment;
 import com.nocmok.orp.api.controller.common_dto.RoadSegmentWithGeodata;
 import com.nocmok.orp.api.controller.common_dto.ScheduleNode;
 import com.nocmok.orp.api.controller.common_dto.SessionInfo;
@@ -9,6 +11,8 @@ import com.nocmok.orp.api.controller.god_api.dto.GetActiveRequestIdsRequest;
 import com.nocmok.orp.api.controller.god_api.dto.GetActiveRequestIdsResponse;
 import com.nocmok.orp.api.controller.god_api.dto.GetActiveSessionsIdsRequest;
 import com.nocmok.orp.api.controller.god_api.dto.GetActiveSessionsIdsResponse;
+import com.nocmok.orp.api.controller.god_api.dto.GetRequestInfoRequest;
+import com.nocmok.orp.api.controller.god_api.dto.GetRequestInfoResponse;
 import com.nocmok.orp.api.controller.god_api.dto.GetSessionInfoRequest;
 import com.nocmok.orp.api.controller.god_api.dto.GetSessionInfoResponse;
 import com.nocmok.orp.api.controller.god_api.dto.GetSessionsGeodataRequest;
@@ -21,6 +25,7 @@ import com.nocmok.orp.api.storage.route_cache.RouteNode;
 import com.nocmok.orp.graph.api.Segment;
 import com.nocmok.orp.state_keeper.api.ScheduleEntry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -117,5 +122,31 @@ public class GodApiController {
                         .sessionStatus(sessionInfo.getStatus())
                         .build())
                 .build();
+    }
+
+    @PostMapping("/request/info")
+    public ResponseEntity<GetRequestInfoResponse> getRequestInfo(@RequestBody GetRequestInfoRequest request) {
+        var requestInfoOptional = requestService.getRequestInfo(request.getRequestId());
+        if (requestInfoOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        var requestInfo = requestInfoOptional.get();
+        return ResponseEntity.ok(GetRequestInfoResponse.builder()
+                .requestInfo(RequestInfo.builder()
+                        .requestId(requestInfo.getRequestId())
+                        .recordedOrigin(new Coordinates(requestInfo.getRecordedOrigin().getLatitude(), requestInfo.getRecordedOrigin().getLongitude()))
+                        .recordedDestination(
+                                new Coordinates(requestInfo.getRecordedDestination().getLatitude(), requestInfo.getRecordedDestination().getLongitude()))
+                        .pickupRoadSegment(new RoadSegment(requestInfo.getPickupRoadSegment().getSourceId(), requestInfo.getPickupRoadSegment().getTargetId()))
+                        .dropoffRoadSegment(
+                                new RoadSegment(requestInfo.getDropoffRoadSegment().getSourceId(), requestInfo.getDropoffRoadSegment().getTargetId()))
+                        .detourConstraint(requestInfo.getDetourConstraint())
+                        .load(requestInfo.getLoad())
+                        .maxPickupDelaySeconds(requestInfo.getMaxPickupDelaySeconds())
+                        .requestedAt(requestInfo.getRequestedAt())
+                        .status(requestInfo.getStatus())
+                        .servingSessionId(requestInfo.getServingSessionId())
+                        .build())
+                .build());
     }
 }
