@@ -2,7 +2,6 @@ import * as GodApi from "./api/GodApi"
 import {Vehicle} from "./map/objects/Vehicle";
 import {SessionListener} from "./websocket/session/SessionListener";
 import {MapObjectPositionUpdater} from "./websocket/session/event_handlers/MapObjectPositionUpdater";
-import {ShowVehicleRouteHandler} from "./websocket/session/event_handlers/ShowVehicleRouteHandler";
 
 export class Bootstrapper {
 
@@ -37,9 +36,6 @@ export class Bootstrapper {
 
                     let positionUpdater = new MapObjectPositionUpdater(mapObject)
                     sessionListener.addTelemetryEventHandler(telemetry => positionUpdater.handleTelemetry(telemetry))
-
-                    let routeRenderer = new ShowVehicleRouteHandler(this.di.map);
-                    sessionListener.addAssignRequestNotificationHandler(notification => routeRenderer.handleRequestAssignment(notification))
 
                     this.di.map.addObject(mapObject)
 
