@@ -26,7 +26,7 @@ public class RiderApi {
 
     @PostMapping("/create_service_request")
     public @ResponseBody CreateServiceRequestResponse createServiceRequest(@RequestBody CreateServiceRequestRequest request) {
-        var requestInfo = dispatchingService.dispatchRequest(RequestInfo.builder()
+        var requestInfo = RequestInfo.builder()
                 .requestId(null)
                 .recordedOrigin(new LatLon(request.getRecordedOrigin().getLatitude(), request.getRecordedOrigin().getLongitude()))
                 .recordedDestination(new LatLon(request.getRecordedDestination().getLatitude(), request.getRecordedDestination().getLongitude()))
@@ -38,7 +38,9 @@ public class RiderApi {
                 .maxPickupDelaySeconds(request.getMaxPickupDelaySeconds())
                 .load(request.getLoad())
                 .requestedAt(request.getRequestedAt())
-                .build());
+                .build();
+
+        requestInfo = dispatchingService.dispatchRequest(requestInfo);
 
         return CreateServiceRequestResponse.builder()
                 .requestId(requestInfo.getRequestId())

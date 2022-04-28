@@ -15,4 +15,6 @@ public interface RequestInfoStorage {
     List<String> getActiveRequestsIds();
 
     Optional<RequestInfo> getRequestInfo(String requestId);
+
+    RequestInfo storeRequest(RequestInfo requestInfo);
 }

@@ -15,8 +15,6 @@ public interface ServiceRequestStorageService {
 
     Optional<ServiceRequestDto> getRequestByIdForUpdate(String id);
 
-    void storeRequest(ServiceRequestDto request);
-
     void updateRequestStatus(String requestId, OrderStatus status);
 
     void updateServingSessionId(String requestId, String sessionId);
