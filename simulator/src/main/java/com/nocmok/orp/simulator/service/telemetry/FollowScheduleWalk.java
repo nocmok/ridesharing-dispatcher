@@ -2,12 +2,14 @@ package com.nocmok.orp.simulator.service.telemetry;
 
 import com.nocmok.orp.graph.api.Segment;
 import com.nocmok.orp.graph.tools.EarthMath;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Slf4j
 public class FollowScheduleWalk implements WalkStrategy {
 
     private String sessionId;
@@ -20,6 +22,7 @@ public class FollowScheduleWalk implements WalkStrategy {
     private Segment currentSegment;
     private double progressOnCurrentSegment;
     private Iterator<Segment> nextSegment;
+    private long lastRecordedTimeMillis;
 
     public FollowScheduleWalk(String sessionId, List<Segment> routeToFollow, Double currentLatitude, Double currentLongitude) {
         if (routeToFollow.isEmpty()) {
@@ -36,6 +39,7 @@ public class FollowScheduleWalk implements WalkStrategy {
         this.progressOnCurrentSegment = currentSegment.getCost() * getRelativeProgressOnRoadSegment(latitude, longitude, currentSegment);
         this.latitude = currentLatitude;
         this.longitude = currentLongitude;
+        this.lastRecordedTimeMillis = System.currentTimeMillis();
     }
 
     public FollowScheduleWalk(String sessionId, List<Segment> routeToFollow) {
@@ -56,13 +60,15 @@ public class FollowScheduleWalk implements WalkStrategy {
         while (progressOnCurrentSegment + time > currentSegment.getCost() && nextSegment.hasNext()) {
             time -= currentSegment.getCost() - progressOnCurrentSegment;
             progressOnCurrentSegment = 0;
+            log.info("road passed " + currentSegment);
             currentSegment = nextSegment.next();
         }
         return time;
     }
 
     @Override public Telemetry nextTelemetry(double time) {
-        time = skipAllPassedRoads(time);
+        long currentTimeMillis = System.currentTimeMillis();
+        time = skipAllPassedRoads((currentTimeMillis - lastRecordedTimeMillis) / 1000d);
 
         progressOnCurrentSegment += time;
 
@@ -78,6 +84,8 @@ public class FollowScheduleWalk implements WalkStrategy {
                     progressOnCurrentSegment * (currentSegment.getEndNode().getLongitude() - currentSegment.getStartNode().getLongitude()) /
                             currentSegment.getCost();
         }
+
+        lastRecordedTimeMillis = currentTimeMillis;
 
         return Telemetry.builder()
                 .sessionId(sessionId)

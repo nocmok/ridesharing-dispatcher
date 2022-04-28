@@ -97,8 +97,8 @@ public class VirtualDriver {
         var telemetry = this.walkStrategy.nextTelemetry(event.getMilliseconds() / 1000d);
         this.currentLatitude = telemetry.getLatitude();
         this.currentLongitude = telemetry.getLongitude();
+        scheduleExecutor.tryExecuteSchedule(event.getMilliseconds() / 1000d);
         telemetrySender.sendTelemetry(telemetry);
-        scheduleExecutor.tryExecuteSchedule(event.getMilliseconds());
     }
 
     private void onServiceRequest(ServiceRequestEvent event) {
