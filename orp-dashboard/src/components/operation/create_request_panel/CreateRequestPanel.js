@@ -7,10 +7,15 @@ import {Button} from "../../ui/buttion/Button";
 import {CoordinatesPicker} from "../coordinates_picker/CoordinatesPicker";
 import * as GeoApi from '../../../api/GeoApi'
 import * as RiderApi from '../../../api/RiderApi'
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 
-export class CreateRequestPanel extends Component {
+export function CreateRequestPanel(props) {
+    const navigation = useNavigate();
+    return <CreateRequestPanelInternal {...props} navigation={navigation}></CreateRequestPanelInternal>
+}
+
+class CreateRequestPanelInternal extends Component {
 
     constructor(props) {
         super(props);
@@ -72,18 +77,16 @@ export class CreateRequestPanel extends Component {
     onCreateRequest() {
         this.parseRequest()
             .then(request => RiderApi.createRequest(request))
-            .then(response => console.log(response))
+            .then(response => {
+                console.log(response);
+                return response
+            })
+            .then((response) => this.props.navigation("/order/" + response.requestId))
     }
 
     render() {
         return (
             <div className={classes.CreateRequestPanel}>
-
-                {/*<TextButton style={*/}
-                {/*    {*/}
-                {/*        color: "#7C7C7C"*/}
-                {/*    }*/}
-                {/*}>Назад</TextButton>*/}
 
                 <Link to="/dashboard">Назад</Link>
 

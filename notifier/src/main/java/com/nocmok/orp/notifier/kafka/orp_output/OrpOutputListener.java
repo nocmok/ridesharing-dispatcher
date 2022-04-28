@@ -1,10 +1,9 @@
 package com.nocmok.orp.notifier.kafka.orp_output;
 
 import com.nocmok.orp.kafka.orp_output.AssignRequestNotification;
-import com.nocmok.orp.kafka.orp_telemetry.VehicleTelemetryMessage;
-import com.nocmok.orp.notifier.kafka.orp_telemetry.mapper.VehicleTelemetryMapper;
-import com.nocmok.orp.notifier.service.AssignRequestNotificationStreamingService;
-import com.nocmok.orp.notifier.service.VehicleGPSStreamingService;
+import com.nocmok.orp.notifier.service.driver.DriverApiNotificationStreamingService;
+import com.nocmok.orp.notifier.service.rider.OrderStatusUpdatedNotification;
+import com.nocmok.orp.notifier.service.rider.RiderApiNotificationStreamingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;
@@ -20,17 +19,23 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class OrpOutputListener {
 
-    private AssignRequestNotificationStreamingService assignRequestNotificationStreamingService;
+    private DriverApiNotificationStreamingService driverApiNotificationStreamingService;
+    private RiderApiNotificationStreamingService riderApiNotificationStreamingService;
 
     @Autowired
-    public OrpOutputListener(AssignRequestNotificationStreamingService assignRequestNotificationStreamingService) {
-        this.assignRequestNotificationStreamingService = assignRequestNotificationStreamingService;
+    public OrpOutputListener(DriverApiNotificationStreamingService driverApiNotificationStreamingService,
+                             RiderApiNotificationStreamingService riderApiNotificationStreamingService) {
+        this.driverApiNotificationStreamingService = driverApiNotificationStreamingService;
+        this.riderApiNotificationStreamingService = riderApiNotificationStreamingService;
     }
 
     @KafkaHandler
     public void receiveAssignRequestNotification(@Payload AssignRequestNotification message) {
 //        log.info("received message " + message);
-        assignRequestNotificationStreamingService.sendNotification(message);
+        driverApiNotificationStreamingService.sendAssignRequestNotification(message);
+        riderApiNotificationStreamingService.sendOrderStatusChangedNotification(OrderStatusUpdatedNotification.builder()
+                .orderId(message.getServiceRequestId())
+                .build());
     }
 
     @KafkaHandler(isDefault = true)

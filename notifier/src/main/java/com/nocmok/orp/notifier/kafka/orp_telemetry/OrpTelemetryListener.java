@@ -2,7 +2,7 @@ package com.nocmok.orp.notifier.kafka.orp_telemetry;
 
 import com.nocmok.orp.kafka.orp_telemetry.VehicleTelemetryMessage;
 import com.nocmok.orp.notifier.kafka.orp_telemetry.mapper.VehicleTelemetryMapper;
-import com.nocmok.orp.notifier.service.VehicleGPSStreamingService;
+import com.nocmok.orp.notifier.service.telemetry.VehicleGPSStreamingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;

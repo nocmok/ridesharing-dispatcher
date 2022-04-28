@@ -1,8 +1,8 @@
 import * as GodApi from "./api/GodApi"
 import {Vehicle} from "./map/objects/Vehicle";
-import {SessionListener} from "./session/SessionListener";
-import {MapObjectPositionUpdater} from "./session/event_handlers/MapObjectPositionUpdater";
-import {ShowVehicleRouteHandler} from "./session/event_handlers/ShowVehicleRouteHandler";
+import {SessionListener} from "./websocket/session/SessionListener";
+import {MapObjectPositionUpdater} from "./websocket/session/event_handlers/MapObjectPositionUpdater";
+import {ShowVehicleRouteHandler} from "./websocket/session/event_handlers/ShowVehicleRouteHandler";
 
 export class Bootstrapper {
 

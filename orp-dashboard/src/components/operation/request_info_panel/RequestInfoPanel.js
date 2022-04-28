@@ -5,6 +5,7 @@ import {useEffect, useState} from "react";
 import {CoordinatesDisplayComponent} from "../coordinates_display/CoordinatesDisplayComponent";
 import {KeyValueComponent} from "../key_value/KeyValueComponent";
 import {VehicleDisplayComponent} from "../vehicle_display/VehicleDisplayComponent";
+import {OrderListener} from "../../../websocket/order/OrderListener";
 
 export function RequestInfoPanel(props) {
 
@@ -12,19 +13,33 @@ export function RequestInfoPanel(props) {
     const map = di.map
 
     const {orderId} = useParams()
+
     let [requestInfo, setRequestInfo] = useState({
-        recordedOrigin: {
-        },
-        recordedDestination: {
-        }
+        recordedOrigin: {},
+        recordedDestination: {}
     })
 
     useEffect(() => {
+        const notificationListener = new OrderListener(orderId);
+
+        notificationListener.addOrderStatusUpdatedHandler(() => {
+            GodApi.getRequestInfo({
+                requestId: orderId
+            }).then((response) => {
+                setRequestInfo(response.requestInfo)
+            })
+        })
+        notificationListener.connect()
+
         GodApi.getRequestInfo({
             requestId: orderId
         }).then((response) => {
             setRequestInfo(response.requestInfo)
         })
+
+        return () => {
+            notificationListener.disconnect()
+        }
     }, [])
 
     return (<div className={classes.RequestInfoPanel}>
@@ -37,14 +52,17 @@ export function RequestInfoPanel(props) {
             }
         }>Заказ #{orderId}</div>
 
-        <CoordinatesDisplayComponent di={di} title="Посадка" coordinates={requestInfo.recordedOrigin}></CoordinatesDisplayComponent>
-        <CoordinatesDisplayComponent di={di} title="Высадка" coordinates={requestInfo.recordedDestination}></CoordinatesDisplayComponent>
+        <CoordinatesDisplayComponent di={di} title="Посадка"
+                                     coordinates={requestInfo.recordedOrigin}></CoordinatesDisplayComponent>
+        <CoordinatesDisplayComponent di={di} title="Высадка"
+                                     coordinates={requestInfo.recordedDestination}></CoordinatesDisplayComponent>
         <KeyValueComponent title="Пассажиры" value={requestInfo.load}></KeyValueComponent>
         <KeyValueComponent title="Ограничение сервиса" value={requestInfo.detourConstraint}></KeyValueComponent>
         <KeyValueComponent title="Время ожидания (сек)" value={requestInfo.maxPickupDelaySeconds}></KeyValueComponent>
         <KeyValueComponent title="Время отправки" value={requestInfo.requestedAt}></KeyValueComponent>
         <KeyValueComponent title="Статус выполнения" value={requestInfo.status}></KeyValueComponent>
-        <VehicleDisplayComponent di={di} title="Исполнитель" id={requestInfo.servingSessionId}></VehicleDisplayComponent>
+        <VehicleDisplayComponent di={di} title="Исполнитель"
+                                 id={requestInfo.servingSessionId}></VehicleDisplayComponent>
 
     </div>)
 
