@@ -1,4 +1,4 @@
-import {MercatorProjection} from "../../map/projections/MercatorProjection";
+import {MercatorProjection} from "../../../map/projections/MercatorProjection";
 import {TWEEN} from "three/examples/jsm/libs/tween.module.min";
 
 const projection = new MercatorProjection()

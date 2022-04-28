@@ -1,6 +1,5 @@
-package com.nocmok.orp.notifier.service;
+package com.nocmok.orp.notifier.service.telemetry;
 
-import com.nocmok.orp.notifier.service.dto.VehicleGPSMessageServiceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;

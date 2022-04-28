@@ -1,7 +1,7 @@
 /**
  * Класс для получения событий сессии
  */
-import * as NotifierApi from "../api/NotifierApi";
+import * as NotifierApi from "../../api/NotifierApi";
 
 export class SessionListener {
 

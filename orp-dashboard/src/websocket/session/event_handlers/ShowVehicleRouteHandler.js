@@ -1,4 +1,4 @@
-import {Route} from "../../map/objects/Route";
+import {Route} from "../../../map/objects/Route";
 
 export class ShowVehicleRouteHandler {
 
@@ -9,7 +9,6 @@ export class ShowVehicleRouteHandler {
     }
 
     handleRequestAssignment(notification) {
-        console.log("NOTIFICATION")
         let body = JSON.parse(notification.body)
         console.log(body)
         let routeScheduled = body.routeScheduled

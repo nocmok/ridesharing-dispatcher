@@ -1,4 +1,4 @@
-package com.nocmok.orp.notifier.service.dto;
+package com.nocmok.orp.notifier.service.telemetry;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

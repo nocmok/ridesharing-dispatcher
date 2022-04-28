@@ -1,4 +1,4 @@
-package com.nocmok.orp.notifier.service;
+package com.nocmok.orp.notifier.service.driver;
 
 import com.nocmok.orp.kafka.orp_output.AssignRequestNotification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,12 +6,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AssignRequestNotificationStreamingServiceImpl implements AssignRequestNotificationStreamingService {
+public class DriverApiNotificationStreamingServiceImpl implements DriverApiNotificationStreamingService {
 
     private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    public AssignRequestNotificationStreamingServiceImpl(SimpMessagingTemplate messagingTemplate) {
+    public DriverApiNotificationStreamingServiceImpl(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
     }
 
@@ -19,7 +19,7 @@ public class AssignRequestNotificationStreamingServiceImpl implements AssignRequ
         return "/topic/driver/assign_request/" + sessionId;
     }
 
-    @Override public void sendNotification(AssignRequestNotification assignRequestNotification) {
+    @Override public void sendAssignRequestNotification(AssignRequestNotification assignRequestNotification) {
         messagingTemplate.convertAndSend(getWebSocketTopicBySessionId(assignRequestNotification.getSessionId()), assignRequestNotification);
     }
 }
