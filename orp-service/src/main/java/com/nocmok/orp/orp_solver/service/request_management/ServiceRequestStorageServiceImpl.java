@@ -29,11 +29,6 @@ public class ServiceRequestStorageServiceImpl implements ServiceRequestStorageSe
         return serviceRequestStorage.getRequestById(id).map(serviceRequestMapper::mapStorageDtoToServiceDto);
     }
 
-    @Override
-    public void storeRequest(ServiceRequestStorageService.ServiceRequestDto request) {
-        serviceRequestStorage.insertRequest(serviceRequestMapper.mapServiceDtoToStorageDto(request));
-    }
-
     @Override public Optional<ServiceRequestStorageService.ServiceRequestDto> getRequestByIdForUpdate(String id) {
         return serviceRequestStorage.getRequestByIdForUpdate(id).map(serviceRequestMapper::mapStorageDtoToServiceDto);
     }

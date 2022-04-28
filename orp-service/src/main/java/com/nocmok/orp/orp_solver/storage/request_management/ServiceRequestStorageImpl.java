@@ -70,64 +70,6 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
         return requests.stream().findFirst();
     }
 
-    @Override
-    public void insertRequest(ServiceRequestDto request) {
-        var params = new HashMap<String, Object>();
-        params.put("request_id", Long.parseLong(request.getRequestId()));
-        params.put("recorded_origin_latitude", request.getRecordedOriginLatitude());
-        params.put("recorded_origin_longitude", request.getRecordedOriginLongitude());
-        params.put("recorded_destination_latitude", request.getRecordedDestinationLatitude());
-        params.put("recorded_destination_longitude", request.getRecordedDestinationLongitude());
-        params.put("pickup_road_segment_start_node_id", request.getPickupRoadSegmentStartNodeId());
-        params.put("pickup_road_segment_end_node_id", request.getPickupRoadSegmentEndNodeId());
-        params.put("dropoff_road_segment_start_node_id", request.getDropOffRoadSegmentStartNodeId());
-        params.put("dropoff_road_segment_end_node_id", request.getDropOffRoadSegmentEndNodeId());
-        params.put("detour_constraint", request.getDetourConstraint());
-        params.put("max_pickup_delay_seconds", request.getMaxPickupDelaySeconds());
-        params.put("requested_at", Optional.ofNullable(request.getRequestedAt()).map(Timestamp::from)
-                .orElseThrow(() -> new NullPointerException("requested_at not expected to be null")));
-        params.put("load", request.getLoad());
-        params.put("status", Objects.requireNonNullElse(request.getStatus(), OrderStatus.PENDING).name());
-        params.put("serving_session_id", request.getServingSessionId() == null ? null : Long.parseLong(request.getServingSessionId()));
-        jdbcTemplate.update(" insert into service_request " +
-                        " ( " +
-                        " request_id," +
-                        " recorded_origin_latitude," +
-                        " recorded_origin_longitude," +
-                        " recorded_destination_latitude," +
-                        " recorded_destination_longitude," +
-                        " pickup_road_segment_start_node_id," +
-                        " pickup_road_segment_end_node_id," +
-                        " dropoff_road_segment_start_node_id," +
-                        " dropoff_road_segment_end_node_id," +
-                        " detour_constraint," +
-                        " max_pickup_delay_seconds," +
-                        " requested_at," +
-                        " load," +
-                        " status," +
-                        " serving_session_id " +
-                        " ) " +
-                        " values " +
-                        " ( " +
-                        "   :request_id, " +
-                        "   :recorded_origin_latitude, " +
-                        "   :recorded_origin_longitude, " +
-                        "   :recorded_destination_latitude, " +
-                        "   :recorded_destination_longitude, " +
-                        "   :pickup_road_segment_start_node_id, " +
-                        "   :pickup_road_segment_end_node_id, " +
-                        "   :dropoff_road_segment_start_node_id, " +
-                        "   :dropoff_road_segment_end_node_id, " +
-                        "   :detour_constraint, " +
-                        "   :max_pickup_delay_seconds, " +
-                        "   :requested_at, " +
-                        "   :load," +
-                        "   cast(:status as service_request_status)," +
-                        "   :serving_session_id " +
-                        " ) ",
-                params);
-    }
-
     @Override public Optional<ServiceRequestDto> getRequestByIdForUpdate(String id) {
         var params = new HashMap<String, Object>();
         params.put("requestId", Long.parseLong(id));

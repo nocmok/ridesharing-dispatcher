@@ -30,7 +30,6 @@ public class OrpInputListener {
     private final ServiceRequestMessageMapper serviceRequestMessageMapper = new ServiceRequestMessageMapper();
     private final AssignRequestMessageMapper assignRequestMessageMapper = new AssignRequestMessageMapper();
     private final ServiceRequestDispatchingService requestProcessingService;
-    private final ServiceRequestStorageServiceImpl serviceRequestService;
     private final RequestAssigningService requestAssigningService;
     private final ServiceRequestValidator serviceRequestValidator;
     private final AssignRequestValidator assignRequestValidator;
@@ -38,13 +37,11 @@ public class OrpInputListener {
 
     @Autowired
     public OrpInputListener(ServiceRequestDispatchingService requestProcessingService,
-                            ServiceRequestStorageServiceImpl serviceRequestService,
                             RequestAssigningService requestAssigningService,
                             ServiceRequestValidator serviceRequestValidator,
                             AssignRequestValidator assignRequestValidator,
                             OrderExecutionService orderExecutionService) {
         this.requestProcessingService = requestProcessingService;
-        this.serviceRequestService = serviceRequestService;
         this.requestAssigningService = requestAssigningService;
         this.serviceRequestValidator = serviceRequestValidator;
         this.assignRequestValidator = assignRequestValidator;
@@ -58,7 +55,6 @@ public class OrpInputListener {
             log.error("invalid service request received: " + message + "\nErrors: " + errors);
             return;
         }
-        serviceRequestService.storeRequest(serviceRequestMessageMapper.mapMessageToServiceRequestStorageServiceDto(message));
         requestProcessingService.dispatchServiceRequest(serviceRequestMessageMapper.mapMessageToServiceRequestDispatchingServiceDto(message));
     }
 

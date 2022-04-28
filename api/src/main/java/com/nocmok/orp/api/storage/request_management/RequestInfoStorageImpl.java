@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -81,5 +82,64 @@ public class RequestInfoStorageImpl implements RequestInfoStorage {
             return Optional.empty();
         }
         return Optional.of(requestInfos.get(0));
+    }
+
+    @Override public RequestInfo storeRequest(RequestInfo requestInfo) {
+        requestInfo.setRequestId(getIdForRequest());
+        var params = new HashMap<String, Object>();
+        params.put("request_id", Long.parseLong(requestInfo.getRequestId()));
+        params.put("recorded_origin_latitude", requestInfo.getRecordedOrigin().getLatitude());
+        params.put("recorded_origin_longitude", requestInfo.getRecordedOrigin().getLongitude());
+        params.put("recorded_destination_latitude", requestInfo.getRecordedDestination().getLatitude());
+        params.put("recorded_destination_longitude", requestInfo.getRecordedDestination().getLongitude());
+        params.put("pickup_road_segment_start_node_id", requestInfo.getPickupRoadSegment().getSourceId());
+        params.put("pickup_road_segment_end_node_id", requestInfo.getPickupRoadSegment().getTargetId());
+        params.put("dropoff_road_segment_start_node_id", requestInfo.getDropoffRoadSegment().getSourceId());
+        params.put("dropoff_road_segment_end_node_id", requestInfo.getDropoffRoadSegment().getTargetId());
+        params.put("detour_constraint", requestInfo.getDetourConstraint());
+        params.put("max_pickup_delay_seconds", requestInfo.getMaxPickupDelaySeconds());
+        params.put("requested_at", Optional.ofNullable(requestInfo.getRequestedAt()).map(Timestamp::from)
+                .orElseThrow(() -> new NullPointerException("requested_at not expected to be null")));
+        params.put("load", requestInfo.getLoad());
+        params.put("status", Objects.requireNonNullElse(requestInfo.getStatus(), OrderStatus.PENDING).name());
+        params.put("serving_session_id", requestInfo.getServingSessionId() == null ? null : Long.parseLong(requestInfo.getServingSessionId()));
+        jdbcTemplate.update(" insert into service_request " +
+                        " ( " +
+                        " request_id," +
+                        " recorded_origin_latitude," +
+                        " recorded_origin_longitude," +
+                        " recorded_destination_latitude," +
+                        " recorded_destination_longitude," +
+                        " pickup_road_segment_start_node_id," +
+                        " pickup_road_segment_end_node_id," +
+                        " dropoff_road_segment_start_node_id," +
+                        " dropoff_road_segment_end_node_id," +
+                        " detour_constraint," +
+                        " max_pickup_delay_seconds," +
+                        " requested_at," +
+                        " load," +
+                        " status," +
+                        " serving_session_id " +
+                        " ) " +
+                        " values " +
+                        " ( " +
+                        "   :request_id, " +
+                        "   :recorded_origin_latitude, " +
+                        "   :recorded_origin_longitude, " +
+                        "   :recorded_destination_latitude, " +
+                        "   :recorded_destination_longitude, " +
+                        "   :pickup_road_segment_start_node_id, " +
+                        "   :pickup_road_segment_end_node_id, " +
+                        "   :dropoff_road_segment_start_node_id, " +
+                        "   :dropoff_road_segment_end_node_id, " +
+                        "   :detour_constraint, " +
+                        "   :max_pickup_delay_seconds, " +
+                        "   :requested_at, " +
+                        "   :load," +
+                        "   cast(:status as service_request_status)," +
+                        "   :serving_session_id " +
+                        " ) ",
+                params);
+        return requestInfo;
     }
 }
