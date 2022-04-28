@@ -139,6 +139,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
 
             @Override public void handleReservations(List<VehicleReservation> reservations) {
                 if (reservations.isEmpty()) {
+                    serviceRequestStorageService.updateRequestStatus(request.getRequestId(), OrderStatus.DENIED);
                     return;
                 }
 

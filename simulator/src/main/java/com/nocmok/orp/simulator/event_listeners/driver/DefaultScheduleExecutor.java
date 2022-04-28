@@ -99,7 +99,7 @@ public class DefaultScheduleExecutor implements ScheduleExecutor {
 
     private double skipAllPassedRoads(double time) {
         while (!routeToFollow.isEmpty() && progressOnCurrentSegment + time > routeToFollow.getFirst().getCost()) {
-            time -= routeToFollow.getFirst().getCost();
+            time -= routeToFollow.getFirst().getCost() - progressOnCurrentSegment;
             handleRoadPassed(routeToFollow.pollFirst());
             progressOnCurrentSegment = 0;
         }
