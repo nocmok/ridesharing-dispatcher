@@ -8,6 +8,9 @@ create type vehicle_status as enum ('PENDING', 'SERVING');
 drop type if exists schedule_node_kind cascade;
 create type schedule_node_kind as enum ('PICKUP', 'DROPOFF');
 
+drop type if exists service_request_status cascade;
+create type service_request_status as enum ('PENDING', 'SERVING', 'SERVED', 'DENIED', 'SERVING_DENIED');
+
 drop table if exists vehicle_session cascade;
 create table vehicle_session
 (
@@ -39,10 +42,12 @@ create table service_request
     detour_constraint float8 not null,
     max_pickup_delay_seconds bigint not null,
     requested_at timestamp with time zone not null,
-    load bigint not null
+    load bigint not null,
+    status service_request_status,
+    serving_session_id bigint
 );
 
-drop table if exist session_route_cache cascade;
+drop table if exists session_route_cache cascade;
 create table session_route_cache
 (
     session_id bigint primary key,

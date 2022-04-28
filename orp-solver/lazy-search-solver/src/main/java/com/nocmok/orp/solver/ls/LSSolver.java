@@ -165,7 +165,7 @@ public class LSSolver implements OrpSolver {
         double combinedCost = 0;
 
         for (var route : routes) {
-            if (!combinedRoute.isEmpty()) {
+            if (!combinedRoute.isEmpty() && !route.getRoute().isEmpty()) {
                 combinedRoute.remove(combinedRoute.size() - 1);
             }
             combinedRoute.addAll(route.getRoute());
