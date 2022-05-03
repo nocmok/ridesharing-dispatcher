@@ -3,7 +3,6 @@ package com.nocmok.orp.orp_solver.service.dispatching;
 import com.nocmok.orp.orp_solver.service.dispatching.dto.AssignRequest;
 import com.nocmok.orp.orp_solver.service.dispatching.dto.VehicleReservation;
 import com.nocmok.orp.orp_solver.service.dispatching.mapper.ServiceRequestMapper;
-import com.nocmok.orp.orp_solver.service.dispatching.mapper.VehicleStateMapper;
 import com.nocmok.orp.orp_solver.service.notification.AssignRequestNotificationService;
 import com.nocmok.orp.orp_solver.service.notification.dto.AssignRequestNotification;
 import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
@@ -21,7 +20,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -34,7 +32,6 @@ public class RequestAssigningService {
     private VehicleReservationService vehicleReservationService;
     private AssignRequestNotificationService assignRequestNotificationService;
     private ServiceRequestMapper serviceRequestMapper;
-    private VehicleStateMapper vehicleStateMapper;
     private RouteCache routeCache;
 
     @Autowired
@@ -42,8 +39,7 @@ public class RequestAssigningService {
                                    ServiceRequestStorageService serviceRequestService,
                                    VehicleReservationService vehicleReservationService,
                                    AssignRequestNotificationService assignRequestNotificationService,
-                                   ServiceRequestMapper serviceRequestMapper,
-                                   VehicleStateMapper vehicleStateMapper, RouteCache routeCache) {
+                                   ServiceRequestMapper serviceRequestMapper, RouteCache routeCache) {
         this.orpSolver = orpSolver;
         this.stateKeeper = stateKeeper;
         this.transactionTemplate = transactionTemplate;
@@ -51,7 +47,6 @@ public class RequestAssigningService {
         this.vehicleReservationService = vehicleReservationService;
         this.assignRequestNotificationService = assignRequestNotificationService;
         this.serviceRequestMapper = serviceRequestMapper;
-        this.vehicleStateMapper = vehicleStateMapper;
         this.routeCache = routeCache;
     }
 
@@ -109,9 +104,7 @@ public class RequestAssigningService {
                 serviceRequestService.updateServingSessionId(serviceRequest.getRequestId(), request.getVehicleId());
 
                 vehicleState.setStatus(VehicleStatus.SERVING);
-                vehicleState.setSchedule(requestMatching.get().getServingPlan().stream()
-                        .map(vehicleStateMapper::mapScheduleNodeToScheduleEntry)
-                        .collect(Collectors.toUnmodifiableList()));
+                vehicleState.setSchedule(requestMatching.get().getServingPlan());
 
                 // Обновляем состояние тс
                 stateKeeper.updateVehiclesBatch(List.of(vehicleState));
@@ -120,7 +113,7 @@ public class RequestAssigningService {
                 assignRequestNotificationService.sendNotification(AssignRequestNotification.builder()
                         .serviceRequestId(request.getServiceRequestId())
                         .sessionId(request.getVehicleId())
-                        .schedule(requestMatching.get().getServingPlan())
+                        .schedule(requestMatching.get().getServingPlan().asList())
                         .routeScheduled(requestMatching.get().getServingRoute())
                         .build());
 

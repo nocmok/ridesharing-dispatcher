@@ -15,10 +15,6 @@ import com.nocmok.orp.simulator.service.telemetry.TelemetrySender;
 import com.nocmok.orp.simulator.service.telemetry.WalkStrategy;
 import com.nocmok.orp.simulator.storage.VehicleSessionStorage;
 import com.nocmok.orp.solver.api.RouteNode;
-import com.nocmok.orp.solver.api.ScheduleNode;
-import com.nocmok.orp.solver.api.ScheduleNodeKind;
-import com.nocmok.orp.state_keeper.api.ScheduleEntry;
-import com.nocmok.orp.state_keeper.api.ScheduleEntryKind;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -35,6 +31,7 @@ public class VirtualDriver {
     // volatile чтобы при обновлении стратегии изменение было видно в других потоках
     private volatile WalkStrategy walkStrategy;
     private volatile ScheduleExecutor scheduleExecutor;
+    private volatile CurrentRoadTracker currentRoadTracker;
 
     private SpatialGraphMetadataStorage graphMetadataStorage;
     private SpatialGraphObjectsStorage graphObjectsStorage;
@@ -84,6 +81,8 @@ public class VirtualDriver {
             throw new UnsupportedOperationException("not implemented");
         }
 
+        this.currentRoadTracker = new IdleCurrentRoadTracker(this.currentRoadSegment);
+
         registerCallbacks();
     }
 
@@ -97,7 +96,10 @@ public class VirtualDriver {
         var telemetry = this.walkStrategy.nextTelemetry(event.getMilliseconds() / 1000d);
         this.currentLatitude = telemetry.getLatitude();
         this.currentLongitude = telemetry.getLongitude();
+
+        currentRoadTracker.updateCurrentRoad();
         scheduleExecutor.tryExecuteSchedule(event.getMilliseconds() / 1000d);
+
         telemetrySender.sendTelemetry(telemetry);
     }
 
@@ -127,28 +129,6 @@ public class VirtualDriver {
         }
     }
 
-    private ScheduleEntryKind mapScheduleNodeKindToScheduleEntryKind(ScheduleNodeKind kind) {
-        switch (kind) {
-            case PICKUP:
-                return ScheduleEntryKind.PICKUP;
-            case DROPOFF:
-                return ScheduleEntryKind.DROPOFF;
-            default:
-                throw new IllegalArgumentException("unknown schedule node kind " + kind);
-        }
-    }
-
-    private ScheduleEntry mapScheduleNodeToScheduleEntry(ScheduleNode scheduleNode) {
-        return new ScheduleEntry(scheduleNode.getDeadline(),
-                scheduleNode.getLoad(),
-                scheduleNode.getNodeId(),
-                scheduleNode.getLatitude(),
-                scheduleNode.getLongitude(),
-                mapScheduleNodeKindToScheduleEntryKind(scheduleNode.getKind()),
-                scheduleNode.getOrderId()
-        );
-    }
-
     private void onRequestAssigningConfirmation(RequestAssignConfirmationEvent event) {
         if (!Objects.equals(sessionId, event.getSessionId())) {
             log.warn("received event with invalid session id. skip ...");
@@ -175,12 +155,36 @@ public class VirtualDriver {
             segmentRoute = List.of(currentRoadSegment);
         }
 
-        var schedule = event.getSchedule().stream()
-                .map(this::mapScheduleNodeToScheduleEntry)
-                .collect(Collectors.toList());
+        var schedule = event.getSchedule();
 
         log.info("received request assignment confirmation " + event);
+
+
+        // TODO
+        // Проблема
+        // Приходит маршрут, который отстает на несколько секунд от нормального.
+        // Из-за этого визуально машина возвращается назад
+
+        // Варианты решения
+        // 1) Стопать вообще генерацию телеметрии, пока не придет подтверждение
+        // 2) Брать текущее ребро через metadata storage. Затем отматывать пришедший маршрут до текущего ребра
+        // 3) Самому считать ближайшее к текущей точке ребро из пришедшего маршрута и отматывать до него
+        // 4) Брать текущее ребро из текущего walk strategy и отматывать до него
+        // 5) Сделать отдельно компонент который отслеживает текущее ребро
+        //      (По идее нужна фабрика, чтобы отдавать согласованные стратегии генерации телеметрии и отслеживания текущего ребра)
+
+//        var currentRoad = currentRoadTracker.getCurrentRoad();
+//        if (segmentRoute.contains(currentRoad)) {
+//            var trimmedRoute = segmentRoute.subList(segmentRoute.indexOf(currentRoad), segmentRoute.size());
+//            log.info("received route " + segmentRoute);
+//            log.info("trimmed route " + trimmedRoute);
+//            this.currentRoadTracker = new DefaultCurrentRoadTracker(trimmedRoute, currentLatitude, currentLongitude);
+//            this.walkStrategy = new FollowScheduleWalk(sessionId, trimmedRoute, currentLatitude, currentLongitude);
+//            this.scheduleExecutor = new DefaultScheduleExecutor(sessionId, schedule, trimmedRoute, currentLatitude, currentLongitude, driverApi);
+//        } else {
+        this.currentRoadTracker = new DefaultCurrentRoadTracker(segmentRoute, currentLatitude, currentLongitude);
         this.walkStrategy = new FollowScheduleWalk(sessionId, segmentRoute, currentLatitude, currentLongitude);
         this.scheduleExecutor = new DefaultScheduleExecutor(sessionId, schedule, segmentRoute, currentLatitude, currentLongitude, driverApi);
+//        }
     }
 }

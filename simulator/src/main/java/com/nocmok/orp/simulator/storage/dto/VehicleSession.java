@@ -1,6 +1,6 @@
 package com.nocmok.orp.simulator.storage.dto;
 
-import com.nocmok.orp.state_keeper.api.ScheduleEntry;
+import com.nocmok.orp.solver.api.ScheduleEntry;
 import com.nocmok.orp.state_keeper.api.VehicleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

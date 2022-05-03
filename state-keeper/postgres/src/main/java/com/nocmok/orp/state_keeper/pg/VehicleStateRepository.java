@@ -1,5 +1,9 @@
 package com.nocmok.orp.state_keeper.pg;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nocmok.orp.solver.api.EmptySchedule;
+import com.nocmok.orp.solver.api.ReadOnlySchedule;
+import com.nocmok.orp.solver.api.Schedule;
 import com.nocmok.orp.state_keeper.api.VehicleState;
 import com.nocmok.orp.state_keeper.api.VehicleStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,28 +30,53 @@ class VehicleStateRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final PlatformTransactionManager transactionManager;
     private final TransactionTemplate transactionTemplate;
-    private final ScheduleJsonMapper scheduleJsonMapper;
     private final SessionIdSequence sessionIdSequence;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public VehicleStateRepository(NamedParameterJdbcTemplate jdbcTemplate, PlatformTransactionManager transactionManager,
-                                  TransactionTemplate transactionTemplate, ScheduleJsonMapper scheduleJsonMapper,
-                                  SessionIdSequence sessionIdSequence) {
+                                  TransactionTemplate transactionTemplate, SessionIdSequence sessionIdSequence,
+                                  ObjectMapper objectMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.transactionManager = transactionManager;
         this.transactionTemplate = transactionTemplate;
-        this.scheduleJsonMapper = scheduleJsonMapper;
         this.sessionIdSequence = sessionIdSequence;
+        this.objectMapper = objectMapper;
+    }
+
+    public Schedule tryParseDefaultSchedule(String json) throws Exception {
+        return objectMapper.readValue(json, ReadOnlySchedule.class);
+    }
+
+    private Schedule jsonToSchedule(String json) {
+        try {
+            return objectMapper.readValue(json, Schedule.class);
+        } catch (Exception e) {
+            try {
+                return tryParseDefaultSchedule(json);
+            } catch (Exception suppress) {
+                var exceptionToThrow = new RuntimeException(e);
+                exceptionToThrow.addSuppressed(suppress);
+                throw exceptionToThrow;
+            }
+        }
+    }
+
+    private String scheduleToJson(Schedule schedule) {
+        try {
+            return objectMapper.writeValueAsString(schedule);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private VehicleDto parseVehicleFromResultSet(ResultSet rs, int nRow) throws SQLException {
-        var schedule = scheduleJsonMapper.decodeSchedule(rs.getString("schedule_json"));
         return VehicleDto.builder()
                 .id(Objects.toString(rs.getLong("session_id")))
                 .status(VehicleStatus.valueOf(rs.getString("status")))
                 .capacity(rs.getInt("total_capacity"))
                 .residualCapacity(rs.getInt("residual_capacity"))
-                .schedule(schedule)
+                .schedule(jsonToSchedule(rs.getString("schedule_json")))
                 .build();
     }
 
@@ -111,7 +140,7 @@ class VehicleStateRepository {
                         ps.setString(1, Optional.ofNullable(vehicle.getStatus()).map(Objects::toString).orElse(null));
                         ps.setObject(2, vehicle.getCapacity(), Types.BIGINT);
                         ps.setObject(3, vehicle.getResidualCapacity(), Types.BIGINT);
-                        ps.setString(4, Optional.ofNullable(vehicle.getSchedule()).map(scheduleJsonMapper::encodeSchedule).orElse(null));
+                        ps.setString(4, Optional.ofNullable(vehicle.getSchedule()).map(VehicleStateRepository.this::scheduleToJson).orElse(null));
                         ps.setLong(5, Long.parseLong(vehicle.getId()));
                     }
 
@@ -142,14 +171,14 @@ class VehicleStateRepository {
 
     public VehicleState createVehicle(VehicleState vehicle) {
         vehicle.setId(Long.toString(sessionIdSequence.nextId()));
-        vehicle.setSchedule(Objects.requireNonNullElse(vehicle.getSchedule(), Collections.emptyList()));
+        vehicle.setSchedule(Objects.requireNonNullElse(vehicle.getSchedule(), new EmptySchedule()));
 
         var params = new HashMap<String, Object>();
         params.put("sessionId", Long.parseLong(vehicle.getId()));
         params.put("status", Objects.requireNonNullElse(vehicle.getStatus(), VehicleStatus.PENDING).name());
         params.put("totalCapacity", vehicle.getCapacity());
         params.put("residualCapacity", vehicle.getResidualCapacity());
-        params.put("schedule", scheduleJsonMapper.encodeSchedule(vehicle.getSchedule()));
+        params.put("schedule", scheduleToJson(vehicle.getSchedule()));
 
         int rowsAffected =
                 jdbcTemplate.update("insert into vehicle_session (session_id, created_at, status, total_capacity, residual_capacity, schedule_json) " +

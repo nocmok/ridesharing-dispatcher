@@ -9,15 +9,15 @@ public class RequestMatching {
      * План тс на момент, когда алгоритм пересчитывал план тс.
      * Может использоваться для того, чтобы проверять актуальность вычислений.
      */
-    private final List<ScheduleNode> oldServingPlan;
-    private final List<ScheduleNode> servingPlan;
+    private final Schedule oldServingPlan;
+    private final Schedule servingPlan;
     private final List<RouteNode> servingRoute;
     /**
      * Разница в стоимости построенного алгоритмом маршрута и текущего маршрута транспортного средства.
      */
     private final Double additionalCost;
 
-    public RequestMatching(String servingVehicleId, List<ScheduleNode> oldServingPlan, List<ScheduleNode> servingPlan,
+    public RequestMatching(String servingVehicleId, Schedule oldServingPlan, Schedule servingPlan,
                            List<RouteNode> servingRoute, Double additionalCost) {
         this.servingVehicleId = servingVehicleId;
         this.oldServingPlan = oldServingPlan;
@@ -26,7 +26,7 @@ public class RequestMatching {
         this.additionalCost = additionalCost;
     }
 
-    public List<ScheduleNode> getOldServingPlan() {
+    public Schedule getOldServingPlan() {
         return oldServingPlan;
     }
 
@@ -34,7 +34,7 @@ public class RequestMatching {
         return servingVehicleId;
     }
 
-    public List<ScheduleNode> getServingPlan() {
+    public Schedule getServingPlan() {
         return servingPlan;
     }
 

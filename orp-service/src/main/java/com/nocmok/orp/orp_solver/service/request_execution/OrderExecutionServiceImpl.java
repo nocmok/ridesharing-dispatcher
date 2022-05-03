@@ -1,7 +1,7 @@
 package com.nocmok.orp.orp_solver.service.request_execution;
 
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
-import com.nocmok.orp.state_keeper.api.ScheduleEntryKind;
+import com.nocmok.orp.solver.api.ScheduleEntryKind;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import com.nocmok.orp.state_keeper.api.VehicleState;
 import com.nocmok.orp.state_keeper.api.VehicleStatus;
@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,12 +54,13 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
     }
 
     private VehicleState handleServingStatus(VehicleState vehicleState, String orderId) {
-        if (CollectionUtils.isEmpty(vehicleState.getSchedule())) {
+        if (vehicleState.getSchedule().empty()) {
             throw new RuntimeException("session " + vehicleState.getId() + " has empty schedule");
         }
-        var entryToRemoveOptional = vehicleState.getSchedule().stream()
+        var entryToRemoveOptional = vehicleState.getSchedule().asList().stream()
                 .filter(scheduleEntry -> Objects.equals(orderId, scheduleEntry.getOrderId()) && ScheduleEntryKind.PICKUP == scheduleEntry.getKind())
                 .findFirst();
+
         if (entryToRemoveOptional.isEmpty()) {
             throw new RuntimeException("no point with kind " + ScheduleEntryKind.PICKUP + " in schedule that corresponds to order with " + orderId);
         }
@@ -69,8 +69,8 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
 
         // Если следующая в плане точка совпадает с той, которую требуется удалить из плана,
         // то просто удаляем
-        if (entryToRemove.equals(vehicleState.getSchedule().get(0))) {
-            vehicleState.getSchedule().remove(0);
+        if (entryToRemove.equals(vehicleState.getSchedule().asList().get(0))) {
+            vehicleState.getSchedule().removeFirstEntry();
             return vehicleState;
         }
 
@@ -79,10 +79,10 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
     }
 
     private VehicleState handleServedStatus(VehicleState vehicleState, String orderId) {
-        if (CollectionUtils.isEmpty(vehicleState.getSchedule())) {
+        if (vehicleState.getSchedule().empty()) {
             throw new RuntimeException("session " + vehicleState.getId() + " has empty schedule");
         }
-        var entryToRemoveOptional = vehicleState.getSchedule().stream()
+        var entryToRemoveOptional = vehicleState.getSchedule().asList().stream()
                 .filter(scheduleEntry -> Objects.equals(orderId, scheduleEntry.getOrderId()) && ScheduleEntryKind.DROPOFF == scheduleEntry.getKind())
                 .findFirst();
         if (entryToRemoveOptional.isEmpty()) {
@@ -93,8 +93,8 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
 
         // Если следующая в плане точка совпадает с той, которую требуется удалить из плана,
         // то просто удаляем
-        if (entryToRemove.equals(vehicleState.getSchedule().get(0))) {
-            vehicleState.getSchedule().remove(0);
+        if (entryToRemove.equals(vehicleState.getSchedule().asList().get(0))) {
+            vehicleState.getSchedule().removeFirstEntry();
             return vehicleState;
         }
 
@@ -135,7 +135,7 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
             } else if (OrderStatus.SERVED.equals(updatedStatus)) {
                 updatedSession = handleServedStatus(session, orderId);
                 updatedSession.setResidualCapacity(session.getResidualCapacity() + requestDetails.getLoad());
-                if (CollectionUtils.isEmpty(updatedSession.getSchedule())) {
+                if (updatedSession.getSchedule().empty()) {
                     updatedSession.setStatus(VehicleStatus.PENDING);
                 }
             } else {

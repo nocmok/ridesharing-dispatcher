@@ -23,7 +23,7 @@ import com.nocmok.orp.api.service.request_management.RequestService;
 import com.nocmok.orp.api.service.session_management.SessionManagementService;
 import com.nocmok.orp.api.storage.route_cache.RouteNode;
 import com.nocmok.orp.graph.api.Segment;
-import com.nocmok.orp.state_keeper.api.ScheduleEntry;
+import com.nocmok.orp.solver.api.ScheduleEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

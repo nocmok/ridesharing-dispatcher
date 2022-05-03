@@ -74,7 +74,7 @@ public class SessionManagementServiceImpl implements SessionManagementService {
 
         return SessionInfo.builder()
                 .id(sessionId)
-                .schedule(session.getSchedule())
+                .schedule(session.getSchedule().asList())
                 .capacity(session.getCapacity())
                 .status(session.getStatus())
                 .residualCapacity(session.getResidualCapacity())
