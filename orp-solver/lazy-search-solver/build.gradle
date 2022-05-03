@@ -1,5 +1,7 @@
 plugins {
     id 'java-library'
+    id 'org.springframework.boot' version '2.6.6' apply false
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
 group = 'com.nocmok.orp'
@@ -14,11 +16,17 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.35'
 
     implementation 'com.google.guava:guava:31.0.1-jre'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations'
 
-//    implementation project(':core-api')
     implementation project(':graph-index:api')
     implementation project(':graph-index:tools')
     implementation project(':orp-solver:api')
     implementation project(':state-keeper:api')
 
+}
+
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+    }
 }

@@ -2,7 +2,7 @@ package com.nocmok.orp.kafka.orp_output;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nocmok.orp.solver.api.RouteNode;
-import com.nocmok.orp.solver.api.ScheduleNode;
+import com.nocmok.orp.solver.api.ScheduleEntry;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +29,7 @@ public class AssignRequestNotification {
     private String serviceRequestId;
 
     @JsonProperty("schedule")
-    private List<ScheduleNode> schedule;
+    private List<ScheduleEntry> schedule;
 
     @JsonProperty("routeScheduled")
     private List<RouteNode> routeScheduled;

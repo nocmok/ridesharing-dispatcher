@@ -1,4 +1,4 @@
-package com.nocmok.orp.state_keeper.api;
+package com.nocmok.orp.solver.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

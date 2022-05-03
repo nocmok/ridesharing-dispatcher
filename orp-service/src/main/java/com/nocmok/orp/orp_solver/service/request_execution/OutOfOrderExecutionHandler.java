@@ -1,6 +1,6 @@
 package com.nocmok.orp.orp_solver.service.request_execution;
 
-import com.nocmok.orp.state_keeper.api.ScheduleEntry;
+import com.nocmok.orp.solver.api.ScheduleEntry;
 import com.nocmok.orp.state_keeper.api.VehicleState;
 
 /**

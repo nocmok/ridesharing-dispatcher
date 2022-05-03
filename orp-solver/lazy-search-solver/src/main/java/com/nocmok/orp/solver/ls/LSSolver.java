@@ -1,20 +1,19 @@
 package com.nocmok.orp.solver.ls;
 
 import com.google.common.collect.MinMaxPriorityQueue;
-import com.nocmok.orp.graph.api.SpatialGraphMetadataStorage;
-import com.nocmok.orp.graph.api.SpatialGraphObject;
-import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
 import com.nocmok.orp.graph.api.Node;
 import com.nocmok.orp.graph.api.Route;
 import com.nocmok.orp.graph.api.Segment;
 import com.nocmok.orp.graph.api.ShortestRouteSolver;
+import com.nocmok.orp.graph.api.SpatialGraphMetadataStorage;
+import com.nocmok.orp.graph.api.SpatialGraphObject;
+import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
 import com.nocmok.orp.solver.api.OrpSolver;
 import com.nocmok.orp.solver.api.Request;
 import com.nocmok.orp.solver.api.RequestMatching;
 import com.nocmok.orp.solver.api.RouteNode;
-import com.nocmok.orp.solver.api.ScheduleNode;
-import com.nocmok.orp.solver.api.ScheduleNodeKind;
-import com.nocmok.orp.state_keeper.api.ScheduleEntry;
+import com.nocmok.orp.solver.api.ScheduleEntry;
+import com.nocmok.orp.solver.api.ScheduleEntryKind;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import com.nocmok.orp.state_keeper.api.VehicleState;
 import com.nocmok.orp.state_keeper.api.VehicleStatus;
@@ -72,7 +71,7 @@ public class LSSolver implements OrpSolver {
                         getVehicleProgressOnCurrentRoad(graphObject),
                         getRouteToCompleteSchedule(Stream.concat(
                                 Stream.of(graphObject.getSegment().getStartNode().getId()),
-                                vehicle.getSchedule().stream().map(ScheduleEntry::getNodeId)
+                                vehicle.getSchedule().asList().stream().map(ScheduleEntry::getNodeId)
                         ).collect(Collectors.toList()))
                 ));
     }
@@ -128,31 +127,31 @@ public class LSSolver implements OrpSolver {
         return enrichVehiclesWithGeoData(stateKeeper.getVehiclesByIds(filteredVehiclesId));
     }
 
-    private ScheduleNode createPickupScheduleNode(ExtendedRequest request) {
-        return new ScheduleNode(
+    private ScheduleEntry createPickupScheduleEntry(ExtendedRequest request) {
+        return new ScheduleEntry(
                 request.getRequestedAt().plusSeconds(request.getMaxPickupDelaySeconds()),
                 request.getLoad(),
                 request.getOriginNodeId(),
                 request.getRecordedOriginLatitude(),
                 request.getRecordedOriginLongitude(),
-                ScheduleNodeKind.PICKUP,
+                ScheduleEntryKind.PICKUP,
                 request.getRequestId()
         );
     }
 
-    private ScheduleNode createDropoffScheduleNode(ExtendedRequest request) {
+    private ScheduleEntry createDropoffScheduleEntry(ExtendedRequest request) {
         Instant deadline = request.getRequestedAt()
                 .plusSeconds(request.getMaxPickupDelaySeconds())
                 .plusSeconds((long) (shortestRouteSolver.getShortestRoute(
                         request.getOriginNodeId(),
                         request.getDestinationNodeId()).getRouteCost() * request.getDetourConstraint()));
-        return new ScheduleNode(
+        return new ScheduleEntry(
                 deadline,
                 request.getLoad(),
                 request.getDestinationNodeId(),
                 request.getRecordedDestinationLatitude(),
                 request.getRecordedDestinationLongitude(),
-                ScheduleNodeKind.DROPOFF,
+                ScheduleEntryKind.DROPOFF,
                 request.getRequestId()
         );
     }
@@ -215,14 +214,16 @@ public class LSSolver implements OrpSolver {
         checkpoints.add(request.getDestinationNodeId());
         var bestRoute = getRouteToCompleteSchedule(checkpoints);
 
-        var schedule = new ArrayList<ScheduleNode>();
-        schedule.add(createPickupScheduleNode(request));
-        schedule.add(createDropoffScheduleNode(request));
+        var schedule = new ArrayList<ScheduleEntry>();
+        schedule.add(createPickupScheduleEntry(request));
+        schedule.add(createDropoffScheduleEntry(request));
 
         return Optional.of(new RequestMatching(
                 vehicle.getId(),
+
                 vehicle.getSchedule(),
-                schedule,
+                new ListSchedule(schedule),
+
                 bestRoute.getRoute().stream()
                         .map(this::mapNodeToRouteNode)
                         .collect(Collectors.toList()),
@@ -230,15 +231,15 @@ public class LSSolver implements OrpSolver {
         ));
     }
 
-    private boolean checkCapacityViolation(ExtendedVehicle vehicle, List<ScheduleNode> schedule) {
+    private boolean checkCapacityViolation(ExtendedVehicle vehicle, List<ScheduleEntry> schedule) {
         int capacity = vehicle.getResidualCapacity();
         for (var node : schedule) {
-            if (node.getKind() == ScheduleNodeKind.PICKUP) {
+            if (node.getKind() == ScheduleEntryKind.PICKUP) {
                 if (capacity < node.getLoad()) {
                     return false;
                 }
                 capacity -= node.getLoad();
-            } else if (node.getKind() == ScheduleNodeKind.DROPOFF) {
+            } else if (node.getKind() == ScheduleEntryKind.DROPOFF) {
                 capacity += node.getLoad();
             } else {
                 log.warn("unknown schedule node kind " + node.getKind());
@@ -254,7 +255,7 @@ public class LSSolver implements OrpSolver {
      * Если план нарушает дедлайны, то возвращается пустой Optional.
      * Возвращает маршрут без текущего ребра тс
      */
-    private Optional<NodesRoute> checkDeadlineViolationAndGetRoute(ExtendedVehicle vehicle, List<ScheduleNode> schedule) {
+    private Optional<NodesRoute> checkDeadlineViolationAndGetRoute(ExtendedVehicle vehicle, List<ScheduleEntry> schedule) {
         var partialRoutes = new ArrayList<NodesRoute>();
 
         long time = Instant.now()
@@ -280,26 +281,6 @@ public class LSSolver implements OrpSolver {
         return Optional.of(combineRoutes(partialRoutes));
     }
 
-    private Double getRouteCost(List<RouteNode> route) {
-        if (route.size() < 2) {
-            return 0d;
-        }
-
-        var routeNodesIds = route.stream()
-                .map(RouteNode::getNodeId)
-                .map(Object::toString)
-                .collect(Collectors.toList());
-
-        var routeSegments = graphMetadataStorage.getSegments(
-                routeNodesIds.subList(0, routeNodesIds.size() - 1),
-                routeNodesIds.subList(1, routeNodesIds.size())
-        );
-
-        return routeSegments.stream()
-                .map(Segment::getCost)
-                .reduce(0d, Double::sum);
-    }
-
     private Optional<RequestMatching> matchServingVehicle(ExtendedRequest request, ExtendedVehicle vehicle) {
         if (vehicle.getResidualCapacity() < request.getLoad()) {
             return Optional.empty();
@@ -308,13 +289,13 @@ public class LSSolver implements OrpSolver {
         // Стоимость текущего маршрута тс без учета дорожного сегмента, на котором находится тс в текущий момент времени
         double scheduledRouteCost = vehicle.getRouteScheduled().getRouteCost() - vehicle.getRoadSegment().getCost();
 
-        var pickupNode = createPickupScheduleNode(request);
-        var dropoffNode = createDropoffScheduleNode(request);
+        var pickupNode = createPickupScheduleEntry(request);
+        var dropoffNode = createDropoffScheduleEntry(request);
 
         var augmentedSchedules = new LazyScheduleGenerator(vehicle.getSchedule(), pickupNode, dropoffNode).getAllSchedules();
 
         double bestAdditionalCost = Double.POSITIVE_INFINITY;
-        List<ScheduleNode> bestSchedule = Collections.emptyList();
+        List<ScheduleEntry> bestSchedule = Collections.emptyList();
         List<Node> bestRoute = Collections.emptyList();
 
         for (var schedule : augmentedSchedules) {
@@ -338,8 +319,10 @@ public class LSSolver implements OrpSolver {
 
         return Optional.of(new RequestMatching(
                 vehicle.getId(),
+
                 vehicle.getSchedule(),
-                bestSchedule,
+                new ListSchedule(bestSchedule),
+
                 bestRoute.stream()
                         .map(this::mapNodeToRouteNode)
                         .collect(Collectors.toList()),

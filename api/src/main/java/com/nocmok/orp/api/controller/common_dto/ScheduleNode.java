@@ -1,7 +1,7 @@
 package com.nocmok.orp.api.controller.common_dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nocmok.orp.state_keeper.api.ScheduleEntryKind;
+import com.nocmok.orp.solver.api.ScheduleEntryKind;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

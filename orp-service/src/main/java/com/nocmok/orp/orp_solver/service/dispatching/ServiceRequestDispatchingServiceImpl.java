@@ -2,14 +2,13 @@ package com.nocmok.orp.orp_solver.service.dispatching;
 
 import com.nocmok.orp.orp_solver.service.dispatching.dto.VehicleReservation;
 import com.nocmok.orp.orp_solver.service.dispatching.mapper.ServiceRequestMapper;
-import com.nocmok.orp.orp_solver.service.dispatching.mapper.VehicleStateMapper;
 import com.nocmok.orp.orp_solver.service.notification.ServiceRequestNotificationService;
 import com.nocmok.orp.orp_solver.service.notification.dto.ServiceRequestNotification;
 import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
 import com.nocmok.orp.solver.api.OrpSolver;
 import com.nocmok.orp.solver.api.RequestMatching;
-import com.nocmok.orp.solver.api.ScheduleNode;
+import com.nocmok.orp.solver.api.Schedule;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import com.nocmok.orp.state_keeper.api.VehicleState;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +36,6 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
     private StateKeeper<?> stateKeeper;
     private ServiceRequestNotificationService serviceRequestNotificationService;
     private ServiceRequestMapper serviceRequestMapper;
-    private VehicleStateMapper vehicleStateMapper;
     private ServiceRequestStorageServiceImpl serviceRequestStorageService;
 
     @Value("${orp.orp_dispatcher.service.ServiceRequestDispatchingService.candidatesToFetch:5}")
@@ -48,14 +46,12 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
                                                 StateKeeper<?> stateKeeper,
                                                 ServiceRequestNotificationService serviceRequestNotificationService,
                                                 ServiceRequestMapper serviceRequestMapper,
-                                                VehicleStateMapper vehicleStateMapper,
                                                 ServiceRequestStorageServiceImpl serviceRequestStorageService) {
         this.solver = solver;
         this.vehicleReservationService = vehicleReservationService;
         this.stateKeeper = stateKeeper;
         this.serviceRequestNotificationService = serviceRequestNotificationService;
         this.serviceRequestMapper = serviceRequestMapper;
-        this.vehicleStateMapper = vehicleStateMapper;
         this.serviceRequestStorageService = serviceRequestStorageService;
     }
 
@@ -102,11 +98,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
 
                 // Фактические планы тс на текущий момент
                 var actualSchedules = stateKeeper.getVehiclesByIds(feasibleVehicleIds).stream()
-                        .collect(Collectors.toMap(
-                                VehicleState::getId,
-                                vehicleState -> vehicleState.getSchedule().stream()
-                                        .map(vehicleStateMapper::mapScheduleNodeToScheduleEntry)
-                                        .collect(Collectors.toUnmodifiableList())));
+                        .collect(Collectors.toMap(VehicleState::getId, VehicleState::getSchedule));
 
                 // финальный список идентификаторов тс, которым можно отправлять запрос
                 var suitableVehicleIds = actualSchedules.entrySet().stream()
@@ -152,7 +144,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
                         reservation.getVehicleId(),
                         reservation.getRequestId(),
                         reservation.getReservationId(),
-                        matchingToSatisfy.getServingPlan(),
+                        matchingToSatisfy.getServingPlan().asList(),
                         matchingToSatisfy.getServingRoute()
                 ));
             }
@@ -163,8 +155,8 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
                 .findFirst();
     }
 
-    private boolean schedulesEquals(List<ScheduleNode> scheduleOne, List<ScheduleNode> scheduleTwo) {
-        return Objects.equals(scheduleOne, scheduleTwo);
+    private boolean schedulesEquals(Schedule scheduleOne, Schedule scheduleTwo) {
+        return Objects.equals(scheduleOne.asList(), scheduleTwo.asList());
     }
 
     private void initiateRetry(ServiceRequestDto serviceRequestServiceDto) {

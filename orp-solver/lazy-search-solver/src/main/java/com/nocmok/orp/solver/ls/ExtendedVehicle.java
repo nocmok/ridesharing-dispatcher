@@ -1,19 +1,9 @@
 package com.nocmok.orp.solver.ls;
 
 import com.nocmok.orp.graph.api.Segment;
-import com.nocmok.orp.solver.api.ScheduleNode;
-import com.nocmok.orp.solver.api.ScheduleNodeKind;
-import com.nocmok.orp.state_keeper.api.ScheduleEntry;
-import com.nocmok.orp.state_keeper.api.ScheduleEntryKind;
+import com.nocmok.orp.solver.api.Schedule;
 import com.nocmok.orp.state_keeper.api.VehicleState;
 import com.nocmok.orp.state_keeper.api.VehicleStatus;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.nocmok.orp.solver.api.ScheduleNodeKind.DROPOFF;
-import static com.nocmok.orp.solver.api.ScheduleNodeKind.PICKUP;
 
 /**
  * Обертка над интерфейсом тс, обогащенная геоданными
@@ -22,7 +12,7 @@ class ExtendedVehicle {
 
     private final String id;
     private final VehicleStatus status;
-    private final List<ScheduleNode> schedule;
+    private final Schedule schedule;
     private final NodesRoute routeScheduled;
     private final Integer capacity;
     private final Integer residualCapacity;
@@ -35,12 +25,8 @@ class ExtendedVehicle {
                            NodesRoute routeScheduled) {
         this.id = state.getId();
         this.status = state.getStatus();
-        this.schedule = state.getSchedule().stream()
-                .map(this::mapScheduleEntryToScheduleNode)
-                .collect(Collectors.toCollection(ArrayList::new));
-//        this.routeScheduled = state.getRouteScheduled().stream()
-//                .map(this::mapRouteEntryToRouteNode)
-//                .collect(Collectors.toCollection(ArrayList::new));
+        this.schedule = state.getSchedule();
+
         this.routeScheduled = routeScheduled;
         this.capacity = state.getCapacity();
         this.residualCapacity = state.getResidualCapacity();
@@ -48,29 +34,6 @@ class ExtendedVehicle {
         this.longitude = longitude;
         this.roadSegment = roadSegment;
         this.progressOnRoadSegment = progressOnRoadSegment;
-    }
-
-    private ScheduleNodeKind mapScheduleEntryKindToScheduleNodeKind(ScheduleEntryKind scheduleEntryKind) {
-        switch (scheduleEntryKind) {
-            case PICKUP:
-                return PICKUP;
-            case DROPOFF:
-                return DROPOFF;
-            default:
-                throw new IllegalArgumentException("unknown schedule entry kind: " + scheduleEntryKind);
-        }
-    }
-
-    private ScheduleNode mapScheduleEntryToScheduleNode(ScheduleEntry scheduleEntry) {
-        return new ScheduleNode(
-                scheduleEntry.getDeadline(),
-                scheduleEntry.getLoad(),
-                scheduleEntry.getNodeId(),
-                scheduleEntry.getLatitude(),
-                scheduleEntry.getLongitude(),
-                mapScheduleEntryKindToScheduleNodeKind(scheduleEntry.getKind()),
-                scheduleEntry.getOrderId()
-        );
     }
 
     public String getId() {
@@ -81,7 +44,7 @@ class ExtendedVehicle {
         return status;
     }
 
-    public List<ScheduleNode> getSchedule() {
+    public Schedule getSchedule() {
         return schedule;
     }
 

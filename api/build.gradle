@@ -36,8 +36,6 @@ dependencies {
 
     implementation project(':graph-index:api')
     implementation project(':graph-index:mem-stub:client')
-
-
 }
 
 tasks.named('test') {

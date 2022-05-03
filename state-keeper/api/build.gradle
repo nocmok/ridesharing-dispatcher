@@ -14,6 +14,7 @@ repositories {
 
 dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
+    api project(':orp-solver:api')
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 }

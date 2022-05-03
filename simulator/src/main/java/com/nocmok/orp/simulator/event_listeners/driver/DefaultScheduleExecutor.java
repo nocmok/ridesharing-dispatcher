@@ -5,8 +5,8 @@ import com.nocmok.orp.graph.tools.EarthMath;
 import com.nocmok.orp.kafka.orp_input.OrderStatus;
 import com.nocmok.orp.simulator.service.api.DriverApi;
 import com.nocmok.orp.simulator.service.api.UpdateOrderStatusRequest;
-import com.nocmok.orp.state_keeper.api.ScheduleEntry;
-import com.nocmok.orp.state_keeper.api.ScheduleEntryKind;
+import com.nocmok.orp.solver.api.ScheduleEntry;
+import com.nocmok.orp.solver.api.ScheduleEntryKind;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayDeque;
