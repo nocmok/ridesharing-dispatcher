@@ -38,6 +38,7 @@ dependencies {
 	implementation project(':graph-index:api')
 	implementation project(':graph-index:mem-stub:client')
 	implementation project(':orp-solver:lazy-search-solver')
+	implementation project(':orp-solver:kinetic-tree-solver')
 	implementation project(':kafka')
 
 	implementation 'org.postgresql:postgresql:42.3.2'
