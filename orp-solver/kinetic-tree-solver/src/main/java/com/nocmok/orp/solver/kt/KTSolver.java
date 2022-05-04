@@ -292,16 +292,21 @@ public class KTSolver implements OrpSolver {
 
         kineticTree.insert(pickupNode, dropoffNode);
 
-        var bestAugmentedScheduleOptional = kineticTree.allPermutations().stream()
-                .min(Comparator.comparingLong(permutation -> permutation.get(permutation.size() - 1).bestEntryTime().toEpochMilli()));
+        var bestAugmentedScheduleOptional = kineticTree.minPermutation((a, b) -> {
+            if (a.size() != b.size()) {
+                throw new IllegalArgumentException("permutation sizes mismatched");
+            }
+            if (a.isEmpty()) {
+                return 0;
+            }
+            return Long.compare(a.get(a.size() - 1).bestEntryTime().toEpochMilli(), b.get(b.size() - 1).bestEntryTime().toEpochMilli());
+        });
 
         if (bestAugmentedScheduleOptional.isEmpty()) {
             return Optional.empty();
         }
 
-        var bestAugmentedSchedule = bestAugmentedScheduleOptional.get().stream()
-                .map(KineticTree.TreeNode::value)
-                .collect(Collectors.toList());
+        var bestAugmentedSchedule = bestAugmentedScheduleOptional.get();
 
         if (bestAugmentedSchedule.isEmpty()) {
             return Optional.empty();
@@ -311,9 +316,7 @@ public class KTSolver implements OrpSolver {
                 .map(ScheduleEntry::getNodeId)
                 .collect(Collectors.toList()));
 
-        var schedulesTree = kineticTree.allPermutations().stream()
-                .map(schedule -> schedule.stream().map(KineticTree.TreeNode::value)
-                        .collect(Collectors.toList())).collect(Collectors.toList());
+        var schedulesTree = kineticTree.allPermutations();
 
         return Optional.of(new RequestMatching(
                 vehicle.getId(),

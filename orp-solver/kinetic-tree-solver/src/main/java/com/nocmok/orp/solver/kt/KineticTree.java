@@ -2,12 +2,15 @@ package com.nocmok.orp.solver.kt;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
 
@@ -33,7 +36,8 @@ class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
         this.depth = other.depth;
     }
 
-    public KineticTree(Supplier<N> fabric, Validator<T, N> validator, Aggregator<T, N> aggregator, List<List<T>> validPermutations) {
+    public KineticTree(Supplier<N> fabric, Validator<T, N> validator, Aggregator<T, N> aggregator,
+                       List<List<T>> validPermutations) {
         this(fabric, validator, aggregator);
         validPermutations.forEach(this::addPermutation);
     }
@@ -160,13 +164,7 @@ class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
         return rootCopy;
     }
 
-    public List<List<N>> allPermutations() {
-        var allPermutations = new ArrayList<List<N>>();
-        forEachPermutation(permutation -> allPermutations.add(new ArrayList<>(permutation)));
-        return allPermutations;
-    }
-
-    public void forEachPermutation(Consumer<List<N>> callback) {
+    private void forEachPermutation(Consumer<List<N>> callback) {
         getAllPermutationsDfs(root, new ArrayList<>(), callback);
     }
 
@@ -182,6 +180,21 @@ class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
             getAllPermutationsDfs(subtree.getValue(), permutation, callback);
             permutation.remove(permutation.size() - 1);
         }
+    }
+
+    public List<List<T>> allPermutations() {
+        var allPermutations = new ArrayList<List<T>>();
+        forEachPermutation(permutation -> allPermutations.add(permutation.stream()
+                .map(TreeNode::value)
+                .collect(Collectors.toList())));
+        return allPermutations;
+    }
+
+    public Optional<List<T>> minPermutation(Comparator<List<N>> comparator) {
+        var allPermutations = new ArrayList<List<N>>();
+        forEachPermutation(permutation -> allPermutations.add(new ArrayList<>(permutation)));
+        return allPermutations.stream().min(comparator)
+                .map(permutation -> permutation.stream().map(TreeNode::value).collect(Collectors.toList()));
     }
 
     public interface Validator<T, N extends TreeNode<T, N>> {
