@@ -8,6 +8,7 @@ import com.nocmok.orp.orp_solver.config.state_keeper.StateKeeperConfig;
 import com.nocmok.orp.solver.kt.KTSolver;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +21,9 @@ public class KTSolverConfig {
     @Autowired
     private StateKeeperConfig vehicleStateServiceConfig;
 
+    @Value("${kt_solver.max_allowed_kinetic_tree_size:32}")
+    private Integer maxAllowedKineticTreeSize;
+
     @Bean
     @Autowired
     public KTSolver ktSolver(SpatialGraphMetadataStorage graphMetadataStorage,
@@ -27,6 +31,6 @@ public class KTSolverConfig {
                              ShortestRouteSolver shortestRouteSolver,
                              StateKeeper<?> stateKeeper) {
 
-        return new KTSolver(graphMetadataStorage, graphObjectsStorage, shortestRouteSolver, stateKeeper);
+        return new KTSolver(graphMetadataStorage, graphObjectsStorage, shortestRouteSolver, stateKeeper, maxAllowedKineticTreeSize);
     }
 }

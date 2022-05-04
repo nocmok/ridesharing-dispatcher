@@ -52,11 +52,25 @@ class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
         }
     }
 
-    // Вставляет в дерево пару значений, связанных ограничением, что
-    // значение parent во всех перестановках должно идти перед значением child
+    /**
+     * Вставляет в дерево пару значений, связанных ограничением, что значение parent во всех перестановках должно идти перед значением child.
+     * Затем из дерева отсекаются невалидные ветви с помощью заданных при создании дерева validator и aggregator.
+     */
     public void insert(T parent, T child) {
         insertPair(root, parent, child);
         depth += 2;
+        harvest();
+    }
+
+    /**
+     * То же самое, что и insert, но дерево не прорежается.
+     */
+    public void insertWithoutHarvest(T parent, T child) {
+        insertPair(root, parent, child);
+        depth += 2;
+    }
+
+    public void harvest() {
         harvest(root);
         if (root.isEmpty()) {
             depth = 0;
@@ -195,6 +209,27 @@ class KineticTree<T, N extends KineticTree.TreeNode<T, N>> {
         forEachPermutation(permutation -> allPermutations.add(new ArrayList<>(permutation)));
         return allPermutations.stream().min(comparator)
                 .map(permutation -> permutation.stream().map(TreeNode::value).collect(Collectors.toList()));
+    }
+
+    /**
+     * Возвращает количество вершин в дереве
+     */
+    public int size() {
+        return root.getSubtrees().values().stream()
+                .map(this::subtreeSize)
+                .reduce(Integer::sum)
+                .orElse(0);
+    }
+
+    /**
+     * Общее количество вершин в поддереве включая текущую вершину
+     */
+    private int subtreeSize(N root) {
+        int size = 1;
+        for (var child : root.getSubtrees().values()) {
+            size += subtreeSize(child);
+        }
+        return size;
     }
 
     public interface Validator<T, N extends TreeNode<T, N>> {

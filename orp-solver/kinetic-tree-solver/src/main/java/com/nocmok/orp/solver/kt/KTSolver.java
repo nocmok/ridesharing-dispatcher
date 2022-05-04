@@ -36,15 +36,19 @@ public class KTSolver implements OrpSolver {
     private final StateKeeper<? extends VehicleState> stateKeeper;
     private final RoadProgressStrategy roadProgressStrategy;
 
+    private Integer kineticTreeSizeThreshold;
+
     public KTSolver(SpatialGraphMetadataStorage graphMetadataStorage,
                     SpatialGraphObjectsStorage graphObjectsStorage,
                     ShortestRouteSolver shortestRouteSolver,
-                    StateKeeper<? extends VehicleState> stateKeeper) {
+                    StateKeeper<? extends VehicleState> stateKeeper,
+                    Integer kineticTreeSizeThreshold) {
         this.graphMetadataStorage = graphMetadataStorage;
         this.graphObjectsStorage = graphObjectsStorage;
         this.shortestRouteSolver = shortestRouteSolver;
         this.stateKeeper = stateKeeper;
         this.roadProgressStrategy = new DumbRoadProgressStrategy();
+        this.kineticTreeSizeThreshold = kineticTreeSizeThreshold;
     }
 
     private Double getVehicleProgressOnCurrentRoad(SpatialGraphObject vehicle) {
@@ -234,6 +238,12 @@ public class KTSolver implements OrpSolver {
         throw new UnsupportedOperationException("cannot maintain vehicle with schedule type " + vehicle.getSchedule().getClass());
     }
 
+    private Optional<RequestMatching> handleVehicleWithLargeKineticTree(ExtendedRequest request, ExtendedVehicle vehicle) {
+        log.info(
+                "vehicle with id " + vehicle.getId() + " has too large kinetic tree to process (> " + kineticTreeSizeThreshold + "). Will ignore this vehicle");
+        return Optional.empty();
+    }
+
     private Optional<RequestMatching> matchServingVehicle(ExtendedRequest request, ExtendedVehicle vehicle) {
         if (vehicle.getResidualCapacity() < request.getLoad()) {
             return Optional.empty();
@@ -290,7 +300,17 @@ public class KTSolver implements OrpSolver {
                     }
                 }, ((TreeSchedule) vehicle.getSchedule()).asTree());
 
-        kineticTree.insert(pickupNode, dropoffNode);
+        // Добавляем две точки запроса в план, но пока не делаем валидацию дерева,
+        // чтобы не ходить в дорогостоящий shortestRouteSolver, если дерево получилось слишком большим
+        kineticTree.insertWithoutHarvest(pickupNode, dropoffNode);
+
+        // Проверяем размер получившегося дерева
+        if (kineticTree.size() > kineticTreeSizeThreshold) {
+            return handleVehicleWithLargeKineticTree(request, vehicle);
+        }
+
+        // Если размер дерева в рамках разумного прорежаем дерево от невалидных ветвей
+        kineticTree.harvest();
 
         var bestAugmentedScheduleOptional = kineticTree.minPermutation((a, b) -> {
             if (a.size() != b.size()) {
