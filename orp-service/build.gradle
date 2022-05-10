@@ -30,12 +30,11 @@ dependencies {
 	implementation "io.grpc:grpc-protobuf:${grpcVersion}"
 	implementation "io.grpc:grpc-stub:${grpcVersion}"
 
-//	implementation project(':core-api')
 	implementation project(':orp-solver:api')
 	implementation project(':state-keeper:api')
+	implementation project(':postgres')
 	implementation project(':state-keeper:postgres')
-//	implementation project(':graph-index:mem-stub')
-	implementation project(':graph-index:api')
+
 	implementation project(':graph-index:mem-stub:client')
 	implementation project(':orp-solver:lazy-search-solver')
 	implementation project(':orp-solver:kinetic-tree-solver')

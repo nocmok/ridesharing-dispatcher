@@ -31,9 +31,9 @@ dependencies {
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
     implementation "io.grpc:grpc-stub:${grpcVersion}"
 
-    implementation project(':graph-index:api')
     implementation project(':graph-index:mem-stub:client')
     implementation project(':kafka')
+    implementation project(':postgres')
 
     implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'

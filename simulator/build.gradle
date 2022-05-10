@@ -33,7 +33,9 @@ dependencies {
     implementation project(':graph-index:api')
     implementation project(':graph-index:mem-stub:client')
     implementation project(':graph-index:tools')
-    implementation project(':state-keeper:api')
+
+    implementation project(':postgres')
+    implementation project(':state-keeper:postgres')
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'

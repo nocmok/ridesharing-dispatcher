@@ -4,7 +4,7 @@ plugins {
     id 'java-library'
 }
 
-group = 'com.nocmok.orp'
+group = 'com.nocmok.orp.state_keeper'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
@@ -22,7 +22,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework:spring-jdbc'
 
-    implementation project(':state-keeper:api')
+    api project(':state-keeper:api')
+    implementation project(':postgres')
 
     implementation 'com.fasterxml.jackson.core:jackson-core'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
@@ -32,6 +33,10 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+}
+
+tasks.withType(org.gradle.jvm.tasks.Jar) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 tasks.named('test') {

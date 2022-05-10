@@ -1,10 +1,13 @@
-package com.nocmok.orp.orp_solver.config.postgres;
+package com.nocmok.orp.postgres;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -15,7 +18,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.sql.DataSource;
 
 @Configuration
-public class PostgressConfig {
+@ComponentScan("com.nocmok.orp.postgres")
+@PropertySources({
+        @PropertySource("classpath:postgres999.properties"),
+        @PropertySource("classpath:application.properties"),
+})
+public class PostgresConfig {
 
     @Value("${pg.db.orp.username}")
     private String orpDbUserName;

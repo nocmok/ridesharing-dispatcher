@@ -29,7 +29,7 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.3.2'
     implementation 'org.springframework.kafka:spring-kafka'
 
-    implementation project(':state-keeper:api')
+    implementation project(':postgres')
     implementation project(':state-keeper:postgres')
 
     implementation project(':kafka')

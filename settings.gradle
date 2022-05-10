@@ -4,6 +4,7 @@ include ':api'
 
 include 'orp-solver:api'
 include 'orp-solver:lazy-search-solver'
+include 'orp-solver:kinetic-tree-solver'
 
 include 'state-keeper:api'
 include 'state-keeper:postgres'
@@ -19,7 +20,9 @@ include 'telemetry-processor:service'
 include 'orp-service'
 
 include 'notifier'
+include 'postgres'
 
 include 'kafka'
 
 include 'simulator'
+
