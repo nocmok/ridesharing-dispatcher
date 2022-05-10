@@ -22,14 +22,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class VehicleSessionStorageImpl implements VehicleSessionStorage {
 
-    private NamedParameterJdbcTemplate jdbcTemplate;
     private ObjectMapper objectMapper;
     private SessionStorage sessionStorage;
 
     @Autowired
-    public VehicleSessionStorageImpl(NamedParameterJdbcTemplate jdbcTemplate, ObjectMapper objectMapper,
+    public VehicleSessionStorageImpl(ObjectMapper objectMapper,
                                      SessionStorage sessionStorage) {
-        this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
         this.sessionStorage = sessionStorage;
     }
