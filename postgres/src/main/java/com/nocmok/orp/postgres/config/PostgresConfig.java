@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -17,6 +19,10 @@ import javax.sql.DataSource;
 
 @Configuration
 @ComponentScan("com.nocmok.orp.postgres")
+@PropertySources({
+        @PropertySource("classpath:postgres999.properties"),
+        @PropertySource("classpath:application.properties"),
+})
 public class PostgresConfig {
 
     @Value("${pg.db.orp.username}")
