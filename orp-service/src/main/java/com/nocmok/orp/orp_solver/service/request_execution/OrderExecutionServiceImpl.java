@@ -142,7 +142,7 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
                 throw new RuntimeException("cannot update to status " + updatedStatus + " as its not implemented yet");
             }
 
-            stateKeeper.updateVehiclesBatch(List.of(updatedSession));
+            stateKeeper.updateVehicle(updatedSession);
             serviceRequestStorageService.updateRequestStatus(orderId, updatedStatus);
         });
 

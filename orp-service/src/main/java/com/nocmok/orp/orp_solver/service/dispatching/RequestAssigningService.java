@@ -107,7 +107,7 @@ public class RequestAssigningService {
                 vehicleState.setSchedule(requestMatching.get().getServingPlan());
 
                 // Обновляем состояние тс
-                stateKeeper.updateVehiclesBatch(List.of(vehicleState));
+                stateKeeper.updateVehicle(vehicleState);
 
                 // Отправляем нотификацию водителю
                 assignRequestNotificationService.sendNotification(AssignRequestNotification.builder()

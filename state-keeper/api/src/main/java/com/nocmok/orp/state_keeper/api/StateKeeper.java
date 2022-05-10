@@ -6,15 +6,13 @@ public interface StateKeeper<V extends VehicleState> {
 
     List<String> getActiveVehiclesIds();
 
-    List<V> getActiveVehicles();
-
     // TODO Переименовать метод в getActiveVehiclesByIds
     /**
      * Возвращает только активные тс
      */
     List<V> getVehiclesByIds(List<String> ids);
 
-    void updateVehiclesBatch(List<? extends VehicleState> vehicle);
+    void updateVehicle(VehicleState vehicle);
 
     VehicleState createVehicle(VehicleState vehicle);
 

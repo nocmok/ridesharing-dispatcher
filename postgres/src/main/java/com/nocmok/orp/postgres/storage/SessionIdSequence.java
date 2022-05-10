@@ -1,4 +1,4 @@
-package com.nocmok.orp.state_keeper.pg;
+package com.nocmok.orp.postgres.storage;
 
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;

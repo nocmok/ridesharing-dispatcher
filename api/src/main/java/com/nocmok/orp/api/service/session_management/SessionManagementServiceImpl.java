@@ -8,9 +8,9 @@ import com.nocmok.orp.graph.api.ObjectUpdater;
 import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
 import com.nocmok.orp.kafka.orp_input.OrderStatus;
 import com.nocmok.orp.kafka.orp_input.UpdateOrderStatusMessage;
+import com.nocmok.orp.state_keeper.api.DefaultVehicle;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import com.nocmok.orp.state_keeper.api.VehicleStatus;
-import com.nocmok.orp.state_keeper.pg.VehicleDto;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class SessionManagementServiceImpl implements SessionManagementService {
     @Override public SessionDto createSession(SessionDto sessionDto) {
         // TODO делать транзакционно
 
-        var vehicle = stateKeeper.createVehicle(VehicleDto.builder()
+        var vehicle = stateKeeper.createVehicle(DefaultVehicle.builder()
                 .capacity(sessionDto.getInitialCapacity())
                 .residualCapacity(sessionDto.getInitialCapacity())
                 .status(VehicleStatus.PENDING)

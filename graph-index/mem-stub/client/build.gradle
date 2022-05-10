@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'application'
 }
 
@@ -18,7 +18,7 @@ dependencies {
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
     implementation "io.grpc:grpc-stub:${grpcVersion}"
 
-    implementation project(':graph-index:api')
+    api project(':graph-index:api')
     implementation project(':graph-index:mem-stub:protobuf')
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'

@@ -1,5 +1,6 @@
 package com.nocmok.orp.simulator.event_sources;
 
+import com.nocmok.orp.postgres.storage.SessionStorage;
 import com.nocmok.orp.simulator.event_bus.EventBus;
 import com.nocmok.orp.simulator.event_bus.event.NewSessionEvent;
 import com.nocmok.orp.simulator.storage.VehicleSessionStorage;
@@ -20,6 +21,8 @@ public class SessionEventSource {
     // Время создания самой новой вычитанной сессии
     private Instant latestKnownSessionCreatedAt = Instant.ofEpochMilli(0);
 
+    private SessionStorage sessionStorage;
+
     @Autowired
     public SessionEventSource(EventBus eventBus, VehicleSessionStorage vehicleSessionStorage) {
         this.eventBus = eventBus;
@@ -28,6 +31,8 @@ public class SessionEventSource {
 
     @Scheduled(fixedRate = 1000)
     public void updateActiveSessionList() {
+
+
         // В первый раз вычитывает всю таблицу vehicle_session запоминает самое большое время в createdAt
         var newSessions = vehicleSessionStorage.readActiveVehiclesCreatedAfterTimestampOrderedByCreationTime(latestKnownSessionCreatedAt);
         if (newSessions.isEmpty()) {
