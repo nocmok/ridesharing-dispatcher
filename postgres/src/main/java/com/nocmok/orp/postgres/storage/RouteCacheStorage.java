@@ -1,4 +1,4 @@
-package com.nocmok.orp.orp_solver.storage.route_cache;
+package com.nocmok.orp.postgres.storage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nocmok.orp.solver.api.RouteNode;
@@ -10,13 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 
 @Repository
-public class RouteCacheStorageImpl implements RouteCacheStorage {
+public class RouteCacheStorage {
 
     private NamedParameterJdbcTemplate jdbcTemplate;
     private ObjectMapper objectMapper;
 
     @Autowired
-    public RouteCacheStorageImpl(NamedParameterJdbcTemplate jdbcTemplate, ObjectMapper objectMapper) {
+    public RouteCacheStorage(NamedParameterJdbcTemplate jdbcTemplate, ObjectMapper objectMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
     }
@@ -29,7 +29,7 @@ public class RouteCacheStorageImpl implements RouteCacheStorage {
         }
     }
 
-    @Override public void updateRouteCacheBySessionId(String sessionId, List<RouteNode> route) {
+    public void updateRouteCacheBySessionId(String sessionId, List<RouteNode> route) {
         var params = new HashMap<String, Object>();
         params.put("sessionId", Long.parseLong(sessionId));
         params.put("routeJson", asJson(route));
