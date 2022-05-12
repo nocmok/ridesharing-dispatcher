@@ -1,7 +1,7 @@
 package com.nocmok.orp.api.service.request_management;
 
-import com.nocmok.orp.api.storage.request_management.RequestInfoStorage;
-import com.nocmok.orp.api.storage.request_management.dto.RequestInfo;
+import com.nocmok.orp.postgres.storage.ServiceRequestStorage;
+import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,10 @@ import java.util.Optional;
 @Service
 public class RequestServiceImpl implements RequestService {
 
-    private RequestInfoStorage requestInfoStorage;
+    private ServiceRequestStorage requestInfoStorage;
 
     @Autowired
-    public RequestServiceImpl(RequestInfoStorage requestInfoStorage) {
+    public RequestServiceImpl(ServiceRequestStorage requestInfoStorage) {
         this.requestInfoStorage = requestInfoStorage;
     }
 
@@ -22,7 +22,7 @@ public class RequestServiceImpl implements RequestService {
         return requestInfoStorage.getActiveRequestsIds();
     }
 
-    @Override public Optional<RequestInfo> getRequestInfo(String requestId) {
-        return requestInfoStorage.getRequestInfo(requestId);
+    @Override public Optional<ServiceRequest> getRequestInfo(String requestId) {
+        return requestInfoStorage.getRequestById(requestId);
     }
 }

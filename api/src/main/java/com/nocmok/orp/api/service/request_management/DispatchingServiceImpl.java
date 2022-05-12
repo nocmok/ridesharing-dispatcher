@@ -1,8 +1,8 @@
 package com.nocmok.orp.api.service.request_management;
 
-import com.nocmok.orp.api.storage.request_management.RequestInfoStorage;
-import com.nocmok.orp.api.storage.request_management.dto.RequestInfo;
 import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
+import com.nocmok.orp.postgres.storage.ServiceRequestStorage;
+import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,27 +15,27 @@ import java.util.List;
 @Service
 public class DispatchingServiceImpl implements DispatchingService {
 
-    private RequestInfoStorage requestInfoStorage;
+    private ServiceRequestStorage requestInfoStorage;
     private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Autowired
-    public DispatchingServiceImpl(RequestInfoStorage requestInfoStorage,
+    public DispatchingServiceImpl(ServiceRequestStorage requestInfoStorage,
                                   KafkaTemplate<String, Object> kafkaTemplate) {
         this.requestInfoStorage = requestInfoStorage;
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    private ServiceRequestMessage mapRequestInfoToOrpInputMessage(RequestInfo requestInfo) {
+    private ServiceRequestMessage mapRequestInfoToOrpInputMessage(ServiceRequest requestInfo) {
         return ServiceRequestMessage.builder()
                 .requestId(requestInfo.getRequestId())
-                .recordedOriginLatitude(requestInfo.getRecordedOrigin().getLatitude())
-                .recordedOriginLongitude(requestInfo.getRecordedOrigin().getLongitude())
-                .recordedDestinationLatitude(requestInfo.getRecordedDestination().getLatitude())
-                .recordedDestinationLongitude(requestInfo.getRecordedDestination().getLongitude())
-                .pickupRoadSegmentStartNodeId(requestInfo.getPickupRoadSegment().getSourceId())
-                .pickupRoadSegmentEndNodeId(requestInfo.getPickupRoadSegment().getTargetId())
-                .dropOffRoadSegmentStartNodeId(requestInfo.getDropoffRoadSegment().getSourceId())
-                .dropOffRoadSegmentEndNodeId(requestInfo.getDropoffRoadSegment().getTargetId())
+                .recordedOriginLatitude(requestInfo.getRecordedOriginLatitude())
+                .recordedOriginLongitude(requestInfo.getRecordedOriginLongitude())
+                .recordedDestinationLatitude(requestInfo.getRecordedDestinationLatitude())
+                .recordedDestinationLongitude(requestInfo.getRecordedDestinationLongitude())
+                .pickupRoadSegmentStartNodeId(requestInfo.getPickupRoadSegmentStartNodeId())
+                .pickupRoadSegmentEndNodeId(requestInfo.getPickupRoadSegmentEndNodeId())
+                .dropOffRoadSegmentStartNodeId(requestInfo.getDropOffRoadSegmentStartNodeId())
+                .dropOffRoadSegmentEndNodeId(requestInfo.getDropOffRoadSegmentEndNodeId())
                 .detourConstraint(requestInfo.getDetourConstraint())
                 .maxPickupDelaySeconds(requestInfo.getMaxPickupDelaySeconds())
                 .load(requestInfo.getLoad())
@@ -43,7 +43,7 @@ public class DispatchingServiceImpl implements DispatchingService {
                 .build();
     }
 
-    private void sendRequestToOrpInput(RequestInfo requestInfo) {
+    private void sendRequestToOrpInput(ServiceRequest requestInfo) {
         kafkaTemplate.send(new ProducerRecord<>(
                 "orp.input",
                 null,
@@ -53,7 +53,7 @@ public class DispatchingServiceImpl implements DispatchingService {
         ));
     }
 
-    @Override public RequestInfo dispatchRequest(RequestInfo requestInfo) {
+    @Override public ServiceRequest dispatchRequest(ServiceRequest requestInfo) {
         requestInfo = requestInfoStorage.storeRequest(requestInfo);
         sendRequestToOrpInput(requestInfo);
         return requestInfo;

@@ -2,15 +2,13 @@ package com.nocmok.orp.postgres.storage.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
 
 import java.time.Instant;
 
-@Getter
+@Data
 @Builder
 @AllArgsConstructor
-@ToString
 public class ServiceRequest {
     private String requestId;
 

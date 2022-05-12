@@ -1,6 +1,6 @@
 package com.nocmok.orp.api.service.session_management.dto;
 
-import com.nocmok.orp.api.storage.route_cache.RouteNode;
+import com.nocmok.orp.solver.api.RouteNode;
 import com.nocmok.orp.solver.api.ScheduleEntry;
 import com.nocmok.orp.state_keeper.api.VehicleStatus;
 import lombok.AllArgsConstructor;
