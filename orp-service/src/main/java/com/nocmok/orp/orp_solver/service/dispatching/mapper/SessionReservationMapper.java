@@ -1,14 +1,14 @@
 package com.nocmok.orp.orp_solver.service.dispatching.mapper;
 
 import com.nocmok.orp.orp_solver.service.dispatching.dto.VehicleReservation;
-import com.nocmok.orp.orp_solver.storage.dispatching.VehicleReservationEntry;
+import com.nocmok.orp.postgres.storage.dto.SessionReservationEntry;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VehicleReservationMapper {
+public class SessionReservationMapper {
 
-    public VehicleReservationEntry mapReservationToStorageEntry(VehicleReservation reservation) {
-        return VehicleReservationEntry.builder()
+    public SessionReservationEntry mapReservationToStorageEntry(VehicleReservation reservation) {
+        return SessionReservationEntry.builder()
                 .reservationId(reservation.getReservationId())
                 .vehicleId(reservation.getVehicleId())
                 .requestId(reservation.getRequestId())
@@ -17,7 +17,7 @@ public class VehicleReservationMapper {
                 .build();
     }
 
-    public VehicleReservation mapVehicleReservationEntryToVehicleReservation(VehicleReservationEntry entry) {
+    public VehicleReservation mapVehicleReservationEntryToVehicleReservation(SessionReservationEntry entry) {
         return VehicleReservation.builder()
                 .reservationId(entry.getReservationId())
                 .vehicleId(entry.getVehicleId())

@@ -10,8 +10,7 @@ import com.nocmok.orp.orp_solver.kafka.orp_input.validator.ServiceRequestValidat
 import com.nocmok.orp.orp_solver.service.dispatching.RequestAssigningService;
 import com.nocmok.orp.orp_solver.service.dispatching.ServiceRequestDispatchingService;
 import com.nocmok.orp.orp_solver.service.request_execution.OrderExecutionService;
-import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
-import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
+import com.nocmok.orp.postgres.storage.dto.OrderStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;

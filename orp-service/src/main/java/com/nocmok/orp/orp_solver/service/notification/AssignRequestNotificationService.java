@@ -2,7 +2,7 @@ package com.nocmok.orp.orp_solver.service.notification;
 
 import com.nocmok.orp.orp_solver.service.notification.dto.AssignRequestNotification;
 import com.nocmok.orp.orp_solver.service.notification.mapper.AssignRequestNotificationMapper;
-import com.nocmok.orp.orp_solver.storage.notification.OrpOutputOutboxStorage;
+import com.nocmok.orp.postgres.storage.OrpOutputOutboxStorage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

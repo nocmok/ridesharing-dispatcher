@@ -1,6 +1,7 @@
 package com.nocmok.orp.orp_solver.service.request_execution;
 
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
+import com.nocmok.orp.postgres.storage.dto.OrderStatus;
 import com.nocmok.orp.solver.api.ScheduleEntryKind;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import com.nocmok.orp.state_keeper.api.VehicleState;

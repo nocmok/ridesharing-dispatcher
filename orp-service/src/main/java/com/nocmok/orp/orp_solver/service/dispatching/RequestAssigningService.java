@@ -5,9 +5,10 @@ import com.nocmok.orp.orp_solver.service.dispatching.dto.VehicleReservation;
 import com.nocmok.orp.orp_solver.service.dispatching.mapper.ServiceRequestMapper;
 import com.nocmok.orp.orp_solver.service.notification.AssignRequestNotificationService;
 import com.nocmok.orp.orp_solver.service.notification.dto.AssignRequestNotification;
-import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
 import com.nocmok.orp.orp_solver.service.route_cache.RouteCache;
+import com.nocmok.orp.postgres.storage.dto.OrderStatus;
+import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 import com.nocmok.orp.solver.api.OrpSolver;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import com.nocmok.orp.state_keeper.api.VehicleState;
@@ -58,7 +59,7 @@ public class RequestAssigningService {
                 });
     }
 
-    private ServiceRequestStorageService.ServiceRequestDto getServiceRequestFromAssignRequest(AssignRequest request) {
+    private ServiceRequest getServiceRequestFromAssignRequest(AssignRequest request) {
         return serviceRequestService.getRequestById(request.getServiceRequestId())
                 .orElseGet(() -> {
                     log.error("received assigning request with invalid service request id. Request\n" + request);

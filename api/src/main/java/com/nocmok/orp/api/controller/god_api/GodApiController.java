@@ -21,8 +21,8 @@ import com.nocmok.orp.api.controller.god_api.dto.SessionGeodata;
 import com.nocmok.orp.api.service.geo.GeolocationService;
 import com.nocmok.orp.api.service.request_management.RequestService;
 import com.nocmok.orp.api.service.session_management.SessionManagementService;
-import com.nocmok.orp.api.storage.route_cache.RouteNode;
 import com.nocmok.orp.graph.api.Segment;
+import com.nocmok.orp.solver.api.RouteNode;
 import com.nocmok.orp.solver.api.ScheduleEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -134,12 +134,11 @@ public class GodApiController {
         return ResponseEntity.ok(GetRequestInfoResponse.builder()
                 .requestInfo(RequestInfo.builder()
                         .requestId(requestInfo.getRequestId())
-                        .recordedOrigin(new Coordinates(requestInfo.getRecordedOrigin().getLatitude(), requestInfo.getRecordedOrigin().getLongitude()))
+                        .recordedOrigin(new Coordinates(requestInfo.getRecordedOriginLatitude(), requestInfo.getRecordedOriginLongitude()))
                         .recordedDestination(
-                                new Coordinates(requestInfo.getRecordedDestination().getLatitude(), requestInfo.getRecordedDestination().getLongitude()))
-                        .pickupRoadSegment(new RoadSegment(requestInfo.getPickupRoadSegment().getSourceId(), requestInfo.getPickupRoadSegment().getTargetId()))
-                        .dropoffRoadSegment(
-                                new RoadSegment(requestInfo.getDropoffRoadSegment().getSourceId(), requestInfo.getDropoffRoadSegment().getTargetId()))
+                                new Coordinates(requestInfo.getRecordedDestinationLatitude(), requestInfo.getRecordedDestinationLongitude()))
+                        .pickupRoadSegment(new RoadSegment(requestInfo.getPickupRoadSegmentStartNodeId(), requestInfo.getPickupRoadSegmentEndNodeId()))
+                        .dropoffRoadSegment(new RoadSegment(requestInfo.getDropOffRoadSegmentStartNodeId(), requestInfo.getDropOffRoadSegmentEndNodeId()))
                         .detourConstraint(requestInfo.getDetourConstraint())
                         .load(requestInfo.getLoad())
                         .maxPickupDelaySeconds(requestInfo.getMaxPickupDelaySeconds())

@@ -1,7 +1,7 @@
 package com.nocmok.orp.orp_solver.service.notification.mapper;
 
 import com.nocmok.orp.orp_solver.service.notification.dto.AssignRequestNotification;
-import com.nocmok.orp.orp_solver.storage.notification.dto.OrpOutputOutboxRecord;
+import com.nocmok.orp.postgres.storage.dto.OrpOutputOutboxRecord;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;

@@ -2,8 +2,8 @@ package com.nocmok.orp.orp_solver.job;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nocmok.orp.kafka.orp_output.OrpOutputMessage;
-import com.nocmok.orp.orp_solver.storage.notification.OrpOutputOutboxStorage;
-import com.nocmok.orp.orp_solver.storage.notification.dto.OrpOutputOutboxRecord;
+import com.nocmok.orp.postgres.storage.OrpOutputOutboxStorage;
+import com.nocmok.orp.postgres.storage.dto.OrpOutputOutboxRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;

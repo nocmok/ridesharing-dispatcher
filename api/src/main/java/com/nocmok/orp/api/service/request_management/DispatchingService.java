@@ -1,8 +1,8 @@
 package com.nocmok.orp.api.service.request_management;
 
-import com.nocmok.orp.api.storage.request_management.dto.RequestInfo;
+import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 
 public interface DispatchingService {
 
-    RequestInfo dispatchRequest(RequestInfo requestInfo);
+    ServiceRequest dispatchRequest(ServiceRequest requestInfo);
 }

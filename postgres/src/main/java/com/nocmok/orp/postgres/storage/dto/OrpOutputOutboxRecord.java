@@ -1,4 +1,4 @@
-package com.nocmok.orp.orp_solver.storage.notification.dto;
+package com.nocmok.orp.postgres.storage.dto;
 
 import lombok.Builder;
 

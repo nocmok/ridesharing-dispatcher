@@ -1,8 +1,8 @@
 package com.nocmok.orp.orp_solver.config;
 
+import com.nocmok.orp.kafka.config.KafkaConfig;
 import com.nocmok.orp.orp_solver.config.graph_index.GraphIndexConfig;
 import com.nocmok.orp.orp_solver.config.jackson.JacksonConfig;
-import com.nocmok.orp.orp_solver.config.kafka.KafkaConfig;
 import com.nocmok.orp.orp_solver.config.schedule.ScheduleConfig;
 import com.nocmok.orp.postgres.PostgresConfig;
 import com.nocmok.orp.state_keeper.postgres.StateKeeperConfig;

@@ -1,4 +1,4 @@
-package com.nocmok.orp.orp_solver.service.request_execution;
+package com.nocmok.orp.postgres.storage.dto;
 
 public enum OrderStatus {
 

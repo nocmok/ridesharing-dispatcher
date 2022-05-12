@@ -1,11 +1,11 @@
-package com.nocmok.orp.telemetry.storage.dto;
+package com.nocmok.orp.postgres.storage.dto;
 
 import lombok.Builder;
 
 import java.time.Instant;
 
 @Builder
-public class VehicleTelemetryRecord {
+public class Telemetry {
 
     private String sessionId;
     private Double latitude;
@@ -13,7 +13,7 @@ public class VehicleTelemetryRecord {
     private Double accuracy;
     private Instant recordedAt;
 
-    public VehicleTelemetryRecord(String sessionId, Double latitude, Double longitude, Double accuracy, Instant recordedAt) {
+    public Telemetry(String sessionId, Double latitude, Double longitude, Double accuracy, Instant recordedAt) {
         this.sessionId = sessionId;
         this.latitude = latitude;
         this.longitude = longitude;

@@ -1,5 +1,6 @@
 package com.nocmok.orp.orp_solver.config.kafka;
 
+import com.nocmok.orp.kafka.config.KafkaConfig;
 import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

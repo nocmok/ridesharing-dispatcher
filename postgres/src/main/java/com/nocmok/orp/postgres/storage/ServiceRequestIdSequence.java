@@ -1,14 +1,14 @@
-package com.nocmok.orp.api.storage.request_management;
+package com.nocmok.orp.postgres.storage;
 
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RequestIdSequence {
+public class ServiceRequestIdSequence {
 
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    public RequestIdSequence(NamedParameterJdbcTemplate jdbcTemplate) {
+    public ServiceRequestIdSequence(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

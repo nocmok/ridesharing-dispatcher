@@ -1,4 +1,4 @@
-package com.nocmok.orp.orp_solver.storage.notification;
+package com.nocmok.orp.postgres.storage;
 
 import org.springframework.stereotype.Component;
 
