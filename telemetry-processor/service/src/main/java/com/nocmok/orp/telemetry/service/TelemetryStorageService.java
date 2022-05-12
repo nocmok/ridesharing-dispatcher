@@ -1,8 +1,8 @@
 package com.nocmok.orp.telemetry.service;
 
+import com.nocmok.orp.postgres.storage.TelemetryStorage;
+import com.nocmok.orp.postgres.storage.dto.Telemetry;
 import com.nocmok.orp.telemetry.service.dto.VehicleTelemetry;
-import com.nocmok.orp.telemetry.storage.TelemetryStorage;
-import com.nocmok.orp.telemetry.storage.dto.VehicleTelemetryRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,8 +22,8 @@ public class TelemetryStorageService {
         this.telemetryStorage = telemetryStorage;
     }
 
-    private VehicleTelemetryRecord mapVehicleTelemetryToVehicleTelemetryStorageRecord(VehicleTelemetry vehicleTelemetry) {
-        return VehicleTelemetryRecord.builder()
+    private Telemetry mapVehicleTelemetryToVehicleTelemetryStorageRecord(VehicleTelemetry vehicleTelemetry) {
+        return Telemetry.builder()
                 .sessionId(vehicleTelemetry.getSessionId())
                 .latitude(vehicleTelemetry.getLat())
                 .longitude(vehicleTelemetry.getLon())
@@ -32,7 +32,7 @@ public class TelemetryStorageService {
                 .build();
     }
 
-    private VehicleTelemetry mapVehicleTelemetryStorageRecordToVehicleTelemetry(VehicleTelemetryRecord vehicleTelemetryRecord) {
+    private VehicleTelemetry mapVehicleTelemetryStorageRecordToVehicleTelemetry(Telemetry vehicleTelemetryRecord) {
         return VehicleTelemetry.builder()
                 .sessionId(vehicleTelemetryRecord.getSessionId())
                 .lat(vehicleTelemetryRecord.getLatitude())
@@ -49,7 +49,7 @@ public class TelemetryStorageService {
     }
 
     public List<VehicleTelemetry> getLatestTelemetryForEachVehiclesAfterTimestamp(Instant timestamp) {
-        return telemetryStorage.getLatestRecordsForEachVehicleAfterTimestamp(timestamp).stream()
+        return telemetryStorage.getLatestRecordsForEachSessionAfterTimestamp(timestamp).stream()
                 .map(this::mapVehicleTelemetryStorageRecordToVehicleTelemetry)
                 .collect(Collectors.toList());
     }

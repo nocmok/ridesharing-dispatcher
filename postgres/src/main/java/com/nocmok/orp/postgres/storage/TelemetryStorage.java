@@ -1,10 +1,10 @@
-package com.nocmok.orp.telemetry.storage;
+package com.nocmok.orp.postgres.storage;
 
-import com.nocmok.orp.telemetry.storage.dto.VehicleTelemetryRecord;
+import com.nocmok.orp.postgres.storage.dto.Telemetry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.PreparedStatement;
@@ -17,20 +17,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-@Component
-public class TelemetryStoragePostgres implements TelemetryStorage {
+@Repository
+public class TelemetryStorage {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final TransactionTemplate transactionTemplate;
 
     @Autowired
-    public TelemetryStoragePostgres(NamedParameterJdbcTemplate jdbcTemplate, TransactionTemplate transactionTemplate) {
+    public TelemetryStorage(NamedParameterJdbcTemplate jdbcTemplate, TransactionTemplate transactionTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.transactionTemplate = transactionTemplate;
     }
 
-    private VehicleTelemetryRecord mapResultSetToVehicleTelemetry(ResultSet resultSet, int nRow) throws SQLException {
-        return new VehicleTelemetryRecord(
+    private Telemetry mapResultSetToTelemetry(ResultSet resultSet, int nRow) throws SQLException {
+        return new Telemetry(
                 resultSet.getString("session_id"),
                 resultSet.getDouble("latitude"),
                 resultSet.getDouble("longitude"),
@@ -42,7 +42,7 @@ public class TelemetryStoragePostgres implements TelemetryStorage {
     }
 
 
-    @Override public void appendTelemetryBatch(List<VehicleTelemetryRecord> telemetryBatch) {
+    public void appendTelemetryBatch(List<Telemetry> telemetryBatch) {
         if (telemetryBatch.isEmpty()) {
             return;
         }
@@ -64,7 +64,7 @@ public class TelemetryStoragePostgres implements TelemetryStorage {
                 });
     }
 
-    @Override public List<VehicleTelemetryRecord> getLatestRecordsForEachVehicleAfterTimestamp(Instant timestamp) {
+    public List<Telemetry> getLatestRecordsForEachSessionAfterTimestamp(Instant timestamp) {
         var params = new HashMap<String, Object>();
         params.put("timestamp", Timestamp.from(timestamp));
         return jdbcTemplate.query(
@@ -78,7 +78,7 @@ public class TelemetryStoragePostgres implements TelemetryStorage {
                         " where recorded_at >= :timestamp " +
                         " order by recorded_at asc ",
                 params,
-                this::mapResultSetToVehicleTelemetry
+                this::mapResultSetToTelemetry
         );
     }
 }
