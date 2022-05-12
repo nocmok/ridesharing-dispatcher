@@ -1,11 +1,11 @@
-package com.nocmok.orp.orp_solver.storage.dispatching;
+package com.nocmok.orp.postgres.storage.dto;
 
 import lombok.Builder;
 
 import java.time.Instant;
 
 @Builder
-public class VehicleReservationEntry {
+public class SessionReservationEntry {
 
     private String reservationId;
     private String vehicleId;
@@ -13,10 +13,10 @@ public class VehicleReservationEntry {
     private Instant createdAt;
     private Instant expiredAt;
 
-    public VehicleReservationEntry() {
+    public SessionReservationEntry() {
     }
 
-    public VehicleReservationEntry(String reservationId, String vehicleId, String requestId, Instant createdAt, Instant expiredAt) {
+    public SessionReservationEntry(String reservationId, String vehicleId, String requestId, Instant createdAt, Instant expiredAt) {
         this.reservationId = reservationId;
         this.vehicleId = vehicleId;
         this.requestId = requestId;

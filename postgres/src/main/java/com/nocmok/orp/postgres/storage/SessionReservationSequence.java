@@ -1,16 +1,16 @@
-package com.nocmok.orp.orp_solver.storage.dispatching;
+package com.nocmok.orp.postgres.storage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ReservationTicketSequence {
+public class SessionReservationSequence {
 
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public ReservationTicketSequence(JdbcTemplate jdbcTemplate) {
+    public SessionReservationSequence(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

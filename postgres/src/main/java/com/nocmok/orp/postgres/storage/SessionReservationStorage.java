@@ -1,5 +1,6 @@
-package com.nocmok.orp.orp_solver.storage.dispatching;
+package com.nocmok.orp.postgres.storage;
 
+import com.nocmok.orp.postgres.storage.dto.SessionReservationEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -17,17 +18,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
-public class VehicleReservationStorage {
+public class SessionReservationStorage {
 
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    public VehicleReservationStorage(NamedParameterJdbcTemplate jdbcTemplate) {
+    public SessionReservationStorage(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private VehicleReservationEntry parseVehicleReservationEntryFromResultSet(ResultSet rs, int nRow) throws SQLException {
-        return VehicleReservationEntry.builder()
+    private SessionReservationEntry parseVehicleReservationEntryFromResultSet(ResultSet rs, int nRow) throws SQLException {
+        return SessionReservationEntry.builder()
                 .reservationId(Objects.toString(rs.getLong("reservation_id")))
                 .vehicleId(Objects.toString(rs.getLong("session_id")))
                 .requestId(Objects.toString(rs.getLong("request_id")))
@@ -36,7 +37,7 @@ public class VehicleReservationStorage {
                 .build();
     }
 
-    public List<VehicleReservationEntry> getNotExpiredReservationsByVehicleIdsForUpdate(List<String> vehicleIds) {
+    public List<SessionReservationEntry> getNotExpiredReservationsByVehicleIdsForUpdate(List<String> vehicleIds) {
         var params = new HashMap<String, Object>();
         params.put("ids", vehicleIds.stream()
                 .map(Long::parseLong)
@@ -53,7 +54,7 @@ public class VehicleReservationStorage {
                         " for update ", params, this::parseVehicleReservationEntryFromResultSet);
     }
 
-    public void insertVehicleReservationBatch(List<VehicleReservationEntry> batch) {
+    public void insertVehicleReservationBatch(List<SessionReservationEntry> batch) {
         var batchArray = new ArrayList<>(batch);
         jdbcTemplate.getJdbcTemplate().batchUpdate(
                 " insert into vehicle_reservation (reservation_id, session_id, request_id, created_at, expired_at) values(?,?,?,?,?) ",
@@ -84,7 +85,7 @@ public class VehicleReservationStorage {
                 );
     }
 
-    public Optional<VehicleReservationEntry> getReservationById(String id) {
+    public Optional<SessionReservationEntry> getReservationById(String id) {
         var params = new HashMap<String, Object>();
         params.put("reservationId", Long.parseLong(id));
         return jdbcTemplate.query(" select " +
@@ -100,7 +101,7 @@ public class VehicleReservationStorage {
                 .findFirst();
     }
 
-    public void updateReservation(VehicleReservationEntry entry) {
+    public void updateReservation(SessionReservationEntry entry) {
         var params = new HashMap<String, Object>();
         params.put("sessionId", Long.parseLong(entry.getVehicleId()));
         params.put("requestId", Long.parseLong(entry.getRequestId()));

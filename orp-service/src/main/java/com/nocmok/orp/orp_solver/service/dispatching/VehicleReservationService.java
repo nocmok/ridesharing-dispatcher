@@ -1,10 +1,10 @@
 package com.nocmok.orp.orp_solver.service.dispatching;
 
 import com.nocmok.orp.orp_solver.service.dispatching.dto.VehicleReservation;
-import com.nocmok.orp.orp_solver.service.dispatching.mapper.VehicleReservationMapper;
-import com.nocmok.orp.orp_solver.storage.dispatching.ReservationTicketSequence;
-import com.nocmok.orp.orp_solver.storage.dispatching.VehicleReservationEntry;
-import com.nocmok.orp.orp_solver.storage.dispatching.VehicleReservationStorage;
+import com.nocmok.orp.orp_solver.service.dispatching.mapper.SessionReservationMapper;
+import com.nocmok.orp.postgres.storage.SessionReservationSequence;
+import com.nocmok.orp.postgres.storage.SessionReservationStorage;
+import com.nocmok.orp.postgres.storage.dto.SessionReservationEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -22,27 +22,27 @@ import java.util.stream.Collectors;
 public class VehicleReservationService {
 
     private TransactionTemplate transactionTemplate;
-    private ReservationTicketSequence reservationTicketSequence;
-    private VehicleReservationStorage vehicleReservationStorage;
-    private VehicleReservationMapper vehicleReservationMapper;
+    private SessionReservationSequence sessionReservationSequence;
+    private SessionReservationStorage sessionReservationStorage;
+    private SessionReservationMapper sessionReservationMapper;
 
     @Autowired
     public VehicleReservationService(TransactionTemplate transactionTemplate,
-                                     ReservationTicketSequence reservationTicketSequence,
-                                     VehicleReservationStorage vehicleReservationStorage,
-                                     VehicleReservationMapper vehicleReservationMapper) {
+                                     SessionReservationSequence reservationTicketSequence,
+                                     SessionReservationStorage vehicleReservationStorage,
+                                     SessionReservationMapper vehicleReservationMapper) {
         this.transactionTemplate = transactionTemplate;
-        this.reservationTicketSequence = reservationTicketSequence;
-        this.vehicleReservationStorage = vehicleReservationStorage;
-        this.vehicleReservationMapper = vehicleReservationMapper;
+        this.sessionReservationSequence = reservationTicketSequence;
+        this.sessionReservationStorage = vehicleReservationStorage;
+        this.sessionReservationMapper = vehicleReservationMapper;
     }
 
     public List<VehicleReservation> tryReserveVehicles(ReservationCallback callback) {
         return transactionTemplate.execute(status -> {
             var idsToCheckReservation = callback.getVehicleIdsToCheckReservation();
             var reservedIds =
-                    vehicleReservationStorage.getNotExpiredReservationsByVehicleIdsForUpdate(idsToCheckReservation).stream()
-                            .map(VehicleReservationEntry::getVehicleId)
+                    sessionReservationStorage.getNotExpiredReservationsByVehicleIdsForUpdate(idsToCheckReservation).stream()
+                            .map(SessionReservationEntry::getVehicleId)
                             .collect(Collectors.toList());
             var feasibleIds = new ArrayList<>(idsToCheckReservation);
             feasibleIds.removeAll(reservedIds);
@@ -50,14 +50,14 @@ public class VehicleReservationService {
 
             var reservations = callback.reserveVehicles(feasibleIds);
             reservations.forEach(reservation -> {
-                reservation.setReservationId(reservationTicketSequence.nextValue());
+                reservation.setReservationId(sessionReservationSequence.nextValue());
                 //
                 reservation.setCreatedAt(Instant.now());
                 reservation.setExpiredAt(null);
             });
 
-            vehicleReservationStorage.insertVehicleReservationBatch(reservations.stream()
-                    .map(vehicleReservationMapper::mapReservationToStorageEntry)
+            sessionReservationStorage.insertVehicleReservationBatch(reservations.stream()
+                    .map(sessionReservationMapper::mapReservationToStorageEntry)
                     .collect(Collectors.toList()));
 
             callback.handleReservations(reservations);
@@ -67,12 +67,12 @@ public class VehicleReservationService {
     }
 
     public Optional<VehicleReservation> getReservationById(String id) {
-        return vehicleReservationStorage.getReservationById(id)
-                .map(vehicleReservationMapper::mapVehicleReservationEntryToVehicleReservation);
+        return sessionReservationStorage.getReservationById(id)
+                .map(sessionReservationMapper::mapVehicleReservationEntryToVehicleReservation);
     }
 
     public void updateReservation(VehicleReservation reservation) {
-        vehicleReservationStorage.updateReservation(vehicleReservationMapper.mapReservationToStorageEntry(reservation));
+        sessionReservationStorage.updateReservation(sessionReservationMapper.mapReservationToStorageEntry(reservation));
     }
 
     public interface ReservationCallback {
