@@ -1,5 +1,6 @@
 package com.nocmok.orp.orp_solver.config.kafka;
 
+import com.nocmok.orp.kafka.config.KafkaConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
