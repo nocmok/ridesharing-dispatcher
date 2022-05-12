@@ -1,8 +1,8 @@
-package com.nocmok.orp.orp_solver.storage.notification;
+package com.nocmok.orp.postgres.storage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nocmok.orp.orp_solver.storage.notification.dto.OrpOutputOutboxRecord;
+import com.nocmok.orp.postgres.storage.dto.OrpOutputOutboxRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
