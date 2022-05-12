@@ -1,14 +1,13 @@
 package com.nocmok.orp.orp_solver.kafka.orp_input.mapper;
 
 import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
-import com.nocmok.orp.orp_solver.service.dispatching.ServiceRequestDispatchingService;
-import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
-import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
+import com.nocmok.orp.postgres.storage.dto.OrderStatus;
+import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 
 public class ServiceRequestMessageMapper {
 
-    public ServiceRequestDispatchingService.ServiceRequestDto mapMessageToServiceRequestDispatchingServiceDto(ServiceRequestMessage message) {
-        return ServiceRequestDispatchingService.ServiceRequestDto.builder()
+    public ServiceRequest mapMessageToServiceRequestDispatchingServiceDto(ServiceRequestMessage message) {
+        return ServiceRequest.builder()
                 .requestId(message.getRequestId())
                 .recordedOriginLatitude(message.getRecordedOriginLatitude())
                 .recordedOriginLongitude(message.getRecordedOriginLongitude())
@@ -27,8 +26,8 @@ public class ServiceRequestMessageMapper {
 
     }
 
-    public ServiceRequestStorageServiceImpl.ServiceRequestDto mapMessageToServiceRequestStorageServiceDto(ServiceRequestMessage message) {
-        return ServiceRequestStorageServiceImpl.ServiceRequestDto.builder()
+    public ServiceRequest mapMessageToServiceRequestStorageServiceDto(ServiceRequestMessage message) {
+        return ServiceRequest.builder()
                 .requestId(message.getRequestId())
                 .recordedOriginLatitude(message.getRecordedOriginLatitude())
                 .recordedOriginLongitude(message.getRecordedOriginLongitude())

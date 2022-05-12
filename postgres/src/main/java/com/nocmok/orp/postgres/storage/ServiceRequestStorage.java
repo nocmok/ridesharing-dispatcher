@@ -1,6 +1,7 @@
-package com.nocmok.orp.orp_solver.storage.request_management;
+package com.nocmok.orp.postgres.storage;
 
-import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
+import com.nocmok.orp.postgres.storage.dto.OrderStatus;
+import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -9,21 +10,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class ServiceRequestStorageImpl implements ServiceRequestStorage {
+public class ServiceRequestStorage {
 
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    public ServiceRequestStorageImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+    public ServiceRequestStorage(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private ServiceRequestDto mapResultSetToServiceRequest(ResultSet rs, int nRow) throws SQLException {
-        return new ServiceRequestDto(
+    private ServiceRequest mapResultSetToServiceRequest(ResultSet rs, int nRow) throws SQLException {
+        return new ServiceRequest(
                 Long.toString(rs.getLong("request_id")),
                 rs.getDouble("recorded_origin_latitude"),
                 rs.getDouble("recorded_origin_longitude"),
@@ -43,8 +43,7 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
         );
     }
 
-    @Override
-    public Optional<ServiceRequestDto> getRequestById(String id) {
+    public Optional<ServiceRequest> getRequestById(String id) {
         var params = new HashMap<String, Object>();
         params.put("requestId", Long.parseLong(id));
         var requests = jdbcTemplate.query(
@@ -70,7 +69,7 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
         return requests.stream().findFirst();
     }
 
-    @Override public Optional<ServiceRequestDto> getRequestByIdForUpdate(String id) {
+    public Optional<ServiceRequest> getRequestByIdForUpdate(String id) {
         var params = new HashMap<String, Object>();
         params.put("requestId", Long.parseLong(id));
         var requests = jdbcTemplate.query(
@@ -97,7 +96,7 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
         return requests.stream().findFirst();
     }
 
-    @Override public void updateRequestStatus(String requestId, OrderStatus updatedStatus) {
+    public void updateRequestStatus(String requestId, OrderStatus updatedStatus) {
         var params = new HashMap<String, Object>();
         params.put("status", updatedStatus.name());
         params.put("requestId", Long.parseLong(requestId));
@@ -107,7 +106,7 @@ public class ServiceRequestStorageImpl implements ServiceRequestStorage {
                         " where request_id = :requestId ", params);
     }
 
-    @Override public void updateServingSessionId(String requestId, String sessionId) {
+    public void updateServingSessionId(String requestId, String sessionId) {
         var params = new HashMap<String, Object>();
         params.put("servingSessionId", Long.parseLong(sessionId));
         params.put("requestId", Long.parseLong(requestId));

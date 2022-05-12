@@ -4,8 +4,9 @@ import com.nocmok.orp.orp_solver.service.dispatching.dto.VehicleReservation;
 import com.nocmok.orp.orp_solver.service.dispatching.mapper.ServiceRequestMapper;
 import com.nocmok.orp.orp_solver.service.notification.ServiceRequestNotificationService;
 import com.nocmok.orp.orp_solver.service.notification.dto.ServiceRequestNotification;
-import com.nocmok.orp.orp_solver.service.request_execution.OrderStatus;
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
+import com.nocmok.orp.postgres.storage.dto.OrderStatus;
+import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 import com.nocmok.orp.solver.api.OrpSolver;
 import com.nocmok.orp.solver.api.RequestMatching;
 import com.nocmok.orp.solver.api.Schedule;
@@ -56,7 +57,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
     }
 
     @Override
-    public void dispatchServiceRequest(ServiceRequestDto serviceRequest) {
+    public void dispatchServiceRequest(ServiceRequest serviceRequest) {
         var candidates =
                 solver.getTopKCandidateVehicles(serviceRequestMapper.mapServiceDtoToRequest(serviceRequest), candidatesToFetch);
         if (candidates.isEmpty()) {
@@ -75,7 +76,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
         log.debug(" serving vehicle selected for request\n" + serviceRequest + "\nserving vehicle id\n" + servingVehicleId);
     }
 
-    private Optional<String> dispatchToFirstFeasibleVehicle(ServiceRequestDto request, List<RequestMatching> sortedMatchings) {
+    private Optional<String> dispatchToFirstFeasibleVehicle(ServiceRequest request, List<RequestMatching> sortedMatchings) {
         if (sortedMatchings.isEmpty()) {
             return Optional.empty();
         }
@@ -159,7 +160,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
         return Objects.equals(scheduleOne.asList(), scheduleTwo.asList());
     }
 
-    private void initiateRetry(ServiceRequestDto serviceRequestServiceDto) {
+    private void initiateRetry(ServiceRequest serviceRequestServiceDto) {
         serviceRequestStorageService.updateRequestStatus(serviceRequestServiceDto.getRequestId(), OrderStatus.DENIED);
         log.debug("request retry initiated, but not implemented yet ...");
     }

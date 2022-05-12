@@ -1,9 +1,6 @@
 package com.nocmok.orp.orp_solver.service.request_execution;
 
-import com.nocmok.orp.state_keeper.api.VehicleState;
-
-import java.util.List;
-import java.util.Optional;
+import com.nocmok.orp.postgres.storage.dto.OrderStatus;
 
 /**
  * Сервис для обработки прогресса выполнения запросов
