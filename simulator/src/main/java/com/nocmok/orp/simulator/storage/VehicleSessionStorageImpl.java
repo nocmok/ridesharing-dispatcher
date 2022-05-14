@@ -8,15 +8,17 @@ import com.nocmok.orp.solver.api.ReadOnlySchedule;
 import com.nocmok.orp.solver.api.Schedule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Repository
 @Slf4j
@@ -41,7 +43,7 @@ public class VehicleSessionStorageImpl implements VehicleSessionStorage {
     }
 
     private VehicleSession parseFromSessionAndStatusLog(Session session, List<Session.StatusLogEntry> statusLog) {
-        if(statusLog.isEmpty()) {
+        if (statusLog.isEmpty()) {
             throw new IllegalArgumentException("status log should not be empty");
         }
         return VehicleSession.builder()
@@ -56,15 +58,32 @@ public class VehicleSessionStorageImpl implements VehicleSessionStorage {
 
     @Override public Optional<VehicleSession> getSessionById(String sessionId) {
         var session = sessionStorage.getSessionsByIds(List.of(Long.parseLong(sessionId))).stream().findAny();
-        if(session.isEmpty()) {
+        if (session.isEmpty()) {
             return Optional.empty();
         }
-        var statusLog = sessionStorage.getSessionStatusLog(Long.parseLong(sessionId));
-        if(statusLog.isEmpty()) {
+
+        var statusLog = getSessionsFirstAndLastStatusLogEntries(List.of(Long.parseLong(sessionId)))
+                .getOrDefault(Long.parseLong(sessionId), Collections.emptyList());
+
+        if (statusLog.isEmpty()) {
             log.warn("empty status log for session with id {}", sessionId);
             return Optional.empty();
         }
         return Optional.of(parseFromSessionAndStatusLog(session.get(), statusLog));
+    }
+
+    /**
+     * Возвращает для каждой сессии лог статусов в котором содержится только первая и последняя запись полного лога
+     */
+    private Map<Long, List<Session.StatusLogEntry>> getSessionsFirstAndLastStatusLogEntries(List<Long> ids) {
+        var statusLogsEarliestEntries = sessionStorage.getSessionsStatusLog(ids, 0, 1, false);
+        var statusLogsLatestEntries = sessionStorage.getSessionsStatusLog(ids, 0, 1, true);
+        var statusLogs = ids.stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        id -> Stream.concat(statusLogsEarliestEntries.get(id).stream(), statusLogsLatestEntries.get(id).stream())
+                                .collect(Collectors.toList())));
+        return statusLogs;
     }
 
     @Transactional
@@ -74,7 +93,7 @@ public class VehicleSessionStorageImpl implements VehicleSessionStorage {
             return Collections.emptyList();
         }
         var activeSessions = sessionStorage.getSessionsByIds(activeSessionIds);
-        var statusLogs = sessionStorage.getSessionsStatusLog(activeSessionIds);
+        var statusLogs = getSessionsFirstAndLastStatusLogEntries(activeSessionIds);
         return activeSessions.stream()
                 .map(session -> parseFromSessionAndStatusLog(session, statusLogs.get(session.getSessionId())))
                 .collect(Collectors.toList());

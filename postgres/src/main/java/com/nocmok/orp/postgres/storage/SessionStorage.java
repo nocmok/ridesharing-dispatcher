@@ -179,22 +179,34 @@ public class SessionStorage {
         return new Session.StatusLogEntry(SessionStatus.valueOf(rs.getString("status")), rs.getTimestamp("updated_at").toInstant());
     }
 
-    public Map<Long, List<Session.StatusLogEntry>> getSessionsStatusLog(List<Long> ids) {
+    /**
+     * @param ascendingOrder если true, то 0 страницы содержит самые старые записи, если false, то 0 страница содержит самые новые записи
+     */
+    public Map<Long, List<Session.StatusLogEntry>> getSessionsStatusLog(List<Long> ids, int pageNumber, int entriesPerPage, boolean ascendingOrder) {
         if (ids.isEmpty()) {
             return Collections.emptyMap();
         }
-        var statusLogEntries = jdbcTemplate.query(" select session_id, status, updated_at " +
-                        " from session_status_log " +
-                        " where session_id in (:ids) ",
-                Map.of("ids", ids),
+        var params = new HashMap<String, Object>();
+        params.put("ids", ids);
+        params.put("fromInclusive", pageNumber * entriesPerPage);
+        params.put("toExclusive", pageNumber * entriesPerPage + entriesPerPage);
+        var statusLogEntries = jdbcTemplate.query(
+                " select session_id, status, updated_at " +
+                        " from (" +
+                        "    select session_id, status, updated_at, " +
+                        "    ((row_number() over (partition by session_id order by updated_at " + (ascendingOrder ? "asc" : "desc") + ")) - 1) as rn " +
+                        "    from session_status_log " +
+                        "    where session_id in (:ids) " +
+                        " ) as t " +
+                        " where rn >= :fromInclusive and rn < :toExclusive ",
+                params,
                 (rs, rn) -> Map.entry(rs.getLong("session_id"), parseStatusLogFromResultSet(rs, rn)));
-
 
         return statusLogEntries.stream()
                 .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
     }
 
-    public List<Session.StatusLogEntry> getSessionStatusLog(Long id) {
-        return getSessionsStatusLog(List.of(id)).getOrDefault(id, Collections.emptyList());
+    public List<Session.StatusLogEntry> getSessionStatusLog(Long id, int pageNumber, int entriesPerPage, boolean ascendingOrder) {
+        return getSessionsStatusLog(List.of(id), pageNumber, entriesPerPage, ascendingOrder).getOrDefault(id, Collections.emptyList());
     }
 }

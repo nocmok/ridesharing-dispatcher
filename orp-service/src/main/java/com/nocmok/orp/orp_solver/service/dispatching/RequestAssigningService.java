@@ -7,6 +7,8 @@ import com.nocmok.orp.orp_solver.service.notification.AssignRequestNotificationS
 import com.nocmok.orp.orp_solver.service.notification.dto.AssignRequestNotification;
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
 import com.nocmok.orp.orp_solver.service.route_cache.RouteCache;
+import com.nocmok.orp.postgres.storage.OrderAssignmentStorage;
+import com.nocmok.orp.postgres.storage.dto.OrderAssignment;
 import com.nocmok.orp.postgres.storage.dto.OrderStatus;
 import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 import com.nocmok.orp.solver.api.OrpSolver;
@@ -34,13 +36,15 @@ public class RequestAssigningService {
     private AssignRequestNotificationService assignRequestNotificationService;
     private ServiceRequestMapper serviceRequestMapper;
     private RouteCache routeCache;
+    private OrderAssignmentStorage orderAssignmentStorage;
 
     @Autowired
     public RequestAssigningService(OrpSolver orpSolver, StateKeeper<?> stateKeeper, TransactionTemplate transactionTemplate,
                                    ServiceRequestStorageService serviceRequestService,
                                    VehicleReservationService vehicleReservationService,
                                    AssignRequestNotificationService assignRequestNotificationService,
-                                   ServiceRequestMapper serviceRequestMapper, RouteCache routeCache) {
+                                   ServiceRequestMapper serviceRequestMapper, RouteCache routeCache,
+                                   OrderAssignmentStorage orderAssignmentStorage) {
         this.orpSolver = orpSolver;
         this.stateKeeper = stateKeeper;
         this.transactionTemplate = transactionTemplate;
@@ -49,6 +53,7 @@ public class RequestAssigningService {
         this.assignRequestNotificationService = assignRequestNotificationService;
         this.serviceRequestMapper = serviceRequestMapper;
         this.routeCache = routeCache;
+        this.orderAssignmentStorage = orderAssignmentStorage;
     }
 
     private VehicleState getVehicleStateFromAssignRequest(AssignRequest request) {
@@ -121,6 +126,12 @@ public class RequestAssigningService {
                 // Снимаем резерв с тс
                 vehicleReservation.setExpiredAt(Instant.now());
                 vehicleReservationService.updateReservation(vehicleReservation);
+
+                orderAssignmentStorage.insertAssignment(OrderAssignment.builder()
+                        .orderId(Long.parseLong(request.getServiceRequestId()))
+                        .sessionId(Long.parseLong(request.getVehicleId()))
+                        .assignedAt(Instant.now())
+                        .build());
             });
         } catch (Exception e) {
             serviceRequestService.updateRequestStatus(request.getServiceRequestId(), OrderStatus.DENIED);

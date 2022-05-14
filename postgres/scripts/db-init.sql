@@ -107,11 +107,12 @@ create table telemetry
     recorded_at timestamp with time zone
 );
 
+drop table if exists order_assignment cascade;
 create table order_assignment
 (
-    order_id bigint primary key references service_request(request_id),
-    session_id bigint references vehicle_session(session_id),
-    assigned_at timestamp with time zone
+    order_id bigint primary key references service_request(request_id) not null,
+    session_id bigint references vehicle_session(session_id) not null,
+    assigned_at timestamp with time zone not null
 );
 
 -- Для хранения причин отказа в обработке заказа
