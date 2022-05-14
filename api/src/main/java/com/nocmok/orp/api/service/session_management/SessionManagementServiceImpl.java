@@ -8,6 +8,8 @@ import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
 import com.nocmok.orp.kafka.orp_input.OrderStatus;
 import com.nocmok.orp.kafka.orp_input.UpdateOrderStatusMessage;
 import com.nocmok.orp.postgres.storage.RouteCacheStorage;
+import com.nocmok.orp.postgres.storage.SessionStorage;
+import com.nocmok.orp.postgres.storage.dto.Session;
 import com.nocmok.orp.state_keeper.api.DefaultVehicle;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import com.nocmok.orp.state_keeper.api.VehicleStatus;
@@ -27,14 +29,17 @@ public class SessionManagementServiceImpl implements SessionManagementService {
     private StateKeeper<?> stateKeeper;
     private KafkaTemplate<String, Object> kafkaTemplate;
     private RouteCacheStorage routeCacheStorage;
+    private SessionStorage sessionStorage;
 
     @Autowired
     public SessionManagementServiceImpl(SpatialGraphObjectsStorage graphObjectsStorage, StateKeeper<?> stateKeeper,
-                                        KafkaTemplate<String, Object> kafkaTemplate, RouteCacheStorage routeCacheStorage) {
+                                        KafkaTemplate<String, Object> kafkaTemplate, RouteCacheStorage routeCacheStorage,
+                                        SessionStorage sessionStorage) {
         this.graphObjectsStorage = graphObjectsStorage;
         this.stateKeeper = stateKeeper;
         this.kafkaTemplate = kafkaTemplate;
         this.routeCacheStorage = routeCacheStorage;
+        this.sessionStorage = sessionStorage;
     }
 
     @Override public SessionDto createSession(SessionDto sessionDto) {
@@ -113,5 +118,9 @@ public class SessionManagementServiceImpl implements SessionManagementService {
                         .build(),
                 List.of(new RecordHeader("__TypeId__", UpdateOrderStatusMessage.class.getName().getBytes(StandardCharsets.UTF_8)))
         ));
+    }
+
+    @Override public List<Session.StatusLogEntry> getSessionStatusLog(String sessionId, int pageNumber, int pageSize, boolean ascendingOrder) {
+        return sessionStorage.getSessionStatusLog(Long.parseLong(sessionId), pageNumber, pageSize, ascendingOrder);
     }
 }
