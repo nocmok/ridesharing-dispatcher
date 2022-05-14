@@ -41,6 +41,30 @@ public class SessionStorage {
                 .build();
     }
 
+    public List<Session> getSessionsByIdsOrderedByCreationTime(List<Long> ids, boolean ascending) {
+        if (ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        var params = new HashMap<String, Object>();
+        params.put("ids", ids);
+        var sessions = jdbcTemplate.query(
+                " select t1.session_id, t1.total_capacity, t1.residual_capacity, t1.schedule_json " +
+                        " from " +
+                        " vehicle_session as t1 " +
+                        " join " +
+                        " (" +
+                        "   select session_id, min(updated_at) as updated_at " +
+                        "   from session_status_log " +
+                        "   where session_id in (:ids) " +
+                        "   group by session_id " +
+                        " ) as t2 " +
+                        " on t1.session_id = t2.session_id " +
+                        " order by t2.updated_at " + (ascending ? "asc" : "desc"),
+                params,
+                this::parseVehicleFromResultSet);
+        return sessions;
+    }
+
     public List<Session> getSessionsByIds(List<Long> ids) {
         return getSessionsByIdsInternal(ids, false);
     }
@@ -123,11 +147,14 @@ public class SessionStorage {
     }
 
     public List<Long> getActiveSessionsIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Collections.emptyList();
+        }
         var params = new HashMap<String, Object>();
         params.put("ids", ids);
         return jdbcTemplate.query(" select t1.session_id from " +
                         " (select session_id, max(updated_at) as updated_at from session_status_log " +
-                        (ids == null || ids.isEmpty() ? "" : " where session_id in (:ids) ") +
+                        " where session_id in (:ids) " +
                         " group by session_id) as t1 " +
                         " join session_status_log as t2 " +
                         " on t1.session_id = t2.session_id " +

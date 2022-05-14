@@ -92,7 +92,7 @@ public class VehicleSessionStorageImpl implements VehicleSessionStorage {
         if (activeSessionIds.isEmpty()) {
             return Collections.emptyList();
         }
-        var activeSessions = sessionStorage.getSessionsByIds(activeSessionIds);
+        var activeSessions = sessionStorage.getSessionsByIdsOrderedByCreationTime(activeSessionIds, true);
         var statusLogs = getSessionsFirstAndLastStatusLogEntries(activeSessionIds);
         return activeSessions.stream()
                 .map(session -> parseFromSessionAndStatusLog(session, statusLogs.get(session.getSessionId())))
