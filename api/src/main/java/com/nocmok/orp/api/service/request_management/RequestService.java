@@ -10,4 +10,6 @@ public interface RequestService {
     List<String> getActiveRequestIds();
 
     Optional<ServiceRequest> getRequestInfo(String requestId);
+
+    List<ServiceRequest.OrderStatusLogEntry> getOrderStatusLog(String orderId, int page, int entriesPerPage, boolean ascending);
 }

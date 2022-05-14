@@ -127,11 +127,12 @@ create table service_deny
 
 -- Для расчета времени нахождения в разных состояниях выполнения
 -- По этой таблице можно рассчитать время в пути
+drop table if exists order_status_log cascade;
 create table order_status_log
 (
-    order_id bigint references service_request(request_id),
-    status service_request_status,
-    updated_at timestamp with time zone,
+    order_id bigint references service_request(request_id) not null,
+    status service_request_status not null,
+    updated_at timestamp with time zone not null,
 
     primary key(order_id, updated_at)
 );

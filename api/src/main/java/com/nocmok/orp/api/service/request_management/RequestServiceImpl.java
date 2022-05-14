@@ -25,4 +25,8 @@ public class RequestServiceImpl implements RequestService {
     @Override public Optional<ServiceRequest> getRequestInfo(String requestId) {
         return requestInfoStorage.getRequestById(requestId);
     }
+
+    @Override public List<ServiceRequest.OrderStatusLogEntry> getOrderStatusLog(String orderId, int page, int entriesPerPage, boolean ascending) {
+        return requestInfoStorage.getOrderStatusLog(Long.parseLong(orderId), page, entriesPerPage, ascending);
+    }
 }

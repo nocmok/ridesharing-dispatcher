@@ -5,10 +5,12 @@ import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -105,14 +107,29 @@ public class ServiceRequestStorage {
         return requests.stream().findFirst();
     }
 
+    @Transactional
     public void updateRequestStatus(String requestId, OrderStatus updatedStatus) {
+        updateOrderStatus(Long.parseLong(requestId), updatedStatus);
+        insertStatusLogEntry(Long.parseLong(requestId), new ServiceRequest.OrderStatusLogEntry(updatedStatus, Instant.now()));
+    }
+
+    private void updateOrderStatus(Long requestId, OrderStatus updatedStatus) {
         var params = new HashMap<String, Object>();
         params.put("status", updatedStatus.name());
-        params.put("requestId", Long.parseLong(requestId));
+        params.put("requestId", requestId);
         jdbcTemplate.update(
                 " update service_request " +
                         " set status = cast(:status as service_request_status) " +
                         " where request_id = :requestId ", params);
+    }
+
+    private void insertStatusLogEntry(Long orderId, ServiceRequest.OrderStatusLogEntry orderStatusLogEntry) {
+        var params = new HashMap<String, Object>();
+        params.put("orderId", orderId);
+        params.put("status", orderStatusLogEntry.getOrderStatus().name());
+        params.put("updatedAt", Timestamp.from(orderStatusLogEntry.getUpdatedAt()));
+        jdbcTemplate.update(
+                " insert into order_status_log (order_id, status, updated_at) values(:orderId, cast(:status as service_request_status), :updatedAt)", params);
     }
 
     public void updateServingSessionId(String requestId, String sessionId) {
@@ -189,5 +206,27 @@ public class ServiceRequestStorage {
                 .stream()
                 .map(Object::toString)
                 .collect(Collectors.toList());
+    }
+
+    public List<ServiceRequest.OrderStatusLogEntry> getOrderStatusLog(Long orderId, int page, int entriesPerPage, boolean ascending) {
+        var params = new HashMap<String, Object>();
+        params.put("orderId", orderId);
+        params.put("fromInclusive", page * entriesPerPage);
+        params.put("toExclusive", page * entriesPerPage + entriesPerPage);
+        var orderStatusLog = jdbcTemplate.query(
+                " select order_id, status, updated_at " +
+                        " from (" +
+                        "    select order_id, status, updated_at, " +
+                        "    ((row_number() over (partition by order_id order by updated_at " + (ascending ? "asc" : "desc") + ")) - 1) as rn " +
+                        "    from order_status_log " +
+                        "    where order_id = :orderId " +
+                        " ) as t " +
+                        " where rn >= :fromInclusive and rn < :toExclusive ",
+                params,
+                (rs, rn) -> new ServiceRequest.OrderStatusLogEntry(
+                        OrderStatus.valueOf(rs.getString("status")),
+                        rs.getTimestamp("updated_at").toInstant()
+                ));
+        return orderStatusLog;
     }
 }
