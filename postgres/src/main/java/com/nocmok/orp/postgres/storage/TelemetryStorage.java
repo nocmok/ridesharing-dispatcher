@@ -81,4 +81,42 @@ public class TelemetryStorage {
                 this::mapResultSetToTelemetry
         );
     }
+
+    public List<Telemetry> getSessionTelemetryInsideInterval(Long sessionId, Instant fromInclusive, Instant toInclusive) {
+        var params = new HashMap<String, Object>();
+        params.put("sessionId", sessionId);
+        params.put("fromInclusive", Timestamp.from(fromInclusive));
+        params.put("toInclusive", Timestamp.from(toInclusive));
+        return jdbcTemplate.query(
+                " select " +
+                        " session_id, " +
+                        " latitude," +
+                        " longitude," +
+                        " accuracy," +
+                        " recorded_at " +
+                        " from telemetry " +
+                        " where session_id = :sessionId and recorded_at >= :fromInclusive and recorded_at <= :toInclusive " +
+                        " order by recorded_at asc ",
+                params,
+                this::mapResultSetToTelemetry
+        );
+    }
+
+    public List<Telemetry> getAllSessionTelemetry(Long sessionId) {
+        var params = new HashMap<String, Object>();
+        params.put("sessionId", sessionId);
+        return jdbcTemplate.query(
+                " select " +
+                        " session_id, " +
+                        " latitude," +
+                        " longitude," +
+                        " accuracy," +
+                        " recorded_at " +
+                        " from telemetry " +
+                        " where session_id = :sessionId " +
+                        " order by recorded_at asc ",
+                params,
+                this::mapResultSetToTelemetry
+        );
+    }
 }

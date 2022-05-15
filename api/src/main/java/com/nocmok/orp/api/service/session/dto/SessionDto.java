@@ -1,4 +1,4 @@
-package com.nocmok.orp.api.service.session_management.dto;
+package com.nocmok.orp.api.service.session.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

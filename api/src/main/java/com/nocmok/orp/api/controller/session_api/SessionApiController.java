@@ -1,12 +1,18 @@
 package com.nocmok.orp.api.controller.session_api;
 
 import com.nocmok.orp.api.controller.common_dto.SessionStatusLogEntry;
+import com.nocmok.orp.api.controller.session_api.dto.GetSessionExpendituresRequest;
+import com.nocmok.orp.api.controller.session_api.dto.GetSessionExpendituresResponse;
 import com.nocmok.orp.api.controller.session_api.dto.GetSessionOrdersRequest;
 import com.nocmok.orp.api.controller.session_api.dto.GetSessionOrdersResponse;
 import com.nocmok.orp.api.controller.session_api.dto.GetSessionStatusLogRequest;
 import com.nocmok.orp.api.controller.session_api.dto.GetSessionStatusLogResponse;
+import com.nocmok.orp.api.controller.session_api.dto.SessionExpenditure;
 import com.nocmok.orp.api.controller.session_api.dto.SessionOrderAssignment;
-import com.nocmok.orp.api.service.session_management.SessionManagementService;
+import com.nocmok.orp.api.service.session.SessionManagementService;
+import com.nocmok.orp.api.service.session.SessionStatisticsService;
+import com.nocmok.orp.api.service.session.dto.SessionStatistics;
+import com.nocmok.orp.postgres.storage.dto.SessionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,10 +28,13 @@ import java.util.stream.Collectors;
 public class SessionApiController {
 
     private SessionManagementService sessionManagementService;
+    private SessionStatisticsService sessionStatisticsService;
 
     @Autowired
-    public SessionApiController(SessionManagementService sessionManagementService) {
+    public SessionApiController(SessionManagementService sessionManagementService,
+                                SessionStatisticsService sessionStatisticsService) {
         this.sessionManagementService = sessionManagementService;
+        this.sessionStatisticsService = sessionStatisticsService;
     }
 
     @PostMapping("/statistics/status_log")
@@ -53,6 +62,22 @@ public class SessionApiController {
                         .sessionId(Objects.toString(orderAssignment.getSessionId()))
                         .assignedAt(orderAssignment.getAssignedAt())
                         .build()).collect(Collectors.toList()))
+                .build();
+    }
+
+    private SessionExpenditure mapSessionStatisticsToSessionExpenditure(SessionStatistics sessionStatistics) {
+        return SessionExpenditure.builder()
+                .distanceTravelled(sessionStatistics.getDistanceTravelled())
+                .build();
+    }
+
+    @PostMapping("/statistics/expenditures")
+    public @ResponseBody GetSessionExpendituresResponse getSessionExpenditures(@RequestBody GetSessionExpendituresRequest request) {
+        return GetSessionExpendituresResponse.builder()
+                .expenditure("total",sessionStatisticsService.getTotalSessionStatistics(request.getSessionId()).map(this::mapSessionStatisticsToSessionExpenditure).orElse(null))
+                .expenditure(SessionStatus.PENDING.name(), sessionStatisticsService.getSessionStatisticsByStatus(request.getSessionId(), SessionStatus.PENDING).map(this::mapSessionStatisticsToSessionExpenditure).orElse(null))
+                .expenditure(SessionStatus.SERVING.name(), sessionStatisticsService.getSessionStatisticsByStatus(request.getSessionId(), SessionStatus.SERVING).map(this::mapSessionStatisticsToSessionExpenditure).orElse(null))
+                .expenditure(SessionStatus.FROZEN.name(), sessionStatisticsService.getSessionStatisticsByStatus(request.getSessionId(), SessionStatus.FROZEN).map(this::mapSessionStatisticsToSessionExpenditure).orElse(null))
                 .build();
     }
 }

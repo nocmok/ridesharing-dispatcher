@@ -1,8 +1,8 @@
-package com.nocmok.orp.api.service.session_management;
+package com.nocmok.orp.api.service.session;
 
-import com.nocmok.orp.api.service.session_management.dto.RequestStatus;
-import com.nocmok.orp.api.service.session_management.dto.SessionDto;
-import com.nocmok.orp.api.service.session_management.dto.SessionInfo;
+import com.nocmok.orp.api.service.session.dto.RequestStatus;
+import com.nocmok.orp.api.service.session.dto.SessionDto;
+import com.nocmok.orp.api.service.session.dto.SessionInfo;
 import com.nocmok.orp.postgres.storage.dto.OrderAssignment;
 import com.nocmok.orp.postgres.storage.dto.Session;
 
