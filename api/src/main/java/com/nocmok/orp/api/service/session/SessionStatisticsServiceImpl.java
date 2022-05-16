@@ -1,7 +1,7 @@
 package com.nocmok.orp.api.service.session;
 
 import com.nocmok.orp.api.service.session.dto.SessionStatistics;
-import com.nocmok.orp.graph.tools.GPSTrackUtils;
+import com.nocmok.orp.graph.tools.GPSTrackLengthCalculator;
 import com.nocmok.orp.postgres.storage.SessionStorage;
 import com.nocmok.orp.postgres.storage.TelemetryStorage;
 import com.nocmok.orp.postgres.storage.dto.Session;
@@ -21,22 +21,27 @@ public class SessionStatisticsServiceImpl implements SessionStatisticsService {
 
     private SessionStorage sessionStorage;
     private TelemetryStorage telemetryStorage;
+    private GPSTrackLengthCalculator gpsTrackLengthCalculator;
 
     @Autowired
-    public SessionStatisticsServiceImpl(SessionStorage sessionStorage, TelemetryStorage telemetryStorage) {
+    public SessionStatisticsServiceImpl(SessionStorage sessionStorage, TelemetryStorage telemetryStorage,
+                                        GPSTrackLengthCalculator gpsTrackLengthCalculator) {
         this.sessionStorage = sessionStorage;
         this.telemetryStorage = telemetryStorage;
+        this.gpsTrackLengthCalculator = gpsTrackLengthCalculator;
     }
 
-    private GPSTrackUtils.GPSTrackEntry mapTelemetryToGPSTrackEntry(Telemetry telemetry) {
-        return new GPSTrackUtils.GPSTrackEntry(telemetry.getLatitude(), telemetry.getLongitude(), telemetry.getRecordedAt(), telemetry.getAccuracy());
+    private GPSTrackLengthCalculator.GPSTrackEntry mapTelemetryToGPSTrackEntry(Telemetry telemetry) {
+        return new GPSTrackLengthCalculator.GPSTrackEntry(telemetry.getLatitude(), telemetry.getLongitude(), telemetry.getRecordedAt(),
+                telemetry.getAccuracy());
     }
 
     @Override
     public Optional<SessionStatistics> getTotalSessionStatistics(String sessionId) {
         var telemetry = telemetryStorage.getAllSessionTelemetry(Long.parseLong(sessionId));
         return Optional.of(SessionStatistics.builder()
-                .distanceTravelled(GPSTrackUtils.getGPSTrackLength(telemetry.stream().map(this::mapTelemetryToGPSTrackEntry).collect(Collectors.toList())))
+                .distanceTravelled(
+                        gpsTrackLengthCalculator.getGPSTrackLength(telemetry.stream().map(this::mapTelemetryToGPSTrackEntry).collect(Collectors.toList())))
                 .build());
     }
 
@@ -44,7 +49,7 @@ public class SessionStatisticsServiceImpl implements SessionStatisticsService {
         return timeIntervals.stream()
                 .map(fromTo -> telemetryStorage.getSessionTelemetryInsideInterval(Long.parseLong(sessionId), fromTo[0], fromTo[1]))
                 .map(gpsTrack -> gpsTrack.stream().map(this::mapTelemetryToGPSTrackEntry).collect(Collectors.toList()))
-                .map(GPSTrackUtils::getGPSTrackLength)
+                .map(gpsTrackLengthCalculator::getGPSTrackLength)
                 .reduce(0d, Double::sum);
     }
 
