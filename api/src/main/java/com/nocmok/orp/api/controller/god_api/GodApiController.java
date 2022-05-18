@@ -19,7 +19,7 @@ import com.nocmok.orp.api.controller.god_api.dto.GetSessionsGeodataRequest;
 import com.nocmok.orp.api.controller.god_api.dto.GetSessionsGeodataResponse;
 import com.nocmok.orp.api.controller.god_api.dto.SessionGeodata;
 import com.nocmok.orp.api.service.geo.GeolocationService;
-import com.nocmok.orp.api.service.request_management.RequestService;
+import com.nocmok.orp.api.service.request.RequestService;
 import com.nocmok.orp.api.service.session.SessionManagementService;
 import com.nocmok.orp.graph.api.Segment;
 import com.nocmok.orp.solver.api.RouteNode;

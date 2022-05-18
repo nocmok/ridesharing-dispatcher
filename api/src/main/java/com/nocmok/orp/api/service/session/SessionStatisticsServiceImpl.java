@@ -80,4 +80,8 @@ public class SessionStatisticsServiceImpl implements SessionStatisticsService {
                 .distanceTravelled(getTotalDistanceTravelledBySessionWithinTimeIntervals(sessionId, timeIntervalsToConsider))
                 .build());
     }
+
+    @Override public Double getDistanceTravelledBySessionWithinTimeInterval(String sessionId, Instant fromInclusive, Instant toInclusive) {
+        return getTotalDistanceTravelledBySessionWithinTimeIntervals(sessionId, List.<Instant[]>of(new Instant[]{fromInclusive, toInclusive}));
+    }
 }

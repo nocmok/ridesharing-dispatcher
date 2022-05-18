@@ -62,7 +62,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
                 solver.getTopKCandidateVehicles(serviceRequestMapper.mapServiceDtoToRequest(serviceRequest), candidatesToFetch);
         if (candidates.isEmpty()) {
             log.info("no candidates to serve request\n" + serviceRequest);
-            serviceRequestStorageService.updateRequestStatus(serviceRequest.getRequestId(), OrderStatus.DENIED);
+            serviceRequestStorageService.updateRequestStatus(serviceRequest.getRequestId(), OrderStatus.SERVICE_DENIED);
             // TODO сделать отправку сообщения об отказе
             return;
         }
@@ -132,7 +132,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
 
             @Override public void handleReservations(List<VehicleReservation> reservations) {
                 if (reservations.isEmpty()) {
-                    serviceRequestStorageService.updateRequestStatus(request.getRequestId(), OrderStatus.DENIED);
+                    serviceRequestStorageService.updateRequestStatus(request.getRequestId(), OrderStatus.SERVICE_DENIED);
                     return;
                 }
 
@@ -161,7 +161,7 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
     }
 
     private void initiateRetry(ServiceRequest serviceRequestServiceDto) {
-        serviceRequestStorageService.updateRequestStatus(serviceRequestServiceDto.getRequestId(), OrderStatus.DENIED);
+        serviceRequestStorageService.updateRequestStatus(serviceRequestServiceDto.getRequestId(), OrderStatus.SERVICE_DENIED);
         log.debug("request retry initiated, but not implemented yet ...");
     }
 }

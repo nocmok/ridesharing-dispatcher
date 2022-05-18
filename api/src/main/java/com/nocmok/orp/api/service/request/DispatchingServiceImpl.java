@@ -1,4 +1,4 @@
-package com.nocmok.orp.api.service.request_management;
+package com.nocmok.orp.api.service.request;
 
 import com.nocmok.orp.kafka.orp_input.ServiceRequestMessage;
 import com.nocmok.orp.postgres.storage.ServiceRequestStorage;

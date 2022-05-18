@@ -11,8 +11,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -142,8 +144,18 @@ public class ServiceRequestStorage {
                         " where request_id = :requestId ", params);
     }
 
+    @Transactional
     public ServiceRequest storeRequest(ServiceRequest serviceRequest) {
         serviceRequest.setRequestId(getIdForRequest());
+        serviceRequest.setStatus(Objects.requireNonNullElse(serviceRequest.getStatus(), OrderStatus.SERVICE_PENDING));
+
+        insertRequest(serviceRequest);
+        insertStatusLogEntry(Long.parseLong(serviceRequest.getRequestId()), new ServiceRequest.OrderStatusLogEntry(OrderStatus.SERVICE_PENDING, Instant.now()));
+
+        return serviceRequest;
+    }
+
+    private ServiceRequest insertRequest(ServiceRequest serviceRequest) {
         var params = new HashMap<String, Object>();
         params.put("request_id", Long.parseLong(serviceRequest.getRequestId()));
         params.put("recorded_origin_latitude", serviceRequest.getRecordedOriginLatitude());
@@ -159,7 +171,7 @@ public class ServiceRequestStorage {
         params.put("requested_at", Optional.ofNullable(serviceRequest.getRequestedAt()).map(Timestamp::from)
                 .orElseThrow(() -> new NullPointerException("requested_at not expected to be null")));
         params.put("load", serviceRequest.getLoad());
-        params.put("status", Objects.requireNonNullElse(serviceRequest.getStatus(), OrderStatus.PENDING).name());
+        params.put("status", serviceRequest.getStatus().name());
         params.put("serving_session_id", serviceRequest.getServingSessionId() == null ? null : Long.parseLong(serviceRequest.getServingSessionId()));
         jdbcTemplate.update(" insert into service_request " +
                         " ( " +
@@ -228,5 +240,66 @@ public class ServiceRequestStorage {
                         rs.getTimestamp("updated_at").toInstant()
                 ));
         return orderStatusLog;
+    }
+
+    public Map<Long, List<ServiceRequest.OrderStatusLogEntry>> getOrdersStatusLogs(List<Long> orderIds, int pageNumber, int entriesPerPage,
+                                                                                   boolean ascendingOrder) {
+        if (orderIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        var params = new HashMap<String, Object>();
+        params.put("ids", orderIds);
+        params.put("fromInclusive", pageNumber * entriesPerPage);
+        params.put("toExclusive", pageNumber * entriesPerPage + entriesPerPage);
+        var statusLogEntries = jdbcTemplate.query(
+                " select order_id, status, updated_at " +
+                        " from (" +
+                        "    select order_id, status, updated_at, " +
+                        "    ((row_number() over (partition by order_id order by updated_at " + (ascendingOrder ? "asc" : "desc") + ")) - 1) as rn " +
+                        "    from order_status_log " +
+                        "    where order_id in (:ids) " +
+                        " ) as t " +
+                        " where rn >= :fromInclusive and rn < :toExclusive ",
+                params,
+                (rs, rn) -> Map.entry(rs.getLong("order_id"), new ServiceRequest.OrderStatusLogEntry(
+                        OrderStatus.valueOf(rs.getString("status")),
+                        rs.getTimestamp("updated_at").toInstant())));
+
+        return statusLogEntries.stream()
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+    }
+
+    public Map<Long, List<ServiceRequest.OrderStatusLogEntry>> getOrdersStatusLogs(List<Long> orderIds) {
+        return getOrdersStatusLogs(orderIds, 0, Integer.MAX_VALUE, true);
+    }
+
+    /**
+     * Возвращает идентификаторы всех заказов, которые находятся в состоянии ACCEPTED, PICKUP_PENDING, SERVING в заданном интервале
+     */
+    public List<Long> getSessionActiveOrdersInsideTimeInterval(Long servingSessionId, Instant fromInclusive, Instant toInclusive) {
+        var params = new HashMap<String, Object>();
+        params.put("sessionId", servingSessionId);
+        params.put("fromInclusive", Timestamp.from(fromInclusive));
+        params.put("toInclusive", Timestamp.from(toInclusive));
+        return jdbcTemplate.query("select t1.order_id\n" +
+                " from " +
+                " ( " +
+                "     select order_id " +
+                "     from order_status_log " +
+                "     where order_id in (select order_id from order_assignment where session_id = :sessionId) " +
+                "         and status in ('ACCEPTED', 'PICKUP_PENDING', 'SERVING') " +
+                "     group by order_id " +
+                "     having min(updated_at) < cast(:toInclusive as timestamp with time zone) " +
+                " ) as t1 " +
+                " join " +
+                " ( " +
+                "     select order_id " +
+                "     from order_status_log " +
+                "     where order_id in (select order_id from order_assignment where session_id = :sessionId) " +
+                "         and status in ('SERVED', 'CANCELLED', 'SERVICE_DENIED') " +
+                "     group by order_id " +
+                "     having min(updated_at) > cast(:fromInclusive as timestamp with time zone) " +
+                " ) as t2 " +
+                " on t1.order_id = t2.order_id ", params, (rs, rn) -> rs.getLong("order_id"));
     }
 }

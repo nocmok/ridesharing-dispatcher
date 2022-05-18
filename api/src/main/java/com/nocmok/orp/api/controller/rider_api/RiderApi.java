@@ -4,7 +4,7 @@ import com.nocmok.orp.api.controller.common_dto.Coordinates;
 import com.nocmok.orp.api.controller.common_dto.RoadSegment;
 import com.nocmok.orp.api.controller.rider_api.dto.CreateServiceRequestRequest;
 import com.nocmok.orp.api.controller.rider_api.dto.CreateServiceRequestResponse;
-import com.nocmok.orp.api.service.request_management.DispatchingService;
+import com.nocmok.orp.api.service.request.DispatchingService;
 import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
