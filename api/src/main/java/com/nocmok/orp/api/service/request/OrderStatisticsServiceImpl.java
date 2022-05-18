@@ -68,6 +68,23 @@ public class OrderStatisticsServiceImpl implements OrderStatisticsService {
         return sessionStatisticsService.getDistanceTravelledBySessionWithinTimeInterval(order.getServingSessionId(), pickupTime, dropOffTime);
     }
 
+    private Double getServiceDistanceByStatusLog(ServiceRequest order, List<ServiceRequest.OrderStatusLogEntry> statusLog) {
+        var acceptTimeOptional = statusLog.stream()
+                .filter(orderStatusLogEntry -> orderStatusLogEntry.getOrderStatus() == OrderStatus.ACCEPTED)
+                .findFirst()
+                .map(ServiceRequest.OrderStatusLogEntry::getUpdatedAt);
+        if (acceptTimeOptional.isEmpty()) {
+            return 0d;
+        }
+        var acceptTime = acceptTimeOptional.get();
+        var dropOffTime = statusLog.stream()
+                .filter(orderStatusLogEntry -> orderStatusLogEntry.getOrderStatus() == OrderStatus.SERVED)
+                .findFirst()
+                .map(ServiceRequest.OrderStatusLogEntry::getUpdatedAt)
+                .orElse(Instant.now());
+        return sessionStatisticsService.getDistanceTravelledBySessionWithinTimeInterval(order.getServingSessionId(), acceptTime, dropOffTime);
+    }
+
     @Override public Optional<OrderStatistics> getOrderStatisticsSummary(String orderId) {
         var orderOptional = serviceRequestStorage.getRequestById(orderId);
         if (orderOptional.isEmpty()) {
@@ -86,6 +103,7 @@ public class OrderStatisticsServiceImpl implements OrderStatisticsService {
                 .pickupWaitingTime(getTimeByStatusLogAndStatus(statusLog, OrderStatus.PICKUP_PENDING))
                 .travelTime(getTimeByStatusLogAndStatus(statusLog, OrderStatus.SERVING))
                 .distanceTravelled(getTravelledDistanceByStatusLog(order, statusLog))
+                .serviceDistance(getServiceDistanceByStatusLog(order, statusLog))
                 .build());
     }
 
@@ -174,6 +192,7 @@ public class OrderStatisticsServiceImpl implements OrderStatisticsService {
 
         var mergedStatusLog = serviceRequestStorage.getOrdersStatusLogs(companionOrdersIds).entrySet().stream()
                 .flatMap(entry -> entry.getValue().stream().map(orderStatusLogEntry -> new OrderStatusLogEntryWithId(entry.getKey(), orderStatusLogEntry)))
+                .filter(entry -> entry.status() != OrderStatus.SERVICE_PENDING && entry.status() != OrderStatus.PICKUP_PENDING)
                 .sorted()
                 .collect(Collectors.toCollection(ArrayList::new));
 
@@ -188,7 +207,7 @@ public class OrderStatisticsServiceImpl implements OrderStatisticsService {
             if (mergedStatusLog.get(i - 1).updatedAt().compareTo(startTime) < 0) {
                 continue;
             }
-            if (mergedStatusLog.get(i - 1).updatedAt().compareTo(endTime) > 0) {
+            if (mergedStatusLog.get(i - 1).updatedAt().compareTo(endTime) >= 0) {
                 break;
             }
             result.add(OrderHistoryInterval.builder()
