@@ -24,11 +24,13 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
     private static final Map<OrderStatus, Set<OrderStatus>> orderStatusTransitionGraph = new HashMap<>();
 
     static {
-        orderStatusTransitionGraph.put(OrderStatus.PENDING, Set.of(OrderStatus.SERVING, OrderStatus.DENIED));
-        orderStatusTransitionGraph.put(OrderStatus.SERVING, Set.of(OrderStatus.SERVED, OrderStatus.SERVING_DENIED));
+        orderStatusTransitionGraph.put(OrderStatus.SERVICE_PENDING, Set.of(OrderStatus.ACCEPTED, OrderStatus.SERVICE_DENIED));
+        orderStatusTransitionGraph.put(OrderStatus.ACCEPTED, Set.of(OrderStatus.PICKUP_PENDING, OrderStatus.SERVING, OrderStatus.CANCELLED));
+        orderStatusTransitionGraph.put(OrderStatus.PICKUP_PENDING, Set.of(OrderStatus.SERVING, OrderStatus.CANCELLED));
+        orderStatusTransitionGraph.put(OrderStatus.SERVING, Set.of(OrderStatus.SERVED, OrderStatus.CANCELLED));
         orderStatusTransitionGraph.put(OrderStatus.SERVED, Set.of());
-        orderStatusTransitionGraph.put(OrderStatus.DENIED, Set.of());
-        orderStatusTransitionGraph.put(OrderStatus.SERVING_DENIED, Set.of());
+        orderStatusTransitionGraph.put(OrderStatus.SERVICE_DENIED, Set.of());
+        orderStatusTransitionGraph.put(OrderStatus.CANCELLED, Set.of());
     }
 
     private StateKeeper<?> stateKeeper;

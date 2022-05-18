@@ -2,9 +2,11 @@ package com.nocmok.orp.postgres.storage.dto;
 
 public enum OrderStatus {
 
-    PENDING,
+    SERVICE_PENDING,
+    SERVICE_DENIED,
+    ACCEPTED,
+    PICKUP_PENDING,
     SERVING,
     SERVED,
-    DENIED,
-    SERVING_DENIED
+    CANCELLED
 }

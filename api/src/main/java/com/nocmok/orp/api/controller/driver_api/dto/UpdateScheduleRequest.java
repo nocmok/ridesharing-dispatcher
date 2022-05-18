@@ -1,7 +1,7 @@
 package com.nocmok.orp.api.controller.driver_api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nocmok.orp.api.service.session_management.dto.RequestStatus;
+import com.nocmok.orp.api.service.session.dto.RequestStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

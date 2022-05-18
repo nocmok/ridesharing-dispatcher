@@ -1,4 +1,4 @@
-package com.nocmok.orp.api.service.request_management;
+package com.nocmok.orp.api.service.request;
 
 import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 
@@ -10,4 +10,6 @@ public interface RequestService {
     List<String> getActiveRequestIds();
 
     Optional<ServiceRequest> getRequestInfo(String requestId);
+
+    List<ServiceRequest.OrderStatusLogEntry> getOrderStatusLog(String orderId, int page, int entriesPerPage, boolean ascending);
 }

@@ -108,6 +108,7 @@ public class RequestAssigningService {
 
                 routeCache.updateRouteCacheBySessionId(requestMatching.get().getServingVehicleId(), requestMatching.get().getServingRoute());
                 serviceRequestService.updateServingSessionId(serviceRequest.getRequestId(), request.getVehicleId());
+                serviceRequestService.updateRequestStatus(serviceRequest.getRequestId(), OrderStatus.ACCEPTED);
 
                 vehicleState.setStatus(VehicleStatus.SERVING);
                 vehicleState.setSchedule(requestMatching.get().getServingPlan());
@@ -134,7 +135,7 @@ public class RequestAssigningService {
                         .build());
             });
         } catch (Exception e) {
-            serviceRequestService.updateRequestStatus(request.getServiceRequestId(), OrderStatus.DENIED);
+            serviceRequestService.updateRequestStatus(request.getServiceRequestId(), OrderStatus.SERVICE_DENIED);
         }
     }
 
@@ -142,11 +143,11 @@ public class RequestAssigningService {
     private void handleVehicleReservationExpiration(AssignRequest request) {
 //        log.info("failed to assign request as reservation expired " + request);
 //        throw new UnsupportedOperationException("not implemented");
-        serviceRequestService.updateRequestStatus(request.getServiceRequestId(), OrderStatus.DENIED);
+        serviceRequestService.updateRequestStatus(request.getServiceRequestId(), OrderStatus.SERVICE_DENIED);
     }
 
     private void handleVehicleOutOfServiceZone(AssignRequest request) {
-        serviceRequestService.updateRequestStatus(request.getServiceRequestId(), OrderStatus.DENIED);
+        serviceRequestService.updateRequestStatus(request.getServiceRequestId(), OrderStatus.SERVICE_DENIED);
 //        throw new UnsupportedOperationException("not implemented");
     }
 

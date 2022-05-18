@@ -21,7 +21,7 @@ public class ServiceRequestMessageMapper {
                 .detourConstraint(message.getDetourConstraint())
                 .maxPickupDelaySeconds(message.getMaxPickupDelaySeconds())
                 .requestedAt(message.getRequestedAt())
-                .status(OrderStatus.PENDING)
+                .status(OrderStatus.SERVICE_PENDING)
                 .build();
 
     }
@@ -41,7 +41,7 @@ public class ServiceRequestMessageMapper {
                 .detourConstraint(message.getDetourConstraint())
                 .maxPickupDelaySeconds(message.getMaxPickupDelaySeconds())
                 .requestedAt(message.getRequestedAt())
-                .status(OrderStatus.PENDING)
+                .status(OrderStatus.SERVICE_PENDING)
                 .build();
     }
 }

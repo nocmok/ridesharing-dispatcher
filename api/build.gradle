@@ -35,6 +35,7 @@ dependencies {
     implementation project(':kafka')
 
     implementation project(':graph-index:api')
+    implementation project(':graph-index:tools')
     implementation project(':graph-index:mem-stub:client')
 }
 

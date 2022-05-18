@@ -10,7 +10,6 @@ create type vehicle_status as enum ('PENDING', 'SERVING', 'FROZEN', 'CLOSED');
 drop type if exists schedule_node_kind cascade;
 create type schedule_node_kind as enum ('PICKUP', 'DROPOFF');
 
-drop type if exists service_request_status cascade;
 -- SERVICE_PENDING - запрос отправлен, но вердикт по нему не известен
 -- SERVICE_DENIED - запрос не был никем принят и отклонен
 -- ACCEPTED - заказ был успешно принят
@@ -18,6 +17,7 @@ drop type if exists service_request_status cascade;
 -- SERVING - заказ в процессе выполнения
 -- SERVED - заказ выполнен
 -- CANCELLED - заказ отменен после того как был принят
+drop type if exists service_request_status cascade;
 create type service_request_status as enum ('SERVICE_PENDING', 'SERVICE_DENIED', 'ACCEPTED', 'PICKUP_PENDING', 'SERVING', 'SERVED', 'CANCELLED');
 
 drop type if exists service_deny_reason cascade;
@@ -115,7 +115,6 @@ create table order_assignment
     assigned_at timestamp with time zone not null
 );
 
--- Для хранения причин отказа в обработке заказа
 drop table if exists service_deny cascade;
 create table service_deny
 (
@@ -125,45 +124,16 @@ create table service_deny
     denied_at timestamp with time zone
 );
 
--- Для расчета времени нахождения в разных состояниях выполнения
--- По этой таблице можно рассчитать время в пути
+drop table if exists order_status_log cascade;
 create table order_status_log
 (
-    order_id bigint references service_request(request_id),
-    status service_request_status,
-    updated_at timestamp with time zone,
+    order_id bigint references service_request(request_id) not null,
+    status service_request_status not null,
+    updated_at timestamp with time zone not null,
 
     primary key(order_id, updated_at)
 );
 
--- Как считать пройденное в рамках запроса расстояние
--- 1) Считать фактическое пройденное расстояние по телеметрии
--- 2) Считать запланированное пройденное расстояние
-
---Для варианта 1)
--- Использовать gps трек тс. Абстрагировать работу с треками в отдельный сервис.
--- Вынести в api сервиса возможность запросить пройденное расстояние за интервал времени
-
--- Для варианта 2)
--- 1) Брать историю маршрутов тс во временных рамках запроса затем мержить
--- Знаем по таблице order_status_log время пикапа и время дропофа
--- Забираем все маршруты тс, которые пересекаются по времени с полученным промежутком
--- Откусываем ненужные части от первого и последнего маршрута
--- Полученные маршруты мержим
--- 2) Для каждого заказа хранить лог построенных маршрутов
--- То есть если тс перестраивает маршрут, то для каждого запроса, ассоциированного с тс в лог добавляется запись с новым маршрутом
-
--- Как получать последнюю версию маршрута выполнения запроса
--- 1) Новый маршрут тс всегда строится от какой-то точки из старого маршрута
--- Значит не должно быть проблем смержить новый и старый маршрут (Но это ненадежно)
--- 2) Каким-то образом логировать посчитанные между контрольными точками маршруты
--- Тогда можно брать точки которые попадают между точками интересующего запроса и собирать маршрут по кусочкам
--- (Это надежно, но как-то запутанно и супер негибко)
--- 3) Не добавлять в api запросов получение актуального маршрута.
--- Можно сделать возможность получения пройденного маршрута постфактум, когда запрос выполнен.
--- В этом случае можно использовать модуль для работы с телеметрией тс
-
--- Для расчета общего времени нахождения в разных состояниях сессии
 create table session_status_log
 (
     session_id bigint references vehicle_session(session_id),
@@ -172,9 +142,3 @@ create table session_status_log
 
     primary key(session_id, updated_at)
 );
-
--- Как считать суммарное пройденное сессией расстояние
--- 1) Хранить весь gps трек, затем по нему делать привязку к графу и считать расстояние
--- 2) Хранить весь gps трек и затем по нему рассчитывать пройденное расстояние
--- 3) Хранить лог перемещений по графу и по нему вычислять пройденное расстояние
--- 4) Хранить лог перестроек маршрута и по нему считать пройденное расстояние

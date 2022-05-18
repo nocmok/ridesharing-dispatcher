@@ -39,4 +39,11 @@ public class ServiceRequest {
     private OrderStatus status;
 
     private String servingSessionId;
+
+    @Data
+    @AllArgsConstructor
+    public static class OrderStatusLogEntry {
+        private OrderStatus orderStatus;
+        private Instant updatedAt;
+    }
 }

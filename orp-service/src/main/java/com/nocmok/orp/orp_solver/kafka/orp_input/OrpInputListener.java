@@ -74,9 +74,9 @@ public class OrpInputListener {
             case SERVED:
                 return OrderStatus.SERVED;
             case DENIED:
-                return OrderStatus.DENIED;
+                return OrderStatus.SERVICE_DENIED;
             case SERVING_DENIED:
-                return OrderStatus.SERVING_DENIED;
+                return OrderStatus.CANCELLED;
             default:
                 throw new IllegalArgumentException("unknown order status" + orderStatus);
         }
