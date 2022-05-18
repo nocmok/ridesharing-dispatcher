@@ -13,6 +13,7 @@ public class OrderStatistics {
 
     private Double distanceScheduled;
     private Double distanceTravelled;
+    private Double serviceDistance;
     private Long dispatchWaitingTime;
     private Long serviceWaitingTime;
     private Long pickupWaitingTime;
