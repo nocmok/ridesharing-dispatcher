@@ -1,17 +1,15 @@
 version: '3.8'
 
 services:
-
   postgres:
-    image: postgres
-    container_name: postgres
-    restart: always
+    image: 'pgrouting/pgrouting:latest'
+    container_name: 'postgres'
     environment:
       POSTGRES_USER: orp
       POSTGRES_PASSWORD: orp
       POSTGRES_DB: orp
-    ports: 
-      - "5432:5432"
+    ports:
+      - '5432:5432'
     networks:
       - orp-network
 

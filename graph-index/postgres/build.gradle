@@ -1,0 +1,38 @@
+plugins {
+    id 'java-library'
+    id 'org.springframework.boot' version '2.6.6' apply false
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+group = 'com.nocmok.orp.graph_index.postgres'
+version = '0.0.1'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+    implementation 'com.google.guava:guava:31.1-jre'
+
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    api project(':graph-index:api')
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,7 +1,7 @@
 package com.nocmok.orp.orp_solver.config;
 
 import com.nocmok.orp.kafka.config.KafkaConfig;
-import com.nocmok.orp.orp_solver.config.graph_index.GraphIndexConfig;
+import com.nocmok.orp.graph_index.postgres.GraphIndexConfig;
 import com.nocmok.orp.orp_solver.config.jackson.JacksonConfig;
 import com.nocmok.orp.orp_solver.config.schedule.ScheduleConfig;
 import com.nocmok.orp.postgres.PostgresConfig;
