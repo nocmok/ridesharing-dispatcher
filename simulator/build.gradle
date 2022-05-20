@@ -30,8 +30,7 @@ dependencies {
 
     implementation project(':kafka')
     implementation project(':orp-solver:api')
-    implementation project(':graph-index:api')
-    implementation project(':graph-index:mem-stub:client')
+    implementation project(':graph-index:postgres')
     implementation project(':graph-index:tools')
 
     implementation project(':postgres')

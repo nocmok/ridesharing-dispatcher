@@ -1,6 +1,7 @@
 create sequence if not exists session_id_seq increment by 1 minvalue 1 no maxvalue start 1;
 create sequence if not exists reservation_id_seq increment by 1 minvalue 1 no maxvalue start 1;
 create sequence if not exists orp_output_outbox_seq increment by 1 minvalue 1 no maxvalue start 1;
+create sequence if not exists request_id_seq increment by 1 minvalue 1 no maxvalue start 1;
 
 -- FROZEN - сессия больше не может принимать запросы, так как истекла.
 -- Из состояния FROZEN сессия может перейти только в состояние CLOSED, когда выполнит текущий план
@@ -27,14 +28,9 @@ drop table if exists vehicle_session cascade;
 create table vehicle_session
 (
     session_id bigint primary key default nextval('session_id_seq'),
-
-	created_at timestamp with time zone,
-	completed_at timestamp with time zone,
-
 	status vehicle_status default 'PENDING',
 	total_capacity bigint,
 	residual_capacity bigint,
-
     schedule_json text
 );
 
@@ -65,6 +61,7 @@ create table session_route_cache
     route_json text
 );
 
+drop table if exists session_route_log cascade;
 create table session_route_log
 (
     session_id bigint references vehicle_session(session_id),
@@ -134,6 +131,7 @@ create table order_status_log
     primary key(order_id, updated_at)
 );
 
+drop table if exists session_status_log cascade;
 create table session_status_log
 (
     session_id bigint references vehicle_session(session_id),
