@@ -58,8 +58,12 @@ public class ServiceRequestDispatchingServiceImpl implements ServiceRequestDispa
 
     @Override
     public void dispatchServiceRequest(ServiceRequest serviceRequest) {
+        long timeBefore = System.currentTimeMillis();
         var candidates =
                 solver.getTopKCandidateVehicles(serviceRequestMapper.mapServiceDtoToRequest(serviceRequest), candidatesToFetch);
+        long timeAfter = System.currentTimeMillis();
+        log.info("ELAPSED {}", timeAfter - timeBefore);
+
         if (candidates.isEmpty()) {
             log.info("no candidates to serve request\n" + serviceRequest);
             serviceRequestStorageService.updateRequestStatus(serviceRequest.getRequestId(), OrderStatus.SERVICE_DENIED);
