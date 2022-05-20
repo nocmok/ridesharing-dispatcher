@@ -36,7 +36,8 @@ dependencies {
 
     implementation project(':graph-index:api')
     implementation project(':graph-index:tools')
-    implementation project(':graph-index:mem-stub:client')
+    implementation project(':graph-index:postgres')
+
 }
 
 tasks.named('test') {

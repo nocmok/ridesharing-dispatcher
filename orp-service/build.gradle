@@ -35,7 +35,9 @@ dependencies {
 	implementation project(':postgres')
 	implementation project(':state-keeper:postgres')
 
-	implementation project(':graph-index:mem-stub:client')
+//	implementation project(':graph-index:mem-stub:client')
+	implementation project(':graph-index:postgres')
+
 	implementation project(':orp-solver:lazy-search-solver')
 	implementation project(':orp-solver:kinetic-tree-solver')
 	implementation project(':kafka')

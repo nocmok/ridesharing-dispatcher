@@ -31,7 +31,7 @@ dependencies {
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
     implementation "io.grpc:grpc-stub:${grpcVersion}"
 
-    implementation project(':graph-index:mem-stub:client')
+    implementation project(':graph-index:postgres')
     implementation project(':kafka')
     implementation project(':postgres')
 
