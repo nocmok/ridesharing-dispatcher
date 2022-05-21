@@ -1,14 +1,20 @@
 package com.nocmok.orp.api.controller.order_api;
 
+import com.nocmok.orp.api.controller.common_dto.Coordinates;
+import com.nocmok.orp.api.controller.common_dto.RequestInfo;
+import com.nocmok.orp.api.controller.common_dto.RoadSegment;
 import com.nocmok.orp.api.controller.order_api.dto.GetOrderExpendituresRequest;
 import com.nocmok.orp.api.controller.order_api.dto.GetOrderExpendituresResponse;
 import com.nocmok.orp.api.controller.order_api.dto.GetOrderHistoryRequest;
 import com.nocmok.orp.api.controller.order_api.dto.GetOrderHistoryResponse;
 import com.nocmok.orp.api.controller.order_api.dto.GetOrderStatusLogRequest;
 import com.nocmok.orp.api.controller.order_api.dto.GetOrderStatusLogResponse;
+import com.nocmok.orp.api.controller.order_api.dto.GetOrdersRequest;
+import com.nocmok.orp.api.controller.order_api.dto.GetOrdersResponse;
 import com.nocmok.orp.api.controller.order_api.dto.OrderExecutionInterval;
 import com.nocmok.orp.api.controller.order_api.dto.OrderExpendituresSummary;
 import com.nocmok.orp.api.controller.order_api.dto.OrderStatusLogEntry;
+import com.nocmok.orp.api.controller.order_api.mapper.FilterMapper;
 import com.nocmok.orp.api.service.request.OrderStatisticsService;
 import com.nocmok.orp.api.service.request.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +34,14 @@ public class OrderApi {
 
     private RequestService requestService;
     private OrderStatisticsService orderStatisticsService;
+    private FilterMapper filterMapper;
 
     @Autowired
-    public OrderApi(RequestService requestService, OrderStatisticsService orderStatisticsService) {
+    public OrderApi(RequestService requestService, OrderStatisticsService orderStatisticsService,
+                    FilterMapper filterMapper) {
         this.requestService = requestService;
         this.orderStatisticsService = orderStatisticsService;
+        this.filterMapper = filterMapper;
     }
 
     @PostMapping("/statistics/status_log")
@@ -89,6 +98,29 @@ public class OrderApi {
                                 .status(entry.getStatus().name())
                                 .build())
                         .collect(Collectors.toList()))
+                .build();
+    }
+
+    @PostMapping("/orders")
+    public @ResponseBody
+    GetOrdersResponse getOrders(@RequestBody GetOrdersRequest request) {
+        var filter = filterMapper.mapRequestFilterToInternalFilter(request.getFilter());
+        var orders = requestService.getOrders(filter).stream().map(order -> RequestInfo.builder()
+                .requestId(order.getRequestId())
+                .recordedOrigin(new Coordinates(order.getRecordedOriginLatitude(), order.getRecordedOriginLongitude()))
+                .recordedDestination(
+                        new Coordinates(order.getRecordedDestinationLatitude(), order.getRecordedDestinationLongitude()))
+                .pickupRoadSegment(new RoadSegment(order.getPickupRoadSegmentStartNodeId(), order.getPickupRoadSegmentEndNodeId()))
+                .dropoffRoadSegment(new RoadSegment(order.getDropOffRoadSegmentStartNodeId(), order.getDropOffRoadSegmentEndNodeId()))
+                .detourConstraint(order.getDetourConstraint())
+                .load(order.getLoad())
+                .maxPickupDelaySeconds(order.getMaxPickupDelaySeconds())
+                .requestedAt(order.getRequestedAt())
+                .status(order.getStatus())
+                .servingSessionId(order.getServingSessionId())
+                .build()).collect(Collectors.toList());
+        return GetOrdersResponse.builder()
+                .orders(orders)
                 .build();
     }
 }
