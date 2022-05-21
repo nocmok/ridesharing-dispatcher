@@ -2,7 +2,9 @@ package com.nocmok.orp.postgres.storage;
 
 import com.nocmok.orp.postgres.storage.dto.OrderStatus;
 import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
+import com.nocmok.orp.postgres.storage.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -301,5 +303,14 @@ public class ServiceRequestStorage {
                 "     having min(updated_at) > cast(:fromInclusive as timestamp with time zone) " +
                 " ) as t2 " +
                 " on t1.order_id = t2.order_id ", params, (rs, rn) -> rs.getLong("order_id"));
+    }
+
+    private <T> List<T> queryFilter(String tableName, Filter filter, RowMapper<T> mapper) {
+        var sql = filter.applyPaging(" select * from " + tableName + filter.getWhereString().map(" where "::concat).orElse(""));
+        return jdbcTemplate.query(sql, filter.getParamsMap(), mapper);
+    }
+
+    public List<ServiceRequest> getOrders(Filter filter) {
+        return queryFilter("service_request", filter, this::mapResultSetToServiceRequest);
     }
 }
