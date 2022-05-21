@@ -2,6 +2,7 @@ package com.nocmok.orp.api.service.request;
 
 import com.nocmok.orp.postgres.storage.ServiceRequestStorage;
 import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
+import com.nocmok.orp.postgres.storage.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,5 +29,10 @@ public class RequestServiceImpl implements RequestService {
 
     @Override public List<ServiceRequest.OrderStatusLogEntry> getOrderStatusLog(String orderId, int page, int entriesPerPage, boolean ascending) {
         return requestInfoStorage.getOrderStatusLog(Long.parseLong(orderId), page, entriesPerPage, ascending);
+    }
+
+    @Override public List<ServiceRequest> getOrders(Filter filter) {
+        // validate filter
+        return requestInfoStorage.getOrders(filter);
     }
 }
