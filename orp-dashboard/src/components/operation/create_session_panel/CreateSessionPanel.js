@@ -14,6 +14,7 @@ import {SessionListener} from "../../../websocket/session/SessionListener";
 import {Vehicle} from "../../../map/objects/Vehicle";
 import {MapObjectPositionUpdater} from "../../../websocket/session/event_handlers/MapObjectPositionUpdater";
 import {Link} from "react-router-dom";
+import {ScrollBox} from "../../ui/scrollbox/ScrollBox";
 
 export class CreateSessionPanel extends Component {
 
@@ -124,64 +125,72 @@ export class CreateSessionPanel extends Component {
                 }>Создать сессию
                 </div>
 
-                <div style={
-                    {
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "10px"
-                    }}>
-                    <div className="Heading3">Вместимость</div>
-                    <TextInput onInput={event => this.setState({capacity: event.target.value})}
-                               value={this.state.capacity}/>
-                </div>
-
-                <Separator></Separator>
-
-                <div style={
-                    {
+                <ScrollBox height="80%">
+                    <div style={{
                         display: "flex",
                         flexDirection: "column",
                         gap: "20px"
-                    }
-                }>
-                    <div style={
-                        {
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "10px",
-                        }
-                    }>
-                        <div className="Heading3">Широта</div>
-                        <TextInput onInput={event => this.setState({latitude: event.target.value})}
-                                   value={this.state.latitude}></TextInput>
-                    </div>
-
-
-                    <div style={
-                        {
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "10px"
-                        }
-                    }>
-                        <div className="Heading3">Долгота</div>
-                        <TextInput onInput={event => this.setState({longitude: event.target.value})}
-                                   value={this.state.longitude}></TextInput>
-                    </div>
-
-                </div>
-
-                <Separator></Separator>
-
-                <Button style=
+                    }}>
+                        <div style={
                             {
-                                {
-                                    backgroundColor: "#1B72E8", color: "#ffffff"
-                                }
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "10px"
+                            }}>
+                            <div className="Heading3">Вместимость</div>
+                            <TextInput onInput={event => this.setState({capacity: event.target.value})}
+                                       value={this.state.capacity}/>
+                        </div>
+
+                        <Separator></Separator>
+
+                        <div style={
+                            {
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "20px"
                             }
-                        onClick={this.onCreateSession.bind(this)}>
-                    Создать
-                </Button>
+                        }>
+                            <div style={
+                                {
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "10px",
+                                }
+                            }>
+                                <div className="Heading3">Широта</div>
+                                <TextInput onInput={event => this.setState({latitude: event.target.value})}
+                                           value={this.state.latitude}></TextInput>
+                            </div>
+
+
+                            <div style={
+                                {
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "10px"
+                                }
+                            }>
+                                <div className="Heading3">Долгота</div>
+                                <TextInput onInput={event => this.setState({longitude: event.target.value})}
+                                           value={this.state.longitude}></TextInput>
+                            </div>
+
+                        </div>
+
+                        <Separator></Separator>
+
+                        <Button style=
+                                    {
+                                        {
+                                            backgroundColor: "#1B72E8", color: "#ffffff"
+                                        }
+                                    }
+                                onClick={this.onCreateSession.bind(this)}>
+                            Создать
+                        </Button>
+                    </div>
+                </ScrollBox>
             </div>
         )
     }

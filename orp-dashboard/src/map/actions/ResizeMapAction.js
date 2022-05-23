@@ -6,6 +6,10 @@ export class ResizeMapAction {
     }
 
     onWindowResize() {
-        this.map.resize(this.map.renderer.domElement.width, this.map.renderer.domElement.height)
+        const canvasParent = this.map.renderer.domElement.parentElement;
+        if(!canvasParent) {
+            return
+        }
+        this.map.resize(canvasParent.clientWidth, canvasParent.clientHeight)
     }
 }

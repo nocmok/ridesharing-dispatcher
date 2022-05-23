@@ -4,29 +4,28 @@
     flex-direction: column;
     gap: 20px;
 
-    min-width: 200px;
+    min-width: 250px;
     max-width: 400px;
+    width: 15%;
 
-    width: 100%;
+    height: 100%;
 
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 30px;
-    padding-bottom: 30px;
+    padding: 30px;
 
-    border-color: #D7D7D7;
-    border-width: 1px;
-    border-style: solid;
-
-    overflow-y: scroll;
+    background-color: white;
 }
 
-.ScrollBox {
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
-    gap: 20px;
-
-    max-height: 75%;
-    overflow-y: scroll;
+.Back {
 }
+
+.Footer {
+    min-height: 30px;
+}
+
+.Title {
+    color: #7C7C7C;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+

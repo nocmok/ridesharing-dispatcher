@@ -1,9 +1,9 @@
 import React, {Component} from "react";
-import {OdintsovoMapTile} from "../../map/objects/OdintsovoMapTile";
 import {DragCameraAction} from "../../map/actions/DragCameraAction";
 import classes from "./MapScene.module.css";
 import {ResizeMapAction} from "../../map/actions/ResizeMapAction";
 import {TWEEN} from "three/examples/jsm/libs/tween.module.min";
+import {OdintsovoLargeMapTile} from "../../map/objects/OdintsovoLargeMapTile";
 
 export class MapScene extends Component {
 
@@ -23,15 +23,13 @@ export class MapScene extends Component {
     }
 
     setupMap = () => {
-        this.map.resize(window.innerWidth, window.innerHeight)
-        this.map.lookAt(55.66971000000001, 37.28309499999999)
-
-        let odintsovo = new OdintsovoMapTile();
-        odintsovo.setCoordinates(55.66971000000001, 37.28309499999999)
-
-        this.map.addObject(odintsovo)
+        this.map.lookAt(55.6704, 37.281649999999985)
+        let odintsovoLarge = new OdintsovoLargeMapTile();
+        odintsovoLarge.setCoordinates(55.6704, 37.281649999999985)
+        this.map.addObject(odintsovoLarge)
 
         this.mount.appendChild(this.map.renderer.domElement)
+        this.map.resize(this.mount.clientWidth, this.mount.clientHeight)
     }
 
     setupActions = () => {

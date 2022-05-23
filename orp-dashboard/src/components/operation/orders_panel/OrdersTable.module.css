@@ -1,0 +1,60 @@
+.Wrapper {
+    height: 100%;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.DataGrid {
+    background-color: white;
+}
+
+.Footer {
+    height: 40px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    flex-direction: row;
+    padding-right: 50px;
+    gap: 20px;
+}
+
+.IconButton {
+    width: 10px;
+    height: 10px;
+    border-style: none;
+}
+
+.IconButton:hover {
+    opacity: 0.8;
+}
+
+.IconButton:disabled {
+    opacity: 0.6;
+}
+
+.Code {
+   font-size: 0.9em;
+}
+
+.Link {
+    text-decoration: none;
+    font-weight: bold;
+    color: #1B6BDC;
+}
+
+.GridHeader {
+    background-color: #F4F4F4;
+}
+
+.GridCell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding-left: 30px;
+    width: 100%;
+    height: 100%;
+}

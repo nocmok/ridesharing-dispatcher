@@ -4,6 +4,8 @@ import {Button} from "../../ui/buttion/Button";
 import {ShowSelectedCoordinatesAction} from "./ShowSelectedCoordinatesAction";
 import {DragMapAction} from "../../../map/actions/DragMapAction";
 import {UpdateSelectedCoordinatesAction} from "./UpdateSelectedCoordinatesAction";
+import {ShowSelectedRoadAction} from "./ShowSelectedRoadAction";
+import {UpdateSelectedRoadAction} from "./UpdateSelectedRoadAction";
 
 export class CoordinatesPicker extends Component {
 
@@ -27,15 +29,21 @@ export class CoordinatesPicker extends Component {
 
         this.updateSelectedCoordinatesAction = new UpdateSelectedCoordinatesAction(this);
         this.showSelectedCoordinatesAction = new ShowSelectedCoordinatesAction(this);
+        this.showSelectedRoadAction = new ShowSelectedRoadAction(this)
+        this.updateSelectedRoadAction = new UpdateSelectedRoadAction(this)
 
         this.dragMapAction = new DragMapAction(this.map, {
             activate: () => {
                 this.updateSelectedCoordinatesAction.activate()
                 this.showSelectedCoordinatesAction.activate()
+                this.updateSelectedRoadAction.activate()
+                this.showSelectedRoadAction.activate()
             },
             deactivate: () => {
                 this.updateSelectedCoordinatesAction.deactivate()
                 this.showSelectedCoordinatesAction.deactivate()
+                this.updateSelectedRoadAction.deactivate()
+                this.showSelectedRoadAction.deactivate()
             },
             onDrag: () => {
                 if (!this.state.isActive) {
@@ -45,6 +53,8 @@ export class CoordinatesPicker extends Component {
                 this.showSelectedCoordinatesAction.showCoordinates()
             },
             onDragStopped: () => {
+                this.updateSelectedRoadAction.updateRoadSegment()
+                this.showSelectedRoadAction.showSelectedRoad()
             }
         })
 

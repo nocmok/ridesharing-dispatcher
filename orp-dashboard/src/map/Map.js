@@ -64,14 +64,11 @@ export class Map {
 
     resize(newWidth, newHeight) {
         this.threeCamera.aspect = newWidth / newHeight;
-
         this.threeCamera.updateProjectionMatrix();
         this.renderer.setSize(newWidth, newHeight);
     }
 
     lookAt(latitude, longitude) {
-
-
         this.camera.lookAt(latitude, longitude)
     }
 

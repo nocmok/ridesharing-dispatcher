@@ -6,6 +6,7 @@ function resolve(path) {
 }
 
 export function getRoadSegmentByLatLon(request) {
+    console.log(request)
     return fetch(resolve("/location/road_segment"), {
         method: "POST",
         headers: {

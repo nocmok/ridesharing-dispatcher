@@ -1,0 +1,16 @@
+.Wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    pointer-events: none;
+}
+
+.OrdersTableWrapper {
+    height: 40%;
+    width: 100%;
+    pointer-events: all;
+}
