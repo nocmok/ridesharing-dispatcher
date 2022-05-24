@@ -13,4 +13,8 @@ public abstract class AbstractField<T, V> implements Field<T, V> {
     }
 
     @Override abstract public T convertValue(V value);
+
+    @Override public String createPlaceHolder(String paramName) {
+        return ":" + paramName;
+    }
 }

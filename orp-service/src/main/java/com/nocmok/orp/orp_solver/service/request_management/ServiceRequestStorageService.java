@@ -13,5 +13,7 @@ public interface ServiceRequestStorageService {
 
     void updateRequestStatus(String requestId, OrderStatus status);
 
+    void updateRequestStatus(String requestId, OrderStatus status, boolean shouldCompleteRequest);
+
     void updateServingSessionId(String requestId, String sessionId);
 }

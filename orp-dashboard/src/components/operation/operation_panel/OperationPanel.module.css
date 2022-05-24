@@ -4,17 +4,15 @@
     flex-direction: column;
     gap: 20px;
 
-    min-width: 200px;
+    min-width: 250px;
     max-width: 400px;
+    width: 15%;
 
-    width: 100%;
-    /*min-height: 100%;*/
+    height: 100%;
 
     padding-left: 30px;
     padding-right: 30px;
     padding-top: 30px;
 
-    border-color: #D7D7D7;
-    border-width: 1px;
-    border-style: solid;
+    background-color: white;
 }

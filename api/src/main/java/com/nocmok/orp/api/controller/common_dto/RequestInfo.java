@@ -39,6 +39,9 @@ public class RequestInfo {
     @JsonProperty("requestedAt")
     private Instant requestedAt;
 
+    @JsonProperty("completedAt")
+    private Instant completedAt;
+
     @JsonProperty("load")
     private Integer load;
 

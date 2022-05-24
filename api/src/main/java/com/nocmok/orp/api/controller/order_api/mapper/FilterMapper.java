@@ -1,19 +1,27 @@
 package com.nocmok.orp.api.controller.order_api.mapper;
 
+import com.nocmok.orp.api.controller.common_dto.OneOf;
+import com.nocmok.orp.api.controller.common_dto.OrderBy;
 import com.nocmok.orp.api.controller.common_dto.RequestFilter;
 import com.nocmok.orp.postgres.storage.dto.OrderStatus;
 import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 import com.nocmok.orp.postgres.storage.filter.Filter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
 public class FilterMapper {
 
     private void parseOneOfClauses(Filter filter, RequestFilter requestFilter) {
-        for (var oneOf : requestFilter.getFiltering()) {
+        for (var oneOf : Objects.requireNonNullElse(requestFilter.getFiltering(), Collections.<OneOf>emptyList())) {
+            if (CollectionUtils.isEmpty(oneOf.getValues())) {
+                continue;
+            }
             switch (oneOf.getFieldName()) {
                 case "orderId":
                     filter.oneOf(ServiceRequest.Fields.requestId, oneOf.getValues());
@@ -33,7 +41,7 @@ public class FilterMapper {
     }
 
     private void parseOrderByClauses(Filter filter, RequestFilter requestFilter) {
-        for (var orderBy : requestFilter.getOrdering()) {
+        for (var orderBy : Objects.requireNonNullElse(requestFilter.getOrdering(), Collections.<OrderBy>emptyList())) {
             switch (orderBy.getFieldName()) {
                 case "orderId":
                     filter.orderBy(ServiceRequest.Fields.requestId, orderBy.isAscending());
@@ -41,7 +49,7 @@ public class FilterMapper {
                 case "status":
                     filter.orderBy(ServiceRequest.Fields.status, orderBy.isAscending());
                     break;
-                case "requestedAt":
+                case "orderedAt":
                     filter.orderBy(ServiceRequest.Fields.requestedAt, orderBy.isAscending());
                     break;
                 case "servingSessionId":
@@ -56,6 +64,8 @@ public class FilterMapper {
         var filter = new Filter();
         parseOneOfClauses(filter, requestFilter);
         parseOrderByClauses(filter, requestFilter);
+        filter.page(requestFilter.getPage());
+        filter.pageSize(requestFilter.getPageSize());
         return filter;
     }
 }

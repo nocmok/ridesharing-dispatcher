@@ -10,6 +10,10 @@ public class EnumField<T extends Enum<?>> extends AbstractField<String, T> {
     }
 
     @Override public String convertValue(T value) {
-        return value.name() + "::" + enumName;
+        return value.name();
+    }
+
+    @Override public String createPlaceHolder(String paramName) {
+        return ":" + paramName + "::" + enumName;
     }
 }

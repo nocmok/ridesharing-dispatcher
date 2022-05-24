@@ -49,6 +49,7 @@ create table service_request
     detour_constraint float8 not null,
     max_pickup_delay_seconds bigint not null,
     requested_at timestamp with time zone not null,
+    completed_at timestamp with time zone,
     load bigint not null,
     status service_request_status,
     serving_session_id bigint

@@ -1,0 +1,44 @@
+.ScrollBox {
+    position: relative;
+}
+
+.ScrollBoxContent {
+    overflow-y: scroll;
+    height: 100%;
+}
+
+.ScrollBoxContent::-webkit-scrollbar {
+    display: none;
+}
+
+.ScrollBoxHeader,
+.ScrollBoxFooter {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: black;
+    opacity: 0;
+    min-height: 15px;
+}
+
+.ScrollBoxHeader {
+    position: absolute;
+    top: 0;
+    background: radial-gradient(
+            farthest-side at 50% 0,
+            rgba(0, 0, 0, 0.3),
+            rgba(0, 0, 0, 0)
+    ) center top;
+
+}
+
+.ScrollBoxFooter {
+    position: absolute;
+    bottom: 0;
+    background: radial-gradient(
+            farthest-side at 50% 100%,
+            rgba(0, 0, 0, 0.3),
+            rgba(0, 0, 0, 0)
+    ) center bottom;
+}

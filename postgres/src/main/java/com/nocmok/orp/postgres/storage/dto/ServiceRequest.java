@@ -38,6 +38,8 @@ public class ServiceRequest {
 
     private Instant requestedAt;
 
+    private Instant completedAt;
+
     private Double detourConstraint;
 
     private Integer maxPickupDelaySeconds;
@@ -66,6 +68,7 @@ public class ServiceRequest {
         public static final Field<Long, Long> dropOffRoadSegmentStartNodeId = new LongField("dropoff_road_segment_start_node_id");
         public static final Field<Long, Long> dropOffRoadSegmentEndNodeId = new LongField("dropoff_road_segment_end_node_id");
         public static final Field<Timestamp, Instant> requestedAt = new InstantField("requested_at");
+        public static final Field<Timestamp, Instant> completedAt = new InstantField("completed_at");
         public static final Field<Double, Double> detourConstraint = new DoubleField("detour_constraint");
         public static final Field<Integer, Integer> maxPickupDelaySeconds = new IntegerField("max_pickup_delay_seconds");
         public static final Field<Integer, Integer> load = new IntegerField("load");
