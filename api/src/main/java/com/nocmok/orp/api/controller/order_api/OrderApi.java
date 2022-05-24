@@ -116,6 +116,7 @@ public class OrderApi {
                 .load(order.getLoad())
                 .maxPickupDelaySeconds(order.getMaxPickupDelaySeconds())
                 .requestedAt(order.getRequestedAt())
+                .completedAt(order.getCompletedAt())
                 .status(order.getStatus())
                 .servingSessionId(order.getServingSessionId())
                 .build()).collect(Collectors.toList());

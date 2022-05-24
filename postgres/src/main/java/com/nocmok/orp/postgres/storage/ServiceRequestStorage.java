@@ -50,6 +50,7 @@ public class ServiceRequestStorage {
                 rs.getString("dropoff_road_segment_end_node_id"),
                 Optional.ofNullable(rs.getTimestamp("requested_at")).map(Timestamp::toInstant)
                         .orElseThrow(() -> new NullPointerException("requested_at not expected to be null")),
+                Optional.ofNullable(rs.getTimestamp("completed_at")).map(Timestamp::toInstant).orElse(null),
                 rs.getDouble("detour_constraint"),
                 rs.getInt("max_pickup_delay_seconds"),
                 rs.getInt("load"),
@@ -75,6 +76,7 @@ public class ServiceRequestStorage {
                         " detour_constraint," +
                         " max_pickup_delay_seconds," +
                         " requested_at," +
+                        " completed_at, " +
                         " load," +
                         " status," +
                         " serving_session_id " +
@@ -101,6 +103,7 @@ public class ServiceRequestStorage {
                         " detour_constraint," +
                         " max_pickup_delay_seconds," +
                         " requested_at," +
+                        " completed_at," +
                         " load," +
                         " status," +
                         " serving_session_id " +
@@ -111,19 +114,24 @@ public class ServiceRequestStorage {
         return requests.stream().findFirst();
     }
 
-    @Transactional
     public void updateRequestStatus(String requestId, OrderStatus updatedStatus) {
-        updateOrderStatus(Long.parseLong(requestId), updatedStatus);
+        updateRequestStatus(requestId, updatedStatus, false);
+    }
+
+    @Transactional
+    public void updateRequestStatus(String requestId, OrderStatus updatedStatus, boolean shouldCompleteRequest) {
+        updateOrderStatus(Long.parseLong(requestId), updatedStatus, shouldCompleteRequest);
         insertStatusLogEntry(Long.parseLong(requestId), new ServiceRequest.OrderStatusLogEntry(updatedStatus, Instant.now()));
     }
 
-    private void updateOrderStatus(Long requestId, OrderStatus updatedStatus) {
+    private void updateOrderStatus(Long requestId, OrderStatus updatedStatus, boolean shouldCompleteOrder) {
         var params = new HashMap<String, Object>();
         params.put("status", updatedStatus.name());
         params.put("requestId", requestId);
         jdbcTemplate.update(
                 " update service_request " +
                         " set status = cast(:status as service_request_status) " +
+                        (shouldCompleteOrder ? ", completed_at = now() " : "") +
                         " where request_id = :requestId ", params);
     }
 
@@ -172,6 +180,7 @@ public class ServiceRequestStorage {
         params.put("max_pickup_delay_seconds", serviceRequest.getMaxPickupDelaySeconds());
         params.put("requested_at", Optional.ofNullable(serviceRequest.getRequestedAt()).map(Timestamp::from)
                 .orElseThrow(() -> new NullPointerException("requested_at not expected to be null")));
+        params.put("completed_at", Optional.ofNullable(serviceRequest.getCompletedAt()).map(Timestamp::from).orElse(null));
         params.put("load", serviceRequest.getLoad());
         params.put("status", serviceRequest.getStatus().name());
         params.put("serving_session_id", serviceRequest.getServingSessionId() == null ? null : Long.parseLong(serviceRequest.getServingSessionId()));
@@ -189,6 +198,7 @@ public class ServiceRequestStorage {
                         " detour_constraint," +
                         " max_pickup_delay_seconds," +
                         " requested_at," +
+                        " completed_at," +
                         " load," +
                         " status," +
                         " serving_session_id " +
@@ -207,6 +217,7 @@ public class ServiceRequestStorage {
                         "   :detour_constraint, " +
                         "   :max_pickup_delay_seconds, " +
                         "   :requested_at, " +
+                        "   :completed_at, " +
                         "   :load," +
                         "   cast(:status as service_request_status)," +
                         "   :serving_session_id " +

@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import * as OrderApi from "../../../api/OrderApi";
-import {DataGrid} from "@mui/x-data-grid";
+import {DataGrid, getGridStringOperators, getGridSingleSelectOperators} from "@mui/x-data-grid";
 import classes from "./OrdersTable.module.css";
 import './Fixes.css';
 import {Link} from "react-router-dom";
@@ -25,7 +25,7 @@ export function OrdersTable(props) {
                     pickup: JSON.stringify(order.recordedOrigin, null, 2),
                     dropoff: JSON.stringify(order.recordedDestination, null, 2),
                     orderedAt: order.requestedAt,
-                    completedAt: null,
+                    completedAt: order.completedAt,
                     servingSessionId: order.servingSessionId,
                     status: order.status
                 }
@@ -42,7 +42,7 @@ export function OrdersTable(props) {
             fieldName: sortModel[0].field,
             ascending: sortModel[0].sort === 'asc'
         }] : []
-        setFilter({...filter, ordering: ordering })
+        setFilter({...filter, ordering: ordering})
     }, [sortModel])
 
     useEffect(() => {
@@ -62,6 +62,9 @@ export function OrdersTable(props) {
         })
     }, [filter])
 
+    const stringOperators = getGridStringOperators().filter(({value}) => ['isAnyOf'].includes(value))
+    const singleSelectOperators = getGridSingleSelectOperators().filter(({value}) => ['isAnyOf'].includes(value))
+
     const columns = [
         {
             field: 'orderId',
@@ -73,7 +76,8 @@ export function OrdersTable(props) {
                 return (<div className={classes.GridCell}>
                     <Link to={`/order/${cell.value}`} className={classes.Link}>{cell.value}</Link>
                 </div>)
-            }
+            },
+            filterOperators: stringOperators
         },
         {
             field: 'orderedAt',
@@ -81,7 +85,7 @@ export function OrdersTable(props) {
             minWidth: 200,
             flex: true,
             filterable: false,
-            headerClassName: classes.GridHeader
+            headerClassName: classes.GridHeader,
         },
         {
             field: 'completedAt',
@@ -89,7 +93,7 @@ export function OrdersTable(props) {
             minWidth: 200,
             flex: true,
             filterable: false,
-            headerClassName: classes.GridHeader
+            headerClassName: classes.GridHeader,
         },
         {
             field: 'servingSessionId',
@@ -101,7 +105,8 @@ export function OrdersTable(props) {
                 return (<div className={classes.GridCell}>
                     <Link to={`/session/${cell.value}`} className={classes.Link}>{cell.value}</Link>
                 </div>)
-            }
+            },
+            filterOperators: stringOperators
         },
         {
             field: 'status',
@@ -110,7 +115,8 @@ export function OrdersTable(props) {
             flex: true,
             headerClassName: classes.GridHeader,
             type: 'singleSelect',
-            valueOptions: [ 'SERVICE_PENDING', 'SERVICE_DENIED', 'ACCEPTED', 'PICKUP_PENDING', 'SERVING', 'SERVED', 'CANCELLED' ]
+            valueOptions: ['SERVICE_PENDING', 'SERVICE_DENIED', 'ACCEPTED', 'PICKUP_PENDING', 'SERVING', 'SERVED', 'CANCELLED'],
+            filterOperators: singleSelectOperators
         },
     ];
 
@@ -152,11 +158,11 @@ export function OrdersTable(props) {
                 <div>
                     {page * pageSize} - {page * pageSize + rows.length}
                 </div>
-                <button className={classes.IconButton} style={{background: "url(icons/back.svg) no-repeat center/50%"}}
+                <button className={classes.IconButton} style={{background: "url(icons/prev-page-button.svg) no-repeat center/50%"}}
                         disabled={page <= 0}
                         onClick={() => setPage(page - 1)}>
                 </button>
-                <button className={classes.IconButton} style={{background: "url(icons/front.svg) no-repeat center/50%"}}
+                <button className={classes.IconButton} style={{background: "url(icons/next-page-button.svg) no-repeat center/50%"}}
                         disabled={rows.length < pageSize}
                         onClick={() => setPage(page + 1)}>
                 </button>

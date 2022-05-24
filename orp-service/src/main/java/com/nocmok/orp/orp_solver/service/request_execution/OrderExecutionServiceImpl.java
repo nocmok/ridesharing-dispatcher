@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,6 +23,7 @@ import java.util.Set;
 public class OrderExecutionServiceImpl implements OrderExecutionService {
 
     private static final Map<OrderStatus, Set<OrderStatus>> orderStatusTransitionGraph = new HashMap<>();
+    private static final Set<OrderStatus> terminalOrderStatuses = new HashSet<>();
 
     static {
         orderStatusTransitionGraph.put(OrderStatus.SERVICE_PENDING, Set.of(OrderStatus.ACCEPTED, OrderStatus.SERVICE_DENIED));
@@ -31,6 +33,10 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
         orderStatusTransitionGraph.put(OrderStatus.SERVED, Set.of());
         orderStatusTransitionGraph.put(OrderStatus.SERVICE_DENIED, Set.of());
         orderStatusTransitionGraph.put(OrderStatus.CANCELLED, Set.of());
+
+        terminalOrderStatuses.add(OrderStatus.SERVED);
+        terminalOrderStatuses.add(OrderStatus.SERVICE_DENIED);
+        terminalOrderStatuses.add(OrderStatus.CANCELLED);
     }
 
     private StateKeeper<?> stateKeeper;
@@ -47,6 +53,10 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
         this.outOfOrderExecutionHandler = outOfOrderExecutionHandler;
         this.transactionTemplate = transactionTemplate;
         this.serviceRequestStorageService = serviceRequestStorageService;
+    }
+
+    private static boolean isTerminalOrderStatus(OrderStatus orderStatus) {
+        return terminalOrderStatuses.contains(orderStatus);
     }
 
     /**
@@ -146,7 +156,7 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
             }
 
             stateKeeper.updateVehicle(updatedSession);
-            serviceRequestStorageService.updateRequestStatus(orderId, updatedStatus);
+            serviceRequestStorageService.updateRequestStatus(orderId, updatedStatus, isTerminalOrderStatus(updatedStatus));
         });
 
     }

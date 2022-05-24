@@ -31,6 +31,10 @@ public class ServiceRequestStorageServiceImpl implements ServiceRequestStorageSe
         serviceRequestStorage.updateRequestStatus(requestId, status);
     }
 
+    @Override public void updateRequestStatus(String requestId, OrderStatus status, boolean shouldCompleteRequest) {
+        serviceRequestStorage.updateRequestStatus(requestId, status, shouldCompleteRequest);
+    }
+
     @Override public void updateServingSessionId(String requestId, String sessionId) {
         serviceRequestStorage.updateServingSessionId(requestId, sessionId);
     }

@@ -35,6 +35,9 @@ public class Filter {
     private Long page = 0L;
 
     public <F, V> Filter oneOf(Field<F, V> field, List<V> values) {
+        if (values.isEmpty()) {
+            return this;
+        }
         oneOfClauses.add(new OneOf<>(field, values));
         return this;
     }
@@ -99,7 +102,7 @@ public class Filter {
             var valueMap = values.stream().collect(Collectors.toMap(value -> "___" + field.getFieldName() + identityGenerator.get(), field::convertValue));
             paramsMap.putAll(valueMap);
             return field.getFieldName() + " in (" + valueMap.keySet().stream()
-                    .map(identity -> ":" + identity)
+                    .map(field::createPlaceHolder)
                     .collect(Collectors.joining(",")) + ")";
         }
     }
