@@ -1,5 +1,7 @@
 package com.nocmok.orp.api.controller.session_api;
 
+import com.nocmok.orp.api.controller.common_dto.ScheduleNode;
+import com.nocmok.orp.api.controller.common_dto.SessionDto;
 import com.nocmok.orp.api.controller.common_dto.SessionStatusLogEntry;
 import com.nocmok.orp.api.controller.session_api.dto.GetSessionExpendituresRequest;
 import com.nocmok.orp.api.controller.session_api.dto.GetSessionExpendituresResponse;
@@ -7,8 +9,11 @@ import com.nocmok.orp.api.controller.session_api.dto.GetSessionOrdersRequest;
 import com.nocmok.orp.api.controller.session_api.dto.GetSessionOrdersResponse;
 import com.nocmok.orp.api.controller.session_api.dto.GetSessionStatusLogRequest;
 import com.nocmok.orp.api.controller.session_api.dto.GetSessionStatusLogResponse;
+import com.nocmok.orp.api.controller.session_api.dto.GetSessionsRequest;
+import com.nocmok.orp.api.controller.session_api.dto.GetSessionsResponse;
 import com.nocmok.orp.api.controller.session_api.dto.SessionExpenditure;
 import com.nocmok.orp.api.controller.session_api.dto.SessionOrderAssignment;
+import com.nocmok.orp.api.controller.session_api.mapper.SessionFilterMapper;
 import com.nocmok.orp.api.service.session.SessionManagementService;
 import com.nocmok.orp.api.service.session.SessionStatisticsService;
 import com.nocmok.orp.api.service.session.dto.SessionStatistics;
@@ -29,12 +34,14 @@ public class SessionApiController {
 
     private SessionManagementService sessionManagementService;
     private SessionStatisticsService sessionStatisticsService;
+    private SessionFilterMapper filterMapper;
 
     @Autowired
     public SessionApiController(SessionManagementService sessionManagementService,
-                                SessionStatisticsService sessionStatisticsService) {
+                                SessionStatisticsService sessionStatisticsService, SessionFilterMapper filterMapper) {
         this.sessionManagementService = sessionManagementService;
         this.sessionStatisticsService = sessionStatisticsService;
+        this.filterMapper = filterMapper;
     }
 
     @PostMapping("/statistics/status_log")
@@ -74,10 +81,33 @@ public class SessionApiController {
     @PostMapping("/statistics/expenditures")
     public @ResponseBody GetSessionExpendituresResponse getSessionExpenditures(@RequestBody GetSessionExpendituresRequest request) {
         return GetSessionExpendituresResponse.builder()
-                .expenditure("total",sessionStatisticsService.getTotalSessionStatistics(request.getSessionId()).map(this::mapSessionStatisticsToSessionExpenditure).orElse(null))
-                .expenditure(SessionStatus.PENDING.name(), sessionStatisticsService.getSessionStatisticsByStatus(request.getSessionId(), SessionStatus.PENDING).map(this::mapSessionStatisticsToSessionExpenditure).orElse(null))
-                .expenditure(SessionStatus.SERVING.name(), sessionStatisticsService.getSessionStatisticsByStatus(request.getSessionId(), SessionStatus.SERVING).map(this::mapSessionStatisticsToSessionExpenditure).orElse(null))
-                .expenditure(SessionStatus.FROZEN.name(), sessionStatisticsService.getSessionStatisticsByStatus(request.getSessionId(), SessionStatus.FROZEN).map(this::mapSessionStatisticsToSessionExpenditure).orElse(null))
+                .expenditure("total",
+                        sessionStatisticsService.getTotalSessionStatistics(request.getSessionId()).map(this::mapSessionStatisticsToSessionExpenditure)
+                                .orElse(null))
+                .expenditure(SessionStatus.PENDING.name(), sessionStatisticsService.getSessionStatisticsByStatus(request.getSessionId(), SessionStatus.PENDING)
+                        .map(this::mapSessionStatisticsToSessionExpenditure).orElse(null))
+                .expenditure(SessionStatus.SERVING.name(), sessionStatisticsService.getSessionStatisticsByStatus(request.getSessionId(), SessionStatus.SERVING)
+                        .map(this::mapSessionStatisticsToSessionExpenditure).orElse(null))
+                .expenditure(SessionStatus.FROZEN.name(), sessionStatisticsService.getSessionStatisticsByStatus(request.getSessionId(), SessionStatus.FROZEN)
+                        .map(this::mapSessionStatisticsToSessionExpenditure).orElse(null))
+                .build();
+    }
+
+    @PostMapping("/sessions")
+    public @ResponseBody
+    GetSessionsResponse getSessions(@RequestBody GetSessionsRequest request) {
+        var sessions = sessionManagementService.getSessionsByFilter(filterMapper.mapRequestFilterToInternalFilter(request.getFilter()));
+        return GetSessionsResponse.builder()
+                .sessions(sessions.stream().map(session -> SessionDto.builder()
+                        .sessionId(session.getSessionId())
+                        .capacity(session.getCapacity())
+                        .residualCapacity(session.getResidualCapacity())
+                        .schedule(session.getSchedule().stream().map(node -> ScheduleNode.builder()
+                                .kind(node.getKind())
+                                .orderId(node.getOrderId())
+                                .nodeId(node.getNodeId())
+                                .build()).collect(Collectors.toList()))
+                        .build()).collect(Collectors.toList()))
                 .build();
     }
 }

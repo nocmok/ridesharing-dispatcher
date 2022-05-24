@@ -1,28 +1,19 @@
 package com.nocmok.orp.api.service.session.dto;
 
+import com.nocmok.orp.solver.api.ScheduleEntry;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
-import java.time.Instant;
+import java.util.List;
 
+@Data
 @AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
 @Builder
-@ToString
 public class SessionDto {
 
     private String sessionId;
-    private Integer initialCapacity;
-    private Double initialLatitude;
-    private Double initialLongitude;
-    private String sourceId;
-    private String targetId;
-    private Instant createdAt;
-
+    private Long capacity;
+    private Long residualCapacity;
+    private List<ScheduleEntry> schedule;
 }

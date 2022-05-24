@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
-public class FilterMapper {
+public class OrderFilterMapper {
 
     private void parseOneOfClauses(Filter filter, RequestFilter requestFilter) {
         for (var oneOf : Objects.requireNonNullElse(requestFilter.getFiltering(), Collections.<OneOf>emptyList())) {

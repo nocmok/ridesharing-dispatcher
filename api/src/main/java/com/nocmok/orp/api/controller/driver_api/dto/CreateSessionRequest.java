@@ -22,7 +22,7 @@ public class CreateSessionRequest {
             "Измеряется в количестве человек, которых одновременно может перевозить транспортное средство.",
             example = "2")
     @JsonProperty("capacity")
-    private Integer capacity;
+    private Long capacity;
 
     @Schema(description = "Текущие координаты транспортного средства.")
     @JsonProperty("coordinates")
