@@ -5,12 +5,13 @@ import com.nocmok.orp.api.service.session.dto.SessionDto;
 import com.nocmok.orp.api.service.session.dto.SessionInfo;
 import com.nocmok.orp.postgres.storage.dto.OrderAssignment;
 import com.nocmok.orp.postgres.storage.dto.Session;
+import com.nocmok.orp.postgres.storage.filter.Filter;
 
 import java.util.List;
 
 public interface SessionManagementService {
 
-    SessionDto createSession(SessionDto sessionDto);
+    SessionDto createSession(Long capacity, Double initialLatitude, Double initialLongitude, String sourceId, String targetId);
 
     void stopSession(String sessionId);
 
@@ -23,4 +24,6 @@ public interface SessionManagementService {
     List<Session.StatusLogEntry> getSessionStatusLog(String sessionId, int pageNumber, int pageSize, boolean ascendingOrder);
 
     List<OrderAssignment> getAssignedOrders(String sessionId, int pageNumber, int pageSize, boolean ascendingOrder);
+
+    List<SessionDto> getSessionsByFilter(Filter filter);
 }

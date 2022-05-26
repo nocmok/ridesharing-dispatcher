@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -128,7 +129,10 @@ public class StateKeeperImpl implements StateKeeper<DefaultVehicle> {
         vehicle.setSchedule(Objects.requireNonNullElseGet(vehicle.getSchedule(), EmptySchedule::new));
         vehicle.setStatus(Objects.requireNonNullElse(vehicle.getStatus(), VehicleStatus.PENDING));
 
-        var createdSession = sessionStorage.createSession(mapVehicleStateToSession(vehicle), mapVehicleStatusToSessionStatus(vehicle.getStatus()));
+        var sessionToCreate = mapVehicleStateToSession(vehicle);
+        sessionToCreate.setStartedAt(Instant.now());
+        var createdSession = sessionStorage.createSession(sessionToCreate, mapVehicleStatusToSessionStatus(vehicle.getStatus()));
+
         vehicle.setId(Long.toString(createdSession.getSessionId()));
 
         return vehicle;

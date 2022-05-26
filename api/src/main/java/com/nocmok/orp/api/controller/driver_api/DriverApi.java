@@ -1,12 +1,11 @@
 package com.nocmok.orp.api.controller.driver_api;
 
-import com.nocmok.orp.api.controller.common_dto.Coordinates;
-import com.nocmok.orp.api.controller.common_dto.RoadSegment;
+import com.nocmok.orp.api.controller.common_dto.ScheduleNode;
+import com.nocmok.orp.api.controller.common_dto.SessionDto;
 import com.nocmok.orp.api.controller.driver_api.dto.CreateSessionRequest;
 import com.nocmok.orp.api.controller.driver_api.dto.CreateSessionResponse;
 import com.nocmok.orp.api.controller.driver_api.dto.UpdateScheduleRequest;
 import com.nocmok.orp.api.service.session.SessionManagementService;
-import com.nocmok.orp.api.service.session.dto.SessionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.util.stream.Collectors;
 
 @Controller()
 @RequestMapping("/driver_api/v0")
@@ -29,22 +30,27 @@ public class DriverApi {
     }
 
     @PostMapping("/create_session")
-    public @ResponseBody CreateSessionResponse createSession(@RequestBody CreateSessionRequest createSessionRequest) {
-        var session = sessionManagementService.createSession(SessionDto.builder()
-                .initialCapacity(createSessionRequest.getCapacity())
-                .initialLatitude(createSessionRequest.getCoordinates().getLatitude())
-                .initialLongitude(createSessionRequest.getCoordinates().getLongitude())
-                .sourceId(createSessionRequest.getRoad().getSourceId())
-                .targetId(createSessionRequest.getRoad().getTargetId())
-                .createdAt(createSessionRequest.getCreatedAt())
-                .build());
-
+    public @ResponseBody CreateSessionResponse createSession(@RequestBody CreateSessionRequest request) {
+        var session = sessionManagementService.createSession(
+                request.getCapacity(),
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                request.getRoad().getSourceId(),
+                request.getRoad().getTargetId()
+        );
         return CreateSessionResponse.builder()
-                .sessionId(session.getSessionId())
-                .capacity(session.getInitialCapacity())
-                .coordinates(new Coordinates(session.getInitialLatitude(), session.getInitialLongitude()))
-                .road(new RoadSegment(session.getSourceId(), session.getTargetId()))
-                .createdAt(session.getCreatedAt())
+                .createdSession(SessionDto.builder()
+                        .sessionId(session.getSessionId())
+                        .capacity(session.getCapacity())
+                        .residualCapacity(session.getResidualCapacity())
+                        .schedule(session.getSchedule().stream().map(node -> ScheduleNode.builder()
+                                .kind(node.getKind())
+                                .orderId(node.getOrderId())
+                                .nodeId(node.getNodeId())
+                                .build()).collect(Collectors.toList()))
+                        .build())
+                .road(request.getRoad())
+                .coordinates(request.getCoordinates())
                 .build();
     }
 

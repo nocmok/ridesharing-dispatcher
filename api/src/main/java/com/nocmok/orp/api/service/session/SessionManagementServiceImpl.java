@@ -1,5 +1,6 @@
 package com.nocmok.orp.api.service.session;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nocmok.orp.api.service.session.dto.RequestStatus;
 import com.nocmok.orp.api.service.session.dto.SessionDto;
 import com.nocmok.orp.api.service.session.dto.SessionInfo;
@@ -12,17 +13,24 @@ import com.nocmok.orp.postgres.storage.RouteCacheStorage;
 import com.nocmok.orp.postgres.storage.SessionStorage;
 import com.nocmok.orp.postgres.storage.dto.OrderAssignment;
 import com.nocmok.orp.postgres.storage.dto.Session;
-import com.nocmok.orp.state_keeper.api.DefaultVehicle;
+import com.nocmok.orp.postgres.storage.dto.SessionStatus;
+import com.nocmok.orp.postgres.storage.filter.Filter;
+import com.nocmok.orp.solver.api.EmptySchedule;
+import com.nocmok.orp.solver.api.ReadOnlySchedule;
+import com.nocmok.orp.solver.api.ScheduleEntry;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
-import com.nocmok.orp.state_keeper.api.VehicleStatus;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class SessionManagementServiceImpl implements SessionManagementService {
@@ -33,39 +41,46 @@ public class SessionManagementServiceImpl implements SessionManagementService {
     private RouteCacheStorage routeCacheStorage;
     private SessionStorage sessionStorage;
     private OrderAssignmentStorage orderAssignmentStorage;
+    private ObjectMapper objectMapper;
 
     @Autowired
     public SessionManagementServiceImpl(SpatialGraphObjectsStorage graphObjectsStorage, StateKeeper<?> stateKeeper,
                                         KafkaTemplate<String, Object> kafkaTemplate, RouteCacheStorage routeCacheStorage,
-                                        SessionStorage sessionStorage, OrderAssignmentStorage orderAssignmentStorage) {
+                                        SessionStorage sessionStorage, OrderAssignmentStorage orderAssignmentStorage,
+                                        ObjectMapper objectMapper) {
         this.graphObjectsStorage = graphObjectsStorage;
         this.stateKeeper = stateKeeper;
         this.kafkaTemplate = kafkaTemplate;
         this.routeCacheStorage = routeCacheStorage;
         this.sessionStorage = sessionStorage;
         this.orderAssignmentStorage = orderAssignmentStorage;
+        this.objectMapper = objectMapper;
     }
 
-    @Override public SessionDto createSession(SessionDto sessionDto) {
-        // TODO делать транзакционно
+    @Transactional
+    @Override public SessionDto createSession(Long capacity, Double initialLatitude, Double initialLongitude, String sourceId, String targetId) {
+        Objects.requireNonNull(capacity);
 
-        var vehicle = stateKeeper.createVehicle(DefaultVehicle.builder()
-                .capacity(sessionDto.getInitialCapacity())
-                .residualCapacity(sessionDto.getInitialCapacity())
-                .status(VehicleStatus.PENDING)
-                .build());
-
-        sessionDto.setSessionId(vehicle.getId());
+        var session = sessionStorage.createSession(Session.builder()
+                .totalCapacity(capacity)
+                .residualCapacity(capacity)
+                .scheduleJson(emptyScheduleJson())
+                .build(), SessionStatus.PENDING);
 
         graphObjectsStorage.updateObject(new ObjectUpdater(
-                sessionDto.getSessionId(),
-                sessionDto.getSourceId(),
-                sessionDto.getTargetId(),
-                sessionDto.getInitialLatitude(),
-                sessionDto.getInitialLongitude()
+                Objects.toString(session.getSessionId()),
+                sourceId,
+                targetId,
+                initialLatitude,
+                initialLongitude
         ));
 
-        return sessionDto;
+        return SessionDto.builder()
+                .sessionId(Objects.toString(session.getSessionId()))
+                .capacity(session.getTotalCapacity())
+                .residualCapacity(session.getResidualCapacity())
+                .schedule(Collections.emptyList())
+                .build();
     }
 
     @Override public void stopSession(String sessionId) {
@@ -130,5 +145,32 @@ public class SessionManagementServiceImpl implements SessionManagementService {
 
     @Override public List<OrderAssignment> getAssignedOrders(String sessionId, int pageNumber, int pageSize, boolean ascendingOrder) {
         return orderAssignmentStorage.getSessionAssignments(Long.parseLong(sessionId), pageNumber, pageSize, ascendingOrder);
+    }
+
+    private List<ScheduleEntry> parseDefaultScheduleFromJson(String json) {
+        try {
+            return objectMapper.readValue(json, ReadOnlySchedule.class).asList();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String emptyScheduleJson() {
+        try {
+            return objectMapper.writeValueAsString(new EmptySchedule());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override public List<SessionDto> getSessionsByFilter(Filter filter) {
+        return sessionStorage.getSessions(filter).stream().map(session -> SessionDto.builder()
+                .sessionId(Objects.toString(session.getSessionId()))
+                .capacity(session.getTotalCapacity())
+                .residualCapacity(session.getResidualCapacity())
+                .schedule(parseDefaultScheduleFromJson(session.getScheduleJson()))
+                .startedAt(session.getStartedAt())
+                .terminatedAt(session.getTerminatedAt())
+                .build()).collect(Collectors.toList());
     }
 }

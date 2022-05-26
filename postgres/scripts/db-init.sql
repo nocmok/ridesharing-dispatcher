@@ -31,7 +31,9 @@ create table vehicle_session
 	status vehicle_status default 'PENDING',
 	total_capacity bigint,
 	residual_capacity bigint,
-    schedule_json text
+    schedule_json text,
+    started_at timestamp with time zone not null,
+    terminated_at timestamp with time zone
 );
 
 drop table if exists service_request cascade;

@@ -14,7 +14,7 @@ import com.nocmok.orp.api.controller.order_api.dto.GetOrdersResponse;
 import com.nocmok.orp.api.controller.order_api.dto.OrderExecutionInterval;
 import com.nocmok.orp.api.controller.order_api.dto.OrderExpendituresSummary;
 import com.nocmok.orp.api.controller.order_api.dto.OrderStatusLogEntry;
-import com.nocmok.orp.api.controller.order_api.mapper.FilterMapper;
+import com.nocmok.orp.api.controller.order_api.mapper.OrderFilterMapper;
 import com.nocmok.orp.api.service.request.OrderStatisticsService;
 import com.nocmok.orp.api.service.request.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +34,11 @@ public class OrderApi {
 
     private RequestService requestService;
     private OrderStatisticsService orderStatisticsService;
-    private FilterMapper filterMapper;
+    private OrderFilterMapper filterMapper;
 
     @Autowired
     public OrderApi(RequestService requestService, OrderStatisticsService orderStatisticsService,
-                    FilterMapper filterMapper) {
+                    OrderFilterMapper filterMapper) {
         this.requestService = requestService;
         this.orderStatisticsService = orderStatisticsService;
         this.filterMapper = filterMapper;
