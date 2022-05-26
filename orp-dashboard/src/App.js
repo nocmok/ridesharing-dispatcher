@@ -10,6 +10,7 @@ import {Route, Routes, Navigate} from "react-router-dom";
 import {RequestInfoPanel} from "./components/operation/request_info_panel/RequestInfoPanel";
 import {SessionInfoPanel} from "./components/operation/session_info_panel/SessionInfoPanel";
 import {OrdersPanel} from "./components/operation/orders_panel/OrdersPanel";
+import {SessionsPanel} from "./components/operation/sessions_panel/SessionsPanel";
 
 export class App extends Component {
 
@@ -31,6 +32,9 @@ export class App extends Component {
 
                             <Route path={"/orders"}
                                    element={<OrdersPanel di={this.props.di}></OrdersPanel>}/>
+
+                            <Route path={"/sessions"}
+                                   element={<SessionsPanel di={this.props.di}></SessionsPanel>}/>
 
                             <Route path="*" element={<Navigate to="/dashboard"/>}/>
 

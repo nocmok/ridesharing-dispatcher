@@ -93,9 +93,9 @@ export class CreateSessionPanel extends Component {
         }).then(response => {
 
             let mapObject = new Vehicle()
-            let sessionListener = new SessionListener(response.sessionId)
+            let sessionListener = new SessionListener(response.createdSession.sessionId)
 
-            this.di.sessions[response.sessionId] = {
+            this.di.sessions[response.createdSession.sessionId] = {
                 mapObject: mapObject,
                 sessionListener: sessionListener
             }
