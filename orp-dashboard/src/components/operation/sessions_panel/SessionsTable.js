@@ -22,6 +22,8 @@ export function SessionsTable(props) {
                     id: session.sessionId,
                     sessionId: session.sessionId,
                     capacity: session.capacity,
+                    startedAt: session.startedAt,
+                    terminatedAt: session.terminatedAt,
                     residualCapacity: session.residualCapacity
                 }
             })
@@ -67,6 +69,22 @@ export function SessionsTable(props) {
             flex: true,
             headerClassName: classes.GridHeader,
             filterOperators: stringOperators
+        },
+        {
+            field: 'startedAt',
+            headerName: 'Время начала',
+            minWidth: 150,
+            flex: true,
+            headerClassName: classes.GridHeader,
+            filterable: false
+        },
+        {
+            field: 'terminatedAt',
+            headerName: 'Время завершения',
+            minWidth: 150,
+            flex: true,
+            headerClassName: classes.GridHeader,
+            filterable: false
         },
         {
             field: 'capacity',
@@ -124,11 +142,13 @@ export function SessionsTable(props) {
                 <div>
                     {page * pageSize} - {page * pageSize + rows.length}
                 </div>
-                <button className={classes.IconButton} style={{background: "url(icons/prev-page-button.svg) no-repeat center/50%"}}
+                <button className={classes.IconButton}
+                        style={{background: "url(icons/prev-page-button.svg) no-repeat center/50%"}}
                         disabled={page <= 0}
                         onClick={() => setPage(page - 1)}>
                 </button>
-                <button className={classes.IconButton} style={{background: "url(icons/next-page-button.svg) no-repeat center/50%"}}
+                <button className={classes.IconButton}
+                        style={{background: "url(icons/next-page-button.svg) no-repeat center/50%"}}
                         disabled={rows.length < pageSize}
                         onClick={() => setPage(page + 1)}>
                 </button>

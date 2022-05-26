@@ -169,6 +169,8 @@ public class SessionManagementServiceImpl implements SessionManagementService {
                 .capacity(session.getTotalCapacity())
                 .residualCapacity(session.getResidualCapacity())
                 .schedule(parseDefaultScheduleFromJson(session.getScheduleJson()))
+                .startedAt(session.getStartedAt())
+                .terminatedAt(session.getTerminatedAt())
                 .build()).collect(Collectors.toList());
     }
 }

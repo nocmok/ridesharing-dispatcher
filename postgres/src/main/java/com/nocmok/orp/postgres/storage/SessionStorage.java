@@ -43,6 +43,8 @@ public class SessionStorage {
                 .residualCapacity(rs.getLong("residual_capacity"))
                 .scheduleJson(rs.getString("schedule_json"))
                 .sessionStatus(Optional.ofNullable(rs.getString("status")).map(SessionStatus::valueOf).orElse(null))
+                .startedAt(Optional.ofNullable(rs.getTimestamp("started_at")).map(Timestamp::toInstant).orElse(null))
+                .terminatedAt(Optional.ofNullable(rs.getTimestamp("terminated_at")).map(Timestamp::toInstant).orElse(null))
                 .build();
     }
 
@@ -53,7 +55,7 @@ public class SessionStorage {
         var params = new HashMap<String, Object>();
         params.put("ids", ids);
         var sessions = jdbcTemplate.query(
-                " select t1.session_id, t1.total_capacity, t1.residual_capacity, t1.schedule_json, t1.status " +
+                " select t1.session_id, t1.total_capacity, t1.residual_capacity, t1.schedule_json, t1.status, t1.started_at, t1.terminated_at " +
                         " from " +
                         " vehicle_session as t1 " +
                         " join " +
@@ -85,8 +87,10 @@ public class SessionStorage {
                         " session_id, " +
                         " total_capacity," +
                         " residual_capacity, " +
-                        " schedule_json," +
-                        " status " +
+                        " schedule_json, " +
+                        " status," +
+                        " started_at," +
+                        " terminated_at " +
                         " from vehicle_session " +
                         " where session_id in (:ids) " +
                         (forUpdate ? " for update " : ""),
@@ -130,25 +134,36 @@ public class SessionStorage {
         params.put("residualCapacity", session.getResidualCapacity());
         params.put("scheduleJson", session.getScheduleJson());
         params.put("sessionId", session.getSessionId());
+        params.put("startedAt", Optional.ofNullable(session.getStartedAt()).map(Timestamp::from).orElse(null));
+        params.put("terminatedAt", Optional.ofNullable(session.getTerminatedAt()).map(Timestamp::from).orElse(null));
         jdbcTemplate.update(" update vehicle_session " +
                 " set " +
                 " total_capacity = coalesce(:totalCapacity, total_capacity), " +
                 " residual_capacity = coalesce(:residualCapacity, residual_capacity), " +
-                " schedule_json = coalesce(:scheduleJson, schedule_json) " +
+                " schedule_json = coalesce(:scheduleJson, schedule_json)," +
+                " started_at = coalesce(:startedAt, started_at)" +
+                " terminated_at = coalesce(:terminatedAt, terminated_at) " +
                 " where session_id = :sessionId ", params);
     }
 
-    @Transactional
     public void updateSessionStatus(Long sessionId, SessionStatus updatedStatus) {
-        updateSessionStatusInternal(sessionId, updatedStatus);
+        updateSessionStatus(sessionId, updatedStatus, false);
+    }
+
+    @Transactional
+    public void updateSessionStatus(Long sessionId, SessionStatus updatedStatus, boolean terminateSession) {
+        updateSessionStatusInternal(sessionId, updatedStatus, terminateSession);
         appendToSessionStatusLog(sessionId, updatedStatus);
     }
 
-    private void updateSessionStatusInternal(Long sessionId, SessionStatus updatedStatus) {
+    private void updateSessionStatusInternal(Long sessionId, SessionStatus updatedStatus, boolean terminateSession) {
         var params = new HashMap<String, Object>();
         params.put("status", Optional.ofNullable(updatedStatus).map(Enum::name).orElse(null));
         params.put("sessionId", sessionId);
-        jdbcTemplate.update(" update vehicle_session set status = :status::vehicle_status where session_id = :sessionId ", params);
+        jdbcTemplate.update(" update vehicle_session " +
+                " set status = :status::vehicle_status " +
+                (terminateSession ? " , set terminated_at = now() " : "") +
+                " where session_id = :sessionId ", params);
     }
 
     private void appendToSessionStatusLog(Long sessionId, SessionStatus updatedStatus) {
@@ -195,8 +210,8 @@ public class SessionStorage {
         params.put("status", Optional.ofNullable(session.getSessionStatus()).map(Enum::name).orElse(null));
 
         int rowsAffected =
-                jdbcTemplate.update("insert into vehicle_session (session_id, total_capacity, residual_capacity, schedule_json, status) " +
-                        "values(:sessionId, :totalCapacity, :residualCapacity, :scheduleJson, :status::vehicle_status)", params);
+                jdbcTemplate.update("insert into vehicle_session (session_id, total_capacity, residual_capacity, schedule_json, status, started_at) " +
+                        "values(:sessionId, :totalCapacity, :residualCapacity, :scheduleJson, :status::vehicle_status, now())", params);
 
         if (rowsAffected != 1) {
             throw new RuntimeException("failed to insert session");
@@ -214,11 +229,10 @@ public class SessionStorage {
     }
 
     public List<Long> getSessionsCreatedAfterTimestampIds(Instant timestamp) {
-        return jdbcTemplate.query(" select session_id, min(updated_at) as updated_at " +
-                        " from session_status_log " +
-                        " group by session_id " +
-                        " having min(updated_at) > :timestamp " +
-                        " order by updated_at ",
+        return jdbcTemplate.query(" select session_id " +
+                        " from vehicle_session " +
+                        " where started_at > :timestamp" +
+                        " order by started_at ",
                 Map.of("timestamp", Timestamp.from(timestamp)), (rs, rn) -> rs.getLong("session_id"));
     }
 

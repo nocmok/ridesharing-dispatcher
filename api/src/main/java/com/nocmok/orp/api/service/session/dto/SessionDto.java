@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -16,4 +17,6 @@ public class SessionDto {
     private Long capacity;
     private Long residualCapacity;
     private List<ScheduleEntry> schedule;
+    private Instant startedAt;
+    private Instant terminatedAt;
 }

@@ -107,6 +107,8 @@ public class SessionApiController {
                                 .orderId(node.getOrderId())
                                 .nodeId(node.getNodeId())
                                 .build()).collect(Collectors.toList()))
+                        .startedAt(session.getStartedAt())
+                        .terminatedAt(session.getTerminatedAt())
                         .build()).collect(Collectors.toList()))
                 .build();
     }

@@ -54,6 +54,12 @@ public class SessionFilterMapper {
                 case "status":
                     filter.orderBy(Session.Fields.status, orderBy.isAscending());
                     break;
+                case "startedAt":
+                    filter.orderBy(Session.Fields.startedAt, orderBy.isAscending());
+                    break;
+                case "terminatedAt":
+                    filter.orderBy(Session.Fields.terminatedAt, orderBy.isAscending());
+                    break;
                 default:
             }
         }

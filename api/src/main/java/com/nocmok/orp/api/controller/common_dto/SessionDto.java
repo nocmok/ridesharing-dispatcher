@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -23,4 +24,10 @@ public class SessionDto {
 
     @JsonProperty("residualCapacity")
     private Long residualCapacity;
+
+    @JsonProperty("startedAt")
+    private Instant startedAt;
+
+    @JsonProperty("terminatedAt")
+    private Instant terminatedAt;
 }
