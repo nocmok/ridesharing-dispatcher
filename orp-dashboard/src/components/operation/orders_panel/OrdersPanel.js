@@ -12,7 +12,6 @@ export function OrdersPanel(props) {
         <div className={classes.OrdersPanelWrapper}>
             <div className={classes.OrdersPanel}>
                 <BackButton></BackButton>
-                {/*<div className={classes.Title}>Все заказы</div>*/}
             </div>
         </div>
         <div className={classes.OrdersTableWrapper}>
