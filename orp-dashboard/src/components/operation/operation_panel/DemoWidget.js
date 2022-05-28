@@ -2,10 +2,10 @@ import classes from "./DemoWidget.module.css"
 import {TextButton} from "../../ui/text_button/TextButton";
 import {Link} from "react-router-dom";
 
-export function DemoWidget() {
-    return (<div className={classes.DemoWidget}>
+export function DemoWidget(props) {
+    return (<div className={classes.DemoWidget} style={props.style}>
 
-        <div className="Heading1" style={{color: "#7c7c7c", marginBottom: "30px"}}>Демонстрация</div>
+        <div className="Heading2" style={{color: "#7c7c7c"}}>Демонстрация</div>
 
         <div className={classes.IconedText}>
             <img src="/icons/car.svg"/>

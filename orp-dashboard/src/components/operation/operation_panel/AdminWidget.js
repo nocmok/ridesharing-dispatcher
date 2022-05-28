@@ -2,10 +2,10 @@ import classes from "./AdminWidget.module.css"
 import {TextButton} from "../../ui/text_button/TextButton";
 import {Link} from "react-router-dom";
 
-export function AdminWidget() {
-    return (<div className={classes.AdminWidget}>
+export function AdminWidget(props) {
+    return (<div className={classes.AdminWidget} style={props.style}>
 
-        <div className="Heading1" style={{color: "#7c7c7c", marginBottom: "30px"}}>Администрирование</div>
+        <div className="Heading2" style={{color: "#7c7c7c"}}>Администрирование</div>
 
         <div className={classes.IconedText}>
             <img src="/icons/car.svg"/>
