@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import * as GodApi from "../../../api/GodApi";
 import {KeyValueComponent} from "../key_value/KeyValueComponent";
 import {Route} from "../../../map/objects/Route";
+import {BackButton} from "../../ui/back_button/BackButton";
 
 
 export function SessionInfoPanel(props) {
@@ -47,19 +48,23 @@ export function SessionInfoPanel(props) {
     }, [routeObject])
 
     return (<div className={classes.SessionInfoPanel}>
-        <Link to={-1}>Назад</Link>
-        <div className="Heading1" style={
-            {
-                color: "#7C7C7C",
-                marginTop: "20px",
-                marginBottom: "20px"
-            }
-        }>Сессия #{sessionId}</div>
-
-        <KeyValueComponent title="Вместимость" value={sessionInfo.capacity}></KeyValueComponent>
-        <KeyValueComponent title="Остаточная вместимость" value={sessionInfo.residualCapacity}></KeyValueComponent>
-        <KeyValueComponent title="Статус" value={sessionInfo.sessionStatus}></KeyValueComponent>
-        <KeyValueComponent title="Время создания" value={sessionInfo.createdAt}></KeyValueComponent>
-        <KeyValueComponent title="Время завершения" value={sessionInfo.completedAt}></KeyValueComponent>
+        <div className={classes.Header}>
+            <BackButton></BackButton>
+        </div>
+        <div className={classes.Header}>
+            <div className={classes.Cloud}>
+                <div className="Heading1" style={{color: "#7C7C7C"}}>Сессия #{sessionId}</div>
+            </div>
+        </div>
+        <div className={classes.MainInfo}>
+            <div className={classes.Cloud}>
+                <KeyValueComponent title="Вместимость" value={sessionInfo.capacity}></KeyValueComponent>
+                <KeyValueComponent title="Остаточная вместимость"
+                                   value={sessionInfo.residualCapacity}></KeyValueComponent>
+                <KeyValueComponent title="Статус" value={sessionInfo.sessionStatus}></KeyValueComponent>
+                <KeyValueComponent title="Время создания" value={sessionInfo.createdAt}></KeyValueComponent>
+                <KeyValueComponent title="Время завершения" value={sessionInfo.completedAt}></KeyValueComponent>
+            </div>
+        </div>
     </div>)
 }
