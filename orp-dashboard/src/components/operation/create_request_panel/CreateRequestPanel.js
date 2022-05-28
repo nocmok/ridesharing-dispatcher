@@ -9,7 +9,7 @@ import * as GeoApi from '../../../api/GeoApi'
 import * as RiderApi from '../../../api/RiderApi'
 import {Link, useNavigate} from "react-router-dom";
 import {ScrollBox} from "../../ui/scrollbox/ScrollBox";
-
+import {BackButton} from "../../ui/back_button/BackButton";
 
 export function CreateRequestPanel(props) {
     const navigation = useNavigate();
@@ -88,40 +88,33 @@ class CreateRequestPanelInternal extends Component {
     render() {
         return (
             <div className={classes.CreateRequestPanel}>
-
-                <div className={classes.Back}>
-                    <Link to="/dashboard">Назад</Link>
+                <div className={classes.Header}>
+                    <BackButton></BackButton>
+                </div>
+                <div className={classes.Header}>
+                    <div className={"Heading1 " + classes.Cloud} style={{color: "#7c7c7c"}}>Создать заказ</div>
                 </div>
 
-                <div className={classes.Title}>
-                    <div className="Heading1">Создать запрос</div>
-                </div>
+                <ScrollBox style={{
+                    height: "80%",
+                    width: "100%",
+                }}>
+                    <div className={classes.MainControls}>
 
-                <ScrollBox height="80%">
-                    <div style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "20px"
-                    }}>
-                        <div className="Heading3" style={{color: "#7C7C7C"}}>Посадка</div>
-                        <CoordinatesPicker di={this.props.di}
-                                           onSaveCoordinate={latLon => this.request.origin = latLon}></CoordinatesPicker>
+                        <div className={classes.Cloud}>
+                            <div className="Heading2" style={{color: "#7C7C7C"}}>Посадка</div>
+                            <CoordinatesPicker di={this.props.di}
+                                               onSaveCoordinate={latLon => this.request.origin = latLon}></CoordinatesPicker>
+                        </div>
 
-                        <Separator></Separator>
+                        <div className={classes.Cloud}>
+                            <div className="Heading2" style={{color: "#7C7C7C"}}>Высадка</div>
+                            <CoordinatesPicker di={this.props.di}
+                                               onSaveCoordinate={latLon => this.request.destination = latLon}></CoordinatesPicker>
+                        </div>
 
-                        <div className="Heading3" style={{color: "#7C7C7C"}}>Высадка</div>
-                        <CoordinatesPicker di={this.props.di}
-                                           onSaveCoordinate={latLon => this.request.destination = latLon}></CoordinatesPicker>
-
-                        <Separator></Separator>
-
-                        <div style={
-                            {
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "10px"
-                            }}>
-                            <div className="Heading3">Количество человек</div>
+                        <div className={classes.Cloud}>
+                            <div className="Heading2">Количество человек</div>
                             <TextInput value={this.state.request.load}
                                        onInput={event => {
                                            this.setState({request: {load: event.target.value}})
@@ -129,13 +122,8 @@ class CreateRequestPanelInternal extends Component {
                                        }}/>
                         </div>
 
-                        <div style={
-                            {
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "10px"
-                            }}>
-                            <div className="Heading3">Время ожидания</div>
+                        <div className={classes.Cloud}>
+                            <div className="Heading2">Время ожидания</div>
                             <TextInput value={this.state.request.maxPickupDelaySeconds}
                                        onInput={event => {
                                            this.setState({request: {maxPickupDelaySeconds: event.target.value}})
@@ -143,13 +131,8 @@ class CreateRequestPanelInternal extends Component {
                                        }}/>
                         </div>
 
-                        <div style={
-                            {
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "10px"
-                            }}>
-                            <div className="Heading3">Ограничение</div>
+                        <div className={classes.Cloud}>
+                            <div className="Heading2">Ограничение</div>
                             <TextInput value={this.state.request.detourConstraint}
                                        onInput={event => {
                                            this.setState({request: {detourConstraint: event.target.value}})
@@ -157,15 +140,10 @@ class CreateRequestPanelInternal extends Component {
                                        }}/>
                         </div>
 
-                        <Button style=
-                                    {
-                                        {
-                                            backgroundColor: "#1B72E8", color: "#ffffff"
-                                        }
-                                    }
-                                onClick={this.onCreateRequest.bind(this)}>
+                        <Button onClick={this.onCreateRequest.bind(this)}>
                             Создать
                         </Button>
+
                     </div>
                 </ScrollBox>
             </div>

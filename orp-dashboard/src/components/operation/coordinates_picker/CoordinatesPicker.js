@@ -104,7 +104,7 @@ export class CoordinatesPicker extends Component {
                     {
                         display: "flex",
                         flexDirection: "column",
-                        gap: "20px"
+                        gap: "10px"
                     }
                 }>
                     <div style={
@@ -132,27 +132,30 @@ export class CoordinatesPicker extends Component {
                         }}></TextInput>
                     </div>
 
-                    <Button style=
-                                {
-                                    {
-                                        backgroundColor: "#1B72E8", color: "#ffffff"
-                                    }
-                                }
-                            hidden={this.state.isPickButtonHidden}
-                            onClick={this.onPickCoordinate.bind(this)}>
-                        Указать на карте
-                    </Button>
+                    <div style={{display: "flex", width: "100%", flexDirection: "column", alignItems: "center", marginTop: "10px"}}>
+                        < Button style=
+                                     {
+                                         {
+                                             backgroundColor: "#1B72E8", color: "#ffffff"
+                                         }
+                                     }
+                                 hidden={this.state.isPickButtonHidden}
+                                 onClick={this.onPickCoordinate.bind(this)}>
+                            Указать на карте
+                        </Button>
 
-                    <Button style=
-                                {
+
+                        <Button style=
                                     {
-                                        backgroundColor: "#1B72E8", color: "#ffffff"
+                                        {
+                                            backgroundColor: "#1B72E8", color: "#ffffff"
+                                        }
                                     }
-                                }
-                            hidden={this.state.isSaveButtonHidden}
-                            onClick={this.onSaveCoordinate.bind(this)}>
-                        Сохранить
-                    </Button>
+                                hidden={this.state.isSaveButtonHidden}
+                                onClick={this.onSaveCoordinate.bind(this)}>
+                            Сохранить
+                        </Button>
+                    </div>
 
                 </div>
             </div>

@@ -1,6 +1,7 @@
 .CreateSessionPanel {
     display: flex;
     justify-content: flex-start;
+    align-items: center;
     flex-direction: column;
     gap: 20px;
     min-width: 250px;
@@ -41,6 +42,7 @@
 .MainControls {
     display: flex;
     justify-content: flex-start;
+    align-items: center;
     flex-direction: column;
     gap: 20px;
     height: 100%;
