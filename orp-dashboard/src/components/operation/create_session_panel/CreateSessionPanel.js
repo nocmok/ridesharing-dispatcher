@@ -3,7 +3,6 @@ import classes from './CreateSessionPanel.module.css'
 import '../../../style/Common.css'
 import {TextInput} from "../../ui/text_input/TextInput";
 import {Button} from "../../ui/buttion/Button";
-import {Separator} from "../../ui/separator/Separator";
 import * as DriverApi from "../../../api/DriverApi"
 import {UpdateSelectedRoadAction} from "./UpdateSelectedRoadAction";
 import {ShowSelectedCoordinatesAction} from "./ShowSelectedCoordinatesAction";
@@ -13,8 +12,8 @@ import {DragMapAction} from "../../../map/actions/DragMapAction";
 import {SessionListener} from "../../../websocket/session/SessionListener";
 import {Vehicle} from "../../../map/objects/Vehicle";
 import {MapObjectPositionUpdater} from "../../../websocket/session/event_handlers/MapObjectPositionUpdater";
-import {Link} from "react-router-dom";
 import {ScrollBox} from "../../ui/scrollbox/ScrollBox";
+import {BackButton} from "../../ui/back_button/BackButton";
 
 export class CreateSessionPanel extends Component {
 
@@ -113,64 +112,36 @@ export class CreateSessionPanel extends Component {
 
     render() {
         return (
-            <div className={classes.CreateSessionPanel}>
-                <Link to="/dashboard">Назад</Link>
-
-                <div className="Heading1" style={
-                    {
-                        color: "#7C7C7C",
-                        marginTop: "20px",
-                        marginBottom: "20px"
-                    }
-                }>Создать сессию
+            <div onResize={event => console.log(event)} className={classes.CreateSessionPanel}>
+                <div className={classes.Header}>
+                    <BackButton></BackButton>
+                </div>
+                <div className={classes.Header}>
+                    <div className={"Heading1 " + classes.Cloud} style={{color: "#7c7c7c"}}>Создать сессию</div>
                 </div>
 
-                <ScrollBox height="80%">
-                    <div style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "20px"
-                    }}>
-                        <div style={
-                            {
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "10px"
-                            }}>
-                            <div className="Heading3">Вместимость</div>
+                <ScrollBox style={{
+                    height: "80%",
+                    width: "100%",
+                }}>
+                    <div className={classes.MainControls}>
+
+                        <div className={classes.Cloud}>
+                            <div className="Heading2" style={{color: "#7c7c7c"}}>Вместимость</div>
                             <TextInput onInput={event => this.setState({capacity: event.target.value})}
                                        value={this.state.capacity}/>
                         </div>
 
-                        <Separator></Separator>
+                        <div className={classes.Cloud}>
+                            <div className="Heading2" style={{color: "#7c7c7c"}}>Начальные координаты</div>
 
-                        <div style={
-                            {
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "20px"
-                            }
-                        }>
-                            <div style={
-                                {
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: "10px",
-                                }
-                            }>
+                            <div className={classes.LabeledInput}>
                                 <div className="Heading3">Широта</div>
                                 <TextInput onInput={event => this.setState({latitude: event.target.value})}
                                            value={this.state.latitude}></TextInput>
                             </div>
 
-
-                            <div style={
-                                {
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: "10px"
-                                }
-                            }>
+                            <div className={classes.LabeledInput}>
                                 <div className="Heading3">Долгота</div>
                                 <TextInput onInput={event => this.setState({longitude: event.target.value})}
                                            value={this.state.longitude}></TextInput>
@@ -178,17 +149,10 @@ export class CreateSessionPanel extends Component {
 
                         </div>
 
-                        <Separator></Separator>
-
-                        <Button style=
-                                    {
-                                        {
-                                            backgroundColor: "#1B72E8", color: "#ffffff"
-                                        }
-                                    }
-                                onClick={this.onCreateSession.bind(this)}>
+                        <Button onClick={this.onCreateSession.bind(this)}>
                             Создать
                         </Button>
+
                     </div>
                 </ScrollBox>
             </div>

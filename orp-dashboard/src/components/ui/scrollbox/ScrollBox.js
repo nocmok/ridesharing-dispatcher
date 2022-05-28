@@ -24,9 +24,7 @@ export function ScrollBox(props) {
         setFooterOpacity(1 - scrollProgress)
     }
 
-    return (<div className={classes.ScrollBox} style={{
-        height: props.height || "100%"
-    }}>
+    return (<div className={classes.ScrollBox} style={props.style}>
         <div className={classes.ScrollBoxHeader} style={{opacity: headerOpacity}}></div>
         <div className={classes.ScrollBoxFooter} style={{opacity: footerOpacity}}></div>
         <div ref={ref => setScrollBoxContent(ref)} className={classes.ScrollBoxContent}
