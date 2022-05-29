@@ -18,7 +18,6 @@ import com.nocmok.orp.postgres.storage.filter.Filter;
 import com.nocmok.orp.solver.api.EmptySchedule;
 import com.nocmok.orp.solver.api.ReadOnlySchedule;
 import com.nocmok.orp.solver.api.ScheduleEntry;
-import com.nocmok.orp.state_keeper.api.StateKeeper;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +37,6 @@ import java.util.stream.Collectors;
 public class SessionManagementServiceImpl implements SessionManagementService {
 
     private SpatialGraphObjectsStorage graphObjectsStorage;
-    private StateKeeper<?> stateKeeper;
     private KafkaTemplate<String, Object> kafkaTemplate;
     private RouteCacheStorage routeCacheStorage;
     private SessionStorage sessionStorage;
@@ -44,12 +44,11 @@ public class SessionManagementServiceImpl implements SessionManagementService {
     private ObjectMapper objectMapper;
 
     @Autowired
-    public SessionManagementServiceImpl(SpatialGraphObjectsStorage graphObjectsStorage, StateKeeper<?> stateKeeper,
+    public SessionManagementServiceImpl(SpatialGraphObjectsStorage graphObjectsStorage,
                                         KafkaTemplate<String, Object> kafkaTemplate, RouteCacheStorage routeCacheStorage,
                                         SessionStorage sessionStorage, OrderAssignmentStorage orderAssignmentStorage,
                                         ObjectMapper objectMapper) {
         this.graphObjectsStorage = graphObjectsStorage;
-        this.stateKeeper = stateKeeper;
         this.kafkaTemplate = kafkaTemplate;
         this.routeCacheStorage = routeCacheStorage;
         this.sessionStorage = sessionStorage;
@@ -88,7 +87,7 @@ public class SessionManagementServiceImpl implements SessionManagementService {
     }
 
     @Override public SessionInfo getActiveSessionInfo(String sessionId) {
-        var sessions = stateKeeper.getVehiclesByIds(List.of(sessionId));
+        var sessions = sessionStorage.getSessionsByIds(List.of(Long.parseLong(sessionId)));
         if (sessions.isEmpty()) {
             throw new RuntimeException("cannot found active sessions with id " + sessionId);
         }
@@ -98,16 +97,19 @@ public class SessionManagementServiceImpl implements SessionManagementService {
 
         return SessionInfo.builder()
                 .id(sessionId)
-                .schedule(session.getSchedule().asList())
-                .capacity(session.getCapacity())
-                .status(session.getStatus())
+                .schedule(parseDefaultScheduleFromJson(session.getScheduleJson()))
+                .capacity(session.getTotalCapacity())
+                .status(session.getSessionStatus())
                 .residualCapacity(session.getResidualCapacity())
                 .routeScheduled(route)
                 .build();
     }
 
     @Override public List<String> getActiveSessionsIds() {
-        return stateKeeper.getActiveVehiclesIds();
+        return sessionStorage.getSessions(new Filter().oneOf(Session.Fields.terminatedAt, Arrays.asList(new Instant[]{null}))).stream()
+                .map(Session::getSessionId)
+                .map(Objects::toString)
+                .collect(Collectors.toList());
     }
 
     private OrderStatus mapInternalOrderStatusToKafkaMessageOrderStatus(RequestStatus orderStatus) {

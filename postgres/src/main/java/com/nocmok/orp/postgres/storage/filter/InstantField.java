@@ -10,6 +10,6 @@ public class InstantField extends AbstractField<Timestamp, Instant> {
     }
 
     @Override public Timestamp convertValue(Instant value) {
-        return Timestamp.from(value);
+        return value == null ? null : Timestamp.from(value);
     }
 }

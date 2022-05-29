@@ -1,6 +1,7 @@
 package com.nocmok.orp.api.controller.common_dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nocmok.orp.postgres.storage.dto.SessionStatus;
 import com.nocmok.orp.state_keeper.api.VehicleStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ public class SessionInfo {
     private String id;
 
     @JsonProperty("sessionStatus")
-    private VehicleStatus sessionStatus;
+    private SessionStatus sessionStatus;
 
     @JsonProperty("schedule")
     private List<ScheduleNode> schedule;
@@ -31,10 +32,10 @@ public class SessionInfo {
     private List<Node> routeScheduled;
 
     @JsonProperty("capacity")
-    private Integer capacity;
+    private Long capacity;
 
     @JsonProperty("residualCapacity")
-    private Integer residualCapacity;
+    private Long residualCapacity;
 
     @JsonProperty("createdAt")
     private Instant createdAt;

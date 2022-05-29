@@ -99,11 +99,20 @@ public class Filter {
             if (values == null || values.isEmpty()) {
                 return "";
             }
-            var valueMap = values.stream().collect(Collectors.toMap(value -> "___" + field.getFieldName() + identityGenerator.get(), field::convertValue));
-            paramsMap.putAll(valueMap);
-            return field.getFieldName() + " in (" + valueMap.keySet().stream()
-                    .map(field::createPlaceHolder)
-                    .collect(Collectors.joining(",")) + ")";
+            var valueMap = values.stream()
+                    .<Map<String, F>>collect(HashMap::new, (m, v) -> m.put("___" + field.getFieldName() + identityGenerator.get(), field.convertValue(v)),
+                            Map::putAll);
+
+            valueMap.forEach((key, value) -> {
+                if (value != null) {
+                    paramsMap.put(key, value);
+                }
+            });
+
+            return valueMap.entrySet().stream()
+                    .map(keyValue -> keyValue.getValue() == null ? field.getFieldName() + " is null" :
+                            field.getFieldName() + " = :" + keyValue.getKey())
+                    .collect(Collectors.joining(" or "));
         }
     }
 
