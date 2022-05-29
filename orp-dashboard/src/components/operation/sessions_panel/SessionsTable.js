@@ -3,15 +3,19 @@ import * as SessionApi from "../../../api/SessionApi";
 import {DataGrid, getGridStringOperators, getGridSingleSelectOperators} from "@mui/x-data-grid";
 import classes from "./SessionsTable.module.css";
 import './Fixes.css';
+import {Link} from "react-router-dom";
 
 export function SessionsTable(props) {
+    const di = props.di
+    const sessionRegistry = di.sessionRegistry
+
     let [rows, setRows] = useState([])
     let [page, setPage] = useState(0)
     let [pageSize, setPageSize] = useState(100)
     let [sortModel, setSortModel] = useState([])
     let [filterModel, setFilterModel] = useState({items: []})
+    let [selectionModel, setSelectionModel] = useState(di?.sessionRegistry?.registeredSessionsIds() || [])
     let [filter, setFilter] = useState({filtering: [], ordering: [], page: page, pageSize: pageSize})
-
 
     let requestPage = (filter) => {
         return SessionApi.sessions({
@@ -59,6 +63,15 @@ export function SessionsTable(props) {
         })
     }, [filter])
 
+    useEffect(() => {
+        const sessionIds = selectionModel
+        const registeredIds = sessionRegistry.registeredSessionsIds()
+        const sessionsToDeregister = registeredIds.filter(id => !sessionIds.includes(id))
+        const sessionsToRegister = sessionIds.filter(id => !registeredIds.includes(id))
+        sessionRegistry.deregisterSessions(sessionsToDeregister)
+        sessionRegistry.registerSessions(sessionsToRegister)
+    }, [selectionModel])
+
     const stringOperators = getGridStringOperators().filter(({value}) => ['isAnyOf'].includes(value))
 
     const columns = [
@@ -68,6 +81,11 @@ export function SessionsTable(props) {
             minWidth: 50,
             flex: true,
             headerClassName: classes.GridHeader,
+            renderCell: cell => {
+                return (<div className={classes.GridCell}>
+                    <Link to={`/session/${cell.value}`} className={classes.Link}>{cell.value}</Link>
+                </div>)
+            },
             filterOperators: stringOperators
         },
         {
@@ -137,6 +155,10 @@ export function SessionsTable(props) {
                               paddingLeft: "30px",
                           }
                       }}
+                      checkboxSelection
+                      selectionModel={selectionModel}
+                      onSelectionModelChange={newSelectionModel => setSelectionModel(newSelectionModel)}
+                      keepNonExistentRowsSelected
             />
             <div className={classes.Footer}>
                 <div>

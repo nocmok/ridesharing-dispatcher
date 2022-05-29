@@ -7,6 +7,7 @@ import {Map} from "./map/Map";
 import {BrowserRouter, Router} from "react-router-dom";
 import {Bootstrapper} from "./Bootstrapper";
 import {BootstrapperComponent} from "./BootstrapperComponent";
+import {SessionRegistry} from "./services/SessionRegistry";
 
 // global dependency container
 const di = {};
@@ -24,6 +25,7 @@ di.map = new Map()
  */
 di.sessions = {}
 di.sessionListeners = {}
+di.sessionRegistry = new SessionRegistry(di)
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

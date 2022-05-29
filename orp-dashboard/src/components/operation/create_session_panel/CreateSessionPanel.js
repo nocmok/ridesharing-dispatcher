@@ -90,22 +90,9 @@ export class CreateSessionPanel extends Component {
             road: session.road,
             createdAt: session.createdAt
         }).then(response => {
-
-            let mapObject = new Vehicle()
-            let sessionListener = new SessionListener(response.createdSession.sessionId)
-
-            this.di.sessions[response.createdSession.sessionId] = {
-                mapObject: mapObject,
-                sessionListener: sessionListener
+            if(response?.createdSession?.sessionId) {
+                this.di.sessionRegistry.registerSessions([response.createdSession.sessionId])
             }
-
-            let positionUpdater = new MapObjectPositionUpdater(mapObject)
-            sessionListener.addTelemetryEventHandler(telemetry => positionUpdater.handleTelemetry(telemetry))
-
-            mapObject.setCoordinates(response.coordinates.latitude, response.coordinates.longitude)
-            this.map.addObject(mapObject)
-
-            sessionListener.connect()
         })
     }
 

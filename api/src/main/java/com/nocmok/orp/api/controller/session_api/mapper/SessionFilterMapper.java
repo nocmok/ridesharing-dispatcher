@@ -66,8 +66,8 @@ public class SessionFilterMapper {
     }
 
     private void parsePaging(Filter filter, RequestFilter requestFilter) {
-        filter.page(requestFilter.getPage());
-        filter.pageSize(requestFilter.getPageSize());
+        filter.page(Objects.requireNonNullElse(requestFilter.getPage(), 0L));
+        filter.pageSize(Objects.requireNonNullElse(requestFilter.getPageSize(), 100L));
     }
 
     public Filter mapRequestFilterToInternalFilter(RequestFilter requestFilter) {
