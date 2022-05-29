@@ -30,7 +30,12 @@ public class OrderFilterMapper {
                     filter.oneOf(ServiceRequest.Fields.status, oneOf.getValues().stream().map(OrderStatus::valueOf).collect(Collectors.toList()));
                     break;
                 case "requestedAt":
-                    filter.oneOf(ServiceRequest.Fields.requestedAt, oneOf.getValues().stream().map(Instant::parse).collect(Collectors.toList()));
+                    filter.oneOf(ServiceRequest.Fields.requestedAt,
+                            oneOf.getValues().stream().map(value -> value == null ? null : Instant.parse(value)).collect(Collectors.toList()));
+                    break;
+                case "completedAt":
+                    filter.oneOf(ServiceRequest.Fields.completedAt,
+                            oneOf.getValues().stream().map(value -> value == null ? null : Instant.parse(value)).collect(Collectors.toList()));
                     break;
                 case "servingSessionId":
                     filter.oneOf(ServiceRequest.Fields.servingSessionId, oneOf.getValues());

@@ -17,6 +17,7 @@ import com.nocmok.orp.postgres.storage.dto.SessionStatus;
 import com.nocmok.orp.postgres.storage.filter.Filter;
 import com.nocmok.orp.solver.api.EmptySchedule;
 import com.nocmok.orp.solver.api.ReadOnlySchedule;
+import com.nocmok.orp.solver.api.RouteNode;
 import com.nocmok.orp.solver.api.ScheduleEntry;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
@@ -168,11 +169,16 @@ public class SessionManagementServiceImpl implements SessionManagementService {
     @Override public List<SessionDto> getSessionsByFilter(Filter filter) {
         return sessionStorage.getSessions(filter).stream().map(session -> SessionDto.builder()
                 .sessionId(Objects.toString(session.getSessionId()))
+                .status(session.getSessionStatus())
                 .capacity(session.getTotalCapacity())
                 .residualCapacity(session.getResidualCapacity())
                 .schedule(parseDefaultScheduleFromJson(session.getScheduleJson()))
                 .startedAt(session.getStartedAt())
                 .terminatedAt(session.getTerminatedAt())
                 .build()).collect(Collectors.toList());
+    }
+
+    @Override public List<RouteNode> getLatestSessionRoute(String sessionId) {
+        return routeCacheStorage.getRouteCacheBySessionId(sessionId);
     }
 }

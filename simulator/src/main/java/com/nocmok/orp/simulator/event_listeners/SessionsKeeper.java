@@ -3,6 +3,7 @@ package com.nocmok.orp.simulator.event_listeners;
 import com.nocmok.orp.simulator.event_bus.EventBus;
 import com.nocmok.orp.simulator.event_bus.event.NewSessionEvent;
 import com.nocmok.orp.simulator.event_listeners.driver.VirtualDriver;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@Slf4j
 public class SessionsKeeper {
 
     private EventBus eventBus;
@@ -33,6 +35,10 @@ public class SessionsKeeper {
     }
 
     public void handleNewSession(NewSessionEvent event) {
+        log.info("new session arrived {}", event);
+        if(virtualDrivers.containsKey(event.getSessionId())) {
+            throw new RuntimeException("session with id " + event.getSessionId() + " already registered");
+        }
         var newDriver = vDriverFactory.apply(event.getSessionId());
         virtualDrivers.put(event.getSessionId(), newDriver);
     }

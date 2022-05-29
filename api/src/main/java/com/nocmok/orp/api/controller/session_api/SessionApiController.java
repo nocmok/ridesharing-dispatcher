@@ -1,8 +1,12 @@
 package com.nocmok.orp.api.controller.session_api;
 
+import com.nocmok.orp.api.controller.common_dto.Coordinates;
+import com.nocmok.orp.api.controller.common_dto.Node;
 import com.nocmok.orp.api.controller.common_dto.ScheduleNode;
 import com.nocmok.orp.api.controller.common_dto.SessionDto;
 import com.nocmok.orp.api.controller.common_dto.SessionStatusLogEntry;
+import com.nocmok.orp.api.controller.session_api.dto.GetRouteRequest;
+import com.nocmok.orp.api.controller.session_api.dto.GetRouteResponse;
 import com.nocmok.orp.api.controller.session_api.dto.GetSessionExpendituresRequest;
 import com.nocmok.orp.api.controller.session_api.dto.GetSessionExpendituresResponse;
 import com.nocmok.orp.api.controller.session_api.dto.GetSessionOrdersRequest;
@@ -18,6 +22,7 @@ import com.nocmok.orp.api.service.session.SessionManagementService;
 import com.nocmok.orp.api.service.session.SessionStatisticsService;
 import com.nocmok.orp.api.service.session.dto.SessionStatistics;
 import com.nocmok.orp.postgres.storage.dto.SessionStatus;
+import com.nocmok.orp.solver.api.RouteNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,6 +105,7 @@ public class SessionApiController {
         return GetSessionsResponse.builder()
                 .sessions(sessions.stream().map(session -> SessionDto.builder()
                         .sessionId(session.getSessionId())
+                        .status(session.getStatus())
                         .capacity(session.getCapacity())
                         .residualCapacity(session.getResidualCapacity())
                         .schedule(session.getSchedule().stream().map(node -> ScheduleNode.builder()
@@ -110,6 +116,18 @@ public class SessionApiController {
                         .startedAt(session.getStartedAt())
                         .terminatedAt(session.getTerminatedAt())
                         .build()).collect(Collectors.toList()))
+                .build();
+    }
+
+    private Node mapInternalRouteNodeToApiNode(RouteNode routeNode) {
+        return new Node(routeNode.getNodeId(), new Coordinates(routeNode.getLatitude(), routeNode.getLongitude()));
+    }
+
+    @PostMapping("/route")
+    public @ResponseBody GetRouteResponse getRoute(@RequestBody GetRouteRequest request) {
+        var route = sessionManagementService.getLatestSessionRoute(request.getSessionId());
+        return GetRouteResponse.builder()
+                .route(route.stream().map(this::mapInternalRouteNodeToApiNode).collect(Collectors.toList()))
                 .build();
     }
 }
