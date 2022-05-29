@@ -3,6 +3,7 @@ import * as SessionApi from "../../../api/SessionApi";
 import {DataGrid, getGridStringOperators, getGridSingleSelectOperators} from "@mui/x-data-grid";
 import classes from "./SessionsTable.module.css";
 import './Fixes.css';
+import {Link} from "react-router-dom";
 
 export function SessionsTable(props) {
     const di = props.di
@@ -80,6 +81,11 @@ export function SessionsTable(props) {
             minWidth: 50,
             flex: true,
             headerClassName: classes.GridHeader,
+            renderCell: cell => {
+                return (<div className={classes.GridCell}>
+                    <Link to={`/session/${cell.value}`} className={classes.Link}>{cell.value}</Link>
+                </div>)
+            },
             filterOperators: stringOperators
         },
         {
