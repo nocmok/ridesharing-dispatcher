@@ -1,7 +1,4 @@
-import * as GodApi from "./api/GodApi"
-import {Vehicle} from "./map/objects/Vehicle";
-import {SessionListener} from "./websocket/session/SessionListener";
-import {MapObjectPositionUpdater} from "./websocket/session/event_handlers/MapObjectPositionUpdater";
+import * as SessionApi from "./api/SessionApi"
 
 export class Bootstrapper {
 
@@ -10,37 +7,27 @@ export class Bootstrapper {
     }
 
     bootstrap() {
-        return GodApi.getActiveSessionIds()
-            .then(response => {
-
-                console.log(response)
-
-
-                return GodApi.getSessionGeodata({
-                    sessionIds: response.activeSessionsIds
-                })
-            }).then(response => {
-
-                console.log(response)
-
-                response.sessions.forEach(sessionGeodata => {
-                    let mapObject = new Vehicle()
-                    mapObject.setCoordinates(sessionGeodata.coordinates.latitude, sessionGeodata.coordinates.longitude)
-
-                    let sessionListener = new SessionListener(sessionGeodata.sessionId)
-
-                    this.di.sessions[sessionGeodata.sessionId] = {
-                        mapObject: mapObject,
-                        sessionListener: sessionListener
+        return SessionApi.sessions({
+            filter: {
+                filtering: [
+                    {
+                        fieldName: "terminatedAt",
+                        values: [null]
+                    },
+                ],
+                ordering: [
+                    {
+                        fieldName: "startedAt",
+                        ascending: false,
                     }
-
-                    let positionUpdater = new MapObjectPositionUpdater(mapObject)
-                    sessionListener.addTelemetryEventHandler(telemetry => positionUpdater.handleTelemetry(telemetry))
-
-                    this.di.map.addObject(mapObject)
-
-                    sessionListener.connect()
-                })
+                ],
+                page: 0,
+                pageSize: 10
+            }
+        })
+            .then(response => response.sessions.map(session => session.sessionId))
+            .then(activeSessionIds => {
+                this.di.sessionRegistry.registerSessions(activeSessionIds)
             })
     }
 }

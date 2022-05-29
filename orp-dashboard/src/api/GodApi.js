@@ -5,16 +5,6 @@ function resolve(path) {
     return API_GATEWAY_BASE_URL + GOD_API_PATH + path
 }
 
-export function getActiveSessionIds() {
-    return fetch(resolve("/session/active_sessions/ids"), {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: "{}"
-    }).then(response => response.json());
-}
-
 export function getSessionGeodata(request) {
     return fetch(resolve("/session/geodata"), {
         method: "POST",
