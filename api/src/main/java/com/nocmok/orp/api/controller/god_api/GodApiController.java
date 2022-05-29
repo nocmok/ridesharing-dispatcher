@@ -67,6 +67,9 @@ public class GodApiController {
 
 
     private Node mapGraphApiNodeToApiNode(com.nocmok.orp.graph.api.Node node) {
+        if(node == null) {
+            return null;
+        }
         return Node.builder()
                 .id(node.getId())
                 .coordinates(new Coordinates(node.getLatitude(), node.getLongitude()))
@@ -74,6 +77,9 @@ public class GodApiController {
     }
 
     private RoadSegmentWithGeodata mapGraphApiRoadSegmentToApiRoadSegment(Segment segment) {
+        if(segment == null) {
+            return null;
+        }
         return RoadSegmentWithGeodata.builder()
                 .source(mapGraphApiNodeToApiNode(segment.getStartNode()))
                 .target(mapGraphApiNodeToApiNode(segment.getEndNode()))
