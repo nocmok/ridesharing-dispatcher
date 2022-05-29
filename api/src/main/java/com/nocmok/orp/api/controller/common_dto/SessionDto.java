@@ -1,6 +1,7 @@
 package com.nocmok.orp.api.controller.common_dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nocmok.orp.postgres.storage.dto.SessionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,9 @@ public class SessionDto {
 
     @JsonProperty("schedule")
     private List<ScheduleNode> schedule;
+
+    @JsonProperty("status")
+    private SessionStatus status;
 
     @JsonProperty("capacity")
     private Long capacity;

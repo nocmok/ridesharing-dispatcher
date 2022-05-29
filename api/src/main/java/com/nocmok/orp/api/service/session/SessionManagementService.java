@@ -6,6 +6,7 @@ import com.nocmok.orp.api.service.session.dto.SessionInfo;
 import com.nocmok.orp.postgres.storage.dto.OrderAssignment;
 import com.nocmok.orp.postgres.storage.dto.Session;
 import com.nocmok.orp.postgres.storage.filter.Filter;
+import com.nocmok.orp.solver.api.RouteNode;
 
 import java.util.List;
 
@@ -26,4 +27,6 @@ public interface SessionManagementService {
     List<OrderAssignment> getAssignedOrders(String sessionId, int pageNumber, int pageSize, boolean ascendingOrder);
 
     List<SessionDto> getSessionsByFilter(Filter filter);
+
+    List<RouteNode> getLatestSessionRoute(String sessionId);
 }

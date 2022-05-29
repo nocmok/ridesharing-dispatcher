@@ -152,39 +152,18 @@ public class VirtualDriver {
                     routeNodeIds.subList(0, routeNodeIds.size() - 1),
                     routeNodeIds.subList(1, routeNodeIds.size()));
         } else {
+            log.info("------> HERE WE GO AGAIN <------");
             segmentRoute = List.of(currentRoadSegment);
         }
+
+        log.info("segment route {}", segmentRoute);
 
         var schedule = event.getSchedule();
 
         log.info("received request assignment confirmation " + event);
 
-
-        // TODO
-        // Проблема
-        // Приходит маршрут, который отстает на несколько секунд от нормального.
-        // Из-за этого визуально машина возвращается назад
-
-        // Варианты решения
-        // 1) Стопать вообще генерацию телеметрии, пока не придет подтверждение
-        // 2) Брать текущее ребро через metadata storage. Затем отматывать пришедший маршрут до текущего ребра
-        // 3) Самому считать ближайшее к текущей точке ребро из пришедшего маршрута и отматывать до него
-        // 4) Брать текущее ребро из текущего walk strategy и отматывать до него
-        // 5) Сделать отдельно компонент который отслеживает текущее ребро
-        //      (По идее нужна фабрика, чтобы отдавать согласованные стратегии генерации телеметрии и отслеживания текущего ребра)
-
-//        var currentRoad = currentRoadTracker.getCurrentRoad();
-//        if (segmentRoute.contains(currentRoad)) {
-//            var trimmedRoute = segmentRoute.subList(segmentRoute.indexOf(currentRoad), segmentRoute.size());
-//            log.info("received route " + segmentRoute);
-//            log.info("trimmed route " + trimmedRoute);
-//            this.currentRoadTracker = new DefaultCurrentRoadTracker(trimmedRoute, currentLatitude, currentLongitude);
-//            this.walkStrategy = new FollowScheduleWalk(sessionId, trimmedRoute, currentLatitude, currentLongitude);
-//            this.scheduleExecutor = new DefaultScheduleExecutor(sessionId, schedule, trimmedRoute, currentLatitude, currentLongitude, driverApi);
-//        } else {
         this.currentRoadTracker = new DefaultCurrentRoadTracker(segmentRoute, currentLatitude, currentLongitude);
         this.walkStrategy = new FollowScheduleWalk(sessionId, segmentRoute, currentLatitude, currentLongitude);
         this.scheduleExecutor = new DefaultScheduleExecutor(sessionId, schedule, segmentRoute, currentLatitude, currentLongitude, driverApi);
-//        }
     }
 }

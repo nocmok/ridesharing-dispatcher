@@ -111,7 +111,7 @@ public class Filter {
 
             return valueMap.entrySet().stream()
                     .map(keyValue -> keyValue.getValue() == null ? field.getFieldName() + " is null" :
-                            field.getFieldName() + " = :" + keyValue.getKey())
+                            field.getFieldName() + " = " + field.createPlaceHolder(keyValue.getKey()))
                     .collect(Collectors.joining(" or "));
         }
     }

@@ -21,3 +21,13 @@ export function sessions(request) {
 export function geodata(request) {
     return GodApi.getSessionGeodata(request)
 }
+
+export function route(request) {
+    return fetch(resolve("/route"), {
+        method: "POST",
+        headers: {
+            'Content-Type' : 'application/json',
+        },
+        body: JSON.stringify(request)
+    }).then(response => response.json());
+}
