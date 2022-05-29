@@ -24,7 +24,7 @@ export class SessionListener {
 
     // TODO
     disconnect() {
-
+        this.stompClient.disconnect()
     }
 
     #handleTelemetry(telemetry) {

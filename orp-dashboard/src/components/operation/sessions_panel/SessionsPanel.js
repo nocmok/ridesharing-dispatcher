@@ -15,7 +15,7 @@ export function SessionsPanel(props) {
         </div>
         <div className={classes.SessionsTableWrapper}>
             <div className={classes.SessionsTable}>
-                <SessionsTable></SessionsTable>
+                <SessionsTable di={di}></SessionsTable>
             </div>
         </div>
     </div>)
