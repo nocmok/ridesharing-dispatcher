@@ -140,8 +140,8 @@ public class SessionStorage {
                 " set " +
                 " total_capacity = coalesce(:totalCapacity, total_capacity), " +
                 " residual_capacity = coalesce(:residualCapacity, residual_capacity), " +
-                " schedule_json = coalesce(:scheduleJson, schedule_json)," +
-                " started_at = coalesce(:startedAt, started_at)" +
+                " schedule_json = coalesce(:scheduleJson, schedule_json), " +
+                " started_at = coalesce(:startedAt, started_at), " +
                 " terminated_at = coalesce(:terminatedAt, terminated_at) " +
                 " where session_id = :sessionId ", params);
     }
