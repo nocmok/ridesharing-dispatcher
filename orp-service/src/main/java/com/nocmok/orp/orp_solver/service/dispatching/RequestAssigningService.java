@@ -135,6 +135,8 @@ public class RequestAssigningService {
                         .build());
             });
         } catch (Exception e) {
+            // TODO записать причину отказа
+            log.error(e.toString());
             serviceRequestService.updateRequestStatus(request.getServiceRequestId(), OrderStatus.SERVICE_DENIED);
         }
     }
