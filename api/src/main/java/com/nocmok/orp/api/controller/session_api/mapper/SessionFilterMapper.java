@@ -9,6 +9,7 @@ import com.nocmok.orp.postgres.storage.filter.Filter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -19,6 +20,9 @@ public class SessionFilterMapper {
     private void parseOneOfClauses(Filter filter, RequestFilter requestFilter) {
         for (var oneOf : Objects.requireNonNullElse(requestFilter.getFiltering(), Collections.<OneOf>emptyList())) {
             if (CollectionUtils.isEmpty(oneOf.getValues())) {
+                continue;
+            }
+            if (oneOf.getFieldName() == null) {
                 continue;
             }
             switch (oneOf.getFieldName()) {
@@ -33,6 +37,10 @@ public class SessionFilterMapper {
                     break;
                 case "status":
                     filter.oneOf(Session.Fields.status, oneOf.getValues().stream().map(SessionStatus::valueOf).collect(Collectors.toList()));
+                    break;
+                case "terminatedAt":
+                    filter.oneOf(Session.Fields.terminatedAt,
+                            oneOf.getValues().stream().map(value -> value == null ? null : Instant.parse(value)).collect(Collectors.toList()));
                     break;
                 default:
             }

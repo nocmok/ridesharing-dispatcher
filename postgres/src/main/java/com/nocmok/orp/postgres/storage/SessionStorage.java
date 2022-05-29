@@ -176,10 +176,6 @@ public class SessionStorage {
                 " values(:sessionId, :updatedStatus::vehicle_status, :updatedAt) ", params);
     }
 
-    public List<Long> getActiveSessionsIds() {
-        return getActiveSessionsIds(Collections.emptyList());
-    }
-
     public List<Long> getActiveSessionsIds(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             return Collections.emptyList();

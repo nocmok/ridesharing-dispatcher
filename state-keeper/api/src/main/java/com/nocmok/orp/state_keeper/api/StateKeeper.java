@@ -4,8 +4,6 @@ import java.util.List;
 
 public interface StateKeeper<V extends VehicleState> {
 
-    List<String> getActiveVehiclesIds();
-
     // TODO Переименовать метод в getActiveVehiclesByIds
     /**
      * Возвращает только активные тс

@@ -102,12 +102,6 @@ public class StateKeeperImpl implements StateKeeper<DefaultVehicle> {
         }
     }
 
-    @Override public List<String> getActiveVehiclesIds() {
-        return sessionStorage.getActiveSessionsIds().stream()
-                .map(Objects::toString)
-                .collect(Collectors.toList());
-    }
-
     @Transactional
     @Override public List<DefaultVehicle> getVehiclesByIds(List<String> ids) {
         var longIds = ids.stream().map(Long::parseLong).collect(Collectors.toList());
