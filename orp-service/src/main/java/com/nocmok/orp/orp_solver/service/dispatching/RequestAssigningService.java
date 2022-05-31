@@ -1,5 +1,6 @@
 package com.nocmok.orp.orp_solver.service.dispatching;
 
+import com.nocmok.orp.kafka.orp_output.RequestAssignmentFailedNotification;
 import com.nocmok.orp.orp_solver.service.dispatching.dto.AssignRequest;
 import com.nocmok.orp.orp_solver.service.dispatching.dto.VehicleReservation;
 import com.nocmok.orp.orp_solver.service.dispatching.mapper.ServiceRequestMapper;
@@ -81,58 +82,74 @@ public class RequestAssigningService {
                 });
     }
 
+    private void handleRequestCancelled(AssignRequest assignRequest) {
+        log.info("request cancelled {} ", assignRequest.getServiceRequestId());
+        assignRequestNotificationService.sendNotification(RequestAssignmentFailedNotification.builder()
+                .sessionId(assignRequest.getVehicleId())
+                .serviceRequestId(assignRequest.getServiceRequestId())
+                .build());
+    }
+
     public void assignRequest(AssignRequest request) {
         try {
             transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
             transactionTemplate.executeWithoutResult(transactionStatus -> {
 
-                var vehicleState = getVehicleStateFromAssignRequest(request);
                 var serviceRequest = getServiceRequestFromAssignRequest(request);
+                var vehicleState = getVehicleStateFromAssignRequest(request);
                 var vehicleReservation = getVehicleReservationFromAssignRequest(request);
+                try {
+                    if (vehicleReservation.getExpiredAt() != null) {
+                        transactionStatus.setRollbackOnly();
+                        log.info("failed to assign request " + request + "as reservation expired " + vehicleReservation);
+                        handleVehicleReservationExpiration(request);
+                        return;
+                    }
 
-                if (vehicleReservation.getExpiredAt() != null) {
-                    transactionStatus.setRollbackOnly();
-                    log.info("failed to assign request " + request + "as reservation expired " + vehicleReservation);
-                    handleVehicleReservationExpiration(request);
-                    return;
+                    if (serviceRequest.getStatus() != OrderStatus.SERVICE_PENDING) {
+                        transactionStatus.setRollbackOnly();
+                        handleRequestCancelled(request);
+                        return;
+                    }
+
+                    var requestMatching =
+                            orpSolver.getRequestMatchingForVehicle(serviceRequestMapper.mapServiceDtoToRequest(serviceRequest), vehicleState.getId());
+
+                    if (requestMatching.isEmpty()) {
+                        transactionStatus.setRollbackOnly();
+                        log.info("cannot assign request " + request + " as vehicle unable to serve request");
+                        handleVehicleOutOfServiceZone(request);
+                        return;
+                    }
+
+                    routeCache.updateRouteCacheBySessionId(requestMatching.get().getServingVehicleId(), requestMatching.get().getServingRoute());
+                    serviceRequestService.updateServingSessionId(serviceRequest.getRequestId(), request.getVehicleId());
+                    serviceRequestService.updateRequestStatus(serviceRequest.getRequestId(), OrderStatus.ACCEPTED);
+
+                    vehicleState.setStatus(VehicleStatus.SERVING);
+                    vehicleState.setSchedule(requestMatching.get().getServingPlan());
+
+                    // Обновляем состояние тс
+                    stateKeeper.updateVehicle(vehicleState);
+
+                    // Отправляем нотификацию водителю
+                    assignRequestNotificationService.sendNotification(AssignRequestNotification.builder()
+                            .serviceRequestId(request.getServiceRequestId())
+                            .sessionId(request.getVehicleId())
+                            .schedule(requestMatching.get().getServingPlan().asList())
+                            .routeScheduled(requestMatching.get().getServingRoute())
+                            .build());
+
+                    orderAssignmentStorage.insertAssignment(OrderAssignment.builder()
+                            .orderId(Long.parseLong(request.getServiceRequestId()))
+                            .sessionId(Long.parseLong(request.getVehicleId()))
+                            .assignedAt(Instant.now())
+                            .build());
+                } finally {
+                    // Снимаем резерв с тс
+                    vehicleReservation.setExpiredAt(Instant.now());
+                    vehicleReservationService.updateReservation(vehicleReservation);
                 }
-
-                var requestMatching = orpSolver.getRequestMatchingForVehicle(serviceRequestMapper.mapServiceDtoToRequest(serviceRequest), vehicleState.getId());
-
-                if (requestMatching.isEmpty()) {
-                    transactionStatus.setRollbackOnly();
-                    log.info("cannot assign request " + request + " as vehicle unable to serve request");
-                    handleVehicleOutOfServiceZone(request);
-                    return;
-                }
-
-                routeCache.updateRouteCacheBySessionId(requestMatching.get().getServingVehicleId(), requestMatching.get().getServingRoute());
-                serviceRequestService.updateServingSessionId(serviceRequest.getRequestId(), request.getVehicleId());
-                serviceRequestService.updateRequestStatus(serviceRequest.getRequestId(), OrderStatus.ACCEPTED);
-
-                vehicleState.setStatus(VehicleStatus.SERVING);
-                vehicleState.setSchedule(requestMatching.get().getServingPlan());
-
-                // Обновляем состояние тс
-                stateKeeper.updateVehicle(vehicleState);
-
-                // Отправляем нотификацию водителю
-                assignRequestNotificationService.sendNotification(AssignRequestNotification.builder()
-                        .serviceRequestId(request.getServiceRequestId())
-                        .sessionId(request.getVehicleId())
-                        .schedule(requestMatching.get().getServingPlan().asList())
-                        .routeScheduled(requestMatching.get().getServingRoute())
-                        .build());
-
-                // Снимаем резерв с тс
-                vehicleReservation.setExpiredAt(Instant.now());
-                vehicleReservationService.updateReservation(vehicleReservation);
-
-                orderAssignmentStorage.insertAssignment(OrderAssignment.builder()
-                        .orderId(Long.parseLong(request.getServiceRequestId()))
-                        .sessionId(Long.parseLong(request.getVehicleId()))
-                        .assignedAt(Instant.now())
-                        .build());
             });
         } catch (Exception e) {
             // TODO записать причину отказа
