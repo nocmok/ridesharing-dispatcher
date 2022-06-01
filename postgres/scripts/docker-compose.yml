@@ -12,6 +12,8 @@ services:
       - '5432:5432'
     networks:
       - orp-network
+    volumes:
+      - ./all-dump.sql:/docker-entrypoint-initdb.d/all-dump.sql
 
 networks:
   orp-network:

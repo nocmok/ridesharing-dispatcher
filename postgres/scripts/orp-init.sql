@@ -3,21 +3,12 @@ create sequence if not exists reservation_id_seq increment by 1 minvalue 1 no ma
 create sequence if not exists orp_output_outbox_seq increment by 1 minvalue 1 no maxvalue start 1;
 create sequence if not exists request_id_seq increment by 1 minvalue 1 no maxvalue start 1;
 
--- FROZEN - сессия больше не может принимать запросы, так как истекла.
--- Из состояния FROZEN сессия может перейти только в состояние CLOSED, когда выполнит текущий план
 drop type if exists vehicle_status cascade;
 create type vehicle_status as enum ('PENDING', 'SERVING', 'FROZEN', 'CLOSED');
 
 drop type if exists schedule_node_kind cascade;
 create type schedule_node_kind as enum ('PICKUP', 'DROPOFF');
 
--- SERVICE_PENDING - запрос отправлен, но вердикт по нему не известен
--- SERVICE_DENIED - запрос не был никем принят и отклонен
--- ACCEPTED - заказ был успешно принят
--- PICKUP_PENDING - исполнитель ожидает посадки клиента
--- SERVING - заказ в процессе выполнения
--- SERVED - заказ выполнен
--- CANCELLED - заказ отменен после того как был принят
 drop type if exists service_request_status cascade;
 create type service_request_status as enum ('SERVICE_PENDING', 'SERVICE_DENIED', 'ACCEPTED', 'PICKUP_PENDING', 'SERVING', 'SERVED', 'CANCELLED');
 
@@ -158,3 +149,4 @@ create table session_status_log
 
     primary key(session_id, updated_at)
 );
+
