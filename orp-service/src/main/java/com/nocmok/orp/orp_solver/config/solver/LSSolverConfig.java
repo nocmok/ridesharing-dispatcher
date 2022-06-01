@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class LSSolverConfig {
 
-    @Bean
+//    @Bean
     @Autowired
     public LSSolver lsSolver(SpatialGraphMetadataStorage graphMetadataStorage,
                              SpatialGraphObjectsStorage graphObjectsStorage,

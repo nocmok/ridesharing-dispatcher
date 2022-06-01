@@ -17,7 +17,7 @@ public class KTSolverConfig {
     @Value("${kt_solver.max_allowed_kinetic_tree_size:32}")
     private Integer maxAllowedKineticTreeSize;
 
-//    @Bean
+    @Bean
     @Autowired
     public KTSolver ktSolver(SpatialGraphMetadataStorage graphMetadataStorage,
                              SpatialGraphObjectsStorage graphObjectsStorage,
