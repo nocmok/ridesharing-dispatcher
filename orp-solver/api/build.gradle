@@ -28,3 +28,7 @@ dependencyManagement {
 test {
     useJUnitPlatform()
 }
+
+jar {
+    archiveName("solver_api.jar")
+}

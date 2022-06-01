@@ -30,3 +30,7 @@ dependencyManagement {
         mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
     }
 }
+
+jar {
+    archiveName("ls.jar")
+}
