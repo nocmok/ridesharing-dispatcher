@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  orp_dashboard:
+    image: nyusafonov/orp_dashboard:latest
+    container_name: orp-dashboard
+    ports:
+      - "3000:3000"
+    networks:
+      - orp-network
+networks:
+  orp-network:
+    name: orp-network
+    driver: bridge
