@@ -14,4 +14,9 @@ public interface OrpSolver {
     List<RequestMatching> getTopKCandidateVehicles(Request request, int kCandidates);
 
     Optional<RequestMatching> getRequestMatchingForVehicle(Request request, String vehicleId);
+
+    /**
+     * Возвращает Optional.empty() если метод завершился корректно, но план не поменялся
+     */
+    Optional<RequestCancellation> cancelRequest(Request request, String vehicleId);
 }

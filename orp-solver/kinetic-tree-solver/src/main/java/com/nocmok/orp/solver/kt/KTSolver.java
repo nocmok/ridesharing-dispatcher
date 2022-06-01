@@ -8,10 +8,13 @@ import com.nocmok.orp.graph.api.ShortestRouteSolver;
 import com.nocmok.orp.graph.api.SpatialGraphMetadataStorage;
 import com.nocmok.orp.graph.api.SpatialGraphObject;
 import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
+import com.nocmok.orp.solver.api.EmptySchedule;
 import com.nocmok.orp.solver.api.OrpSolver;
 import com.nocmok.orp.solver.api.Request;
+import com.nocmok.orp.solver.api.RequestCancellation;
 import com.nocmok.orp.solver.api.RequestMatching;
 import com.nocmok.orp.solver.api.RouteNode;
+import com.nocmok.orp.solver.api.Schedule;
 import com.nocmok.orp.solver.api.ScheduleEntry;
 import com.nocmok.orp.solver.api.ScheduleEntryKind;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
@@ -23,6 +26,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -214,7 +218,7 @@ public class KTSolver implements OrpSolver {
         }
 
         var checkpoints = new ArrayList<String>();
-        checkpoints.add(vehicle.getRoadSegment().getEndNode().getId());
+        checkpoints.add(vehicle.getRoadSegment().getStartNode().getId());
         checkpoints.add(request.getOriginNodeId());
         checkpoints.add(request.getDestinationNodeId());
         var bestRoute = getRouteToCompleteSchedule(checkpoints);
@@ -332,9 +336,9 @@ public class KTSolver implements OrpSolver {
             return Optional.empty();
         }
 
-        var routeToCompleteBestAugmentedSchedule = getRouteToCompleteSchedule(bestAugmentedSchedule.stream()
-                .map(ScheduleEntry::getNodeId)
-                .collect(Collectors.toList()));
+        var routeToCompleteBestAugmentedSchedule =
+                getRouteToCompleteSchedule(Stream.concat(Stream.of(vehicle.getRoadSegment().getStartNode().getId()), bestAugmentedSchedule.stream()
+                        .map(ScheduleEntry::getNodeId)).collect(Collectors.toList()));
 
         var schedulesTree = kineticTree.allPermutations();
 
@@ -406,5 +410,120 @@ public class KTSolver implements OrpSolver {
             throw new IllegalArgumentException("vehicle with id " + vehicleId + ", does not exist in graph index");
         }
         return getRequestMatchingForVehicleInternal(enrichRequestWithGeoData(request), extendedVehicle.get());
+    }
+
+    private Schedule listScheduleAsInternalSchedule(List<ScheduleEntry> listSchedule, ExtendedVehicle vehicle) {
+        if (listSchedule == null || listSchedule.isEmpty()) {
+            return new EmptySchedule();
+        }
+        var kineticTree = new KineticTree<ScheduleEntry, ScheduleKTNode>(ScheduleKTNode::new,
+                new KineticTree.Validator<ScheduleEntry, ScheduleKTNode>() {
+                    @Override public boolean validate(ScheduleKTNode parent, ScheduleKTNode child) {
+                        if (child.value().getKind() == ScheduleEntryKind.PICKUP && child.value().getLoad() > child.residualCapacityBeforeEntry()) {
+                            return false;
+                        }
+                        return child.bestEntryTime().toEpochMilli() <= child.value().getDeadline().toEpochMilli();
+                    }
+
+                    @Override public boolean validate(ScheduleKTNode tree) {
+                        if (tree.value().getKind() == ScheduleEntryKind.PICKUP && tree.value().getLoad() > tree.residualCapacityBeforeEntry()) {
+                            return false;
+                        }
+                        return tree.bestEntryTime().toEpochMilli() <= tree.value().getDeadline().toEpochMilli();
+                    }
+                }, new KineticTree.Aggregator<ScheduleEntry, ScheduleKTNode>() {
+
+            @Override public void aggregate(ScheduleKTNode parent, ScheduleKTNode child) {
+                if (parent.value().getKind() == ScheduleEntryKind.PICKUP) {
+                    child.residualCapacityBeforeEntry(parent.residualCapacityBeforeEntry() - parent.value().getLoad());
+                } else if (parent.value.getKind() == ScheduleEntryKind.DROPOFF) {
+                    child.residualCapacityBeforeEntry(parent.residualCapacityBeforeEntry() + parent.value().getLoad());
+                } else {
+                    throw new UnsupportedOperationException("unknown schedule checkpoint kind " + child.value().getKind());
+                }
+                double timeBetweenCheckpoints =
+                        shortestRouteSolver.getShortestRoute(parent.value().getNodeId(), child.value().getNodeId()).getRouteCost();
+                child.bestEntryTime(parent.bestEntryTime().plusSeconds((long) timeBetweenCheckpoints));
+            }
+
+            @Override public void aggregate(ScheduleKTNode tree) {
+                tree.residualCapacityBeforeEntry(vehicle.getResidualCapacity());
+                // время на текущей вершине тс + время до контрольной точки
+                double timeOnCurrentRoad = (1 - vehicle.getProgressOnRoadSegment()) * vehicle.getRoadSegment().getCost();
+                double timeToCheckpoint =
+                        shortestRouteSolver.getShortestRoute(vehicle.getRoadSegment().getEndNode().getId(), tree.value().getNodeId()).getRouteCost();
+                tree.bestEntryTime(Instant.now().plusSeconds((long) (timeOnCurrentRoad + timeToCheckpoint)));
+            }
+        });
+
+        // разбить лист на пары по айдишнику заказа
+        var scheduleEntries = listSchedule.stream().collect(Collectors.groupingBy(ScheduleEntry::getOrderId));
+        scheduleEntries.forEach((orderId, entries) -> {
+            if (entries.size() == 1) {
+                kineticTree.insert(entries.get(0));
+            } else if (entries.size() == 2) {
+                var pickup = entries.stream()
+                        .filter(entry -> entry.getKind() == ScheduleEntryKind.PICKUP)
+                        .findAny().orElseThrow(() -> new IllegalStateException("pickup schedule entry expected but cannot be found"));
+
+                var dropOff = entries.stream()
+                        .filter(entry -> entry.getKind() == ScheduleEntryKind.DROPOFF)
+                        .findAny().orElseThrow(() -> new IllegalStateException("drop off schedule entry expected but cannot be found"));
+
+                kineticTree.insert(pickup, dropOff);
+            } else {
+                throw new IllegalStateException("more than one schedule entries with id " + orderId + " found");
+            }
+        });
+
+        var bestSchedule = kineticTree.minPermutation((a, b) -> {
+            if (a.size() != b.size()) {
+                throw new IllegalArgumentException("permutation sizes mismatched");
+            }
+            if (a.isEmpty()) {
+                return 0;
+            }
+            return Long.compare(a.get(a.size() - 1).bestEntryTime().toEpochMilli(), b.get(b.size() - 1).bestEntryTime().toEpochMilli());
+        }).orElseThrow(() -> new IllegalStateException("kinetic tree not expected to be empty"));
+
+        return new TreeSchedule(bestSchedule, kineticTree.allPermutations());
+    }
+
+    private Optional<RequestCancellation> cancelRequestInternal(Request request, ExtendedVehicle vehicle) {
+        var newScheduleEntries = vehicle.getSchedule().asList().stream()
+                .filter(scheduleEntry -> !Objects.equals(scheduleEntry.getOrderId(), request.getRequestId()))
+                .collect(Collectors.toList());
+
+        var newSchedule = listScheduleAsInternalSchedule(newScheduleEntries, vehicle);
+
+        var newRouteCheckpoints = Stream.concat(
+                Stream.of(vehicle.getRoadSegment().getStartNode().getId()),
+                newSchedule.asList().stream().map(ScheduleEntry::getNodeId)).collect(Collectors.toList());
+
+        var newRoute = getRouteToCompleteSchedule(newRouteCheckpoints).getRoute().stream()
+                .map(this::mapNodeToRouteNode)
+                .collect(Collectors.toList());
+
+        return Optional.of(new RequestCancellation(newSchedule, newRoute));
+    }
+
+    private boolean scheduleContainsRequest(Schedule schedule, Request request) {
+        return schedule.asList().stream()
+                .map(ScheduleEntry::getOrderId)
+                .anyMatch(request.getRequestId()::equals);
+    }
+
+    @Override public Optional<RequestCancellation> cancelRequest(Request request, String vehicleId) {
+        var vehicle = stateKeeper.getActiveVehiclesByIdsForUpdate(List.of(vehicleId)).stream().findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("vehicle with id " + vehicleId + " does not exist"));
+
+        if (!scheduleContainsRequest(vehicle.getSchedule(), request)) {
+            return Optional.empty();
+        }
+
+        var extendedVehicle = enrichVehicleWithGeoData(vehicle).orElseThrow(
+                () -> new IllegalArgumentException("vehicle with id " + vehicleId + ", does not present in graph index"));
+
+        return cancelRequestInternal(request, extendedVehicle);
     }
 }

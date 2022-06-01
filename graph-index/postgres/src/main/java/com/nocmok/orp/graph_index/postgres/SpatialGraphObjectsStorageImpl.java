@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -83,9 +84,13 @@ public class SpatialGraphObjectsStorageImpl implements SpatialGraphObjectsStorag
     }
 
     private List<SpatialGraphObject> getObjectsByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Collections.emptyList();
+        }
         var params = new HashMap<String, Object>();
         params.put("ids", ids);
-        return jdbcTemplate.query(" select * from graph_object where object_id in (:ids) ", params, this::mapResultSetToGraphObject);
+        return jdbcTemplate.query(" select * from graph_object where object_id in (:ids) ",
+                params, this::mapResultSetToGraphObject);
     }
 
     @Override public List<SpatialGraphObject> getNeighborhood(String nodeId, double radius) {

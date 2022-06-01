@@ -113,22 +113,7 @@ public class SessionManagementServiceImpl implements SessionManagementService {
                 .collect(Collectors.toList());
     }
 
-    private OrderStatus mapInternalOrderStatusToKafkaMessageOrderStatus(RequestStatus orderStatus) {
-        switch (orderStatus) {
-            case SERVING:
-                return OrderStatus.SERVING;
-            case SERVED:
-                return OrderStatus.SERVED;
-            case DENIED:
-                return OrderStatus.DENIED;
-            case SERVING_DENIED:
-                return OrderStatus.SERVING_DENIED;
-            default:
-                throw new IllegalArgumentException("unknown order status " + orderStatus);
-        }
-    }
-
-    @Override public void updateOrderStatus(String sessionId, String orderId, RequestStatus updatedStatus) {
+    @Override public void updateOrderStatus(String sessionId, String orderId, OrderStatus updatedStatus) {
         kafkaTemplate.send(new ProducerRecord<>(
                 "orp.input",
                 null,
@@ -136,7 +121,7 @@ public class SessionManagementServiceImpl implements SessionManagementService {
                 UpdateOrderStatusMessage.builder()
                         .sessionId(sessionId)
                         .orderId(orderId)
-                        .updatedStatus(mapInternalOrderStatusToKafkaMessageOrderStatus(updatedStatus))
+                        .updatedStatus(updatedStatus)
                         .build(),
                 List.of(new RecordHeader("__TypeId__", UpdateOrderStatusMessage.class.getName().getBytes(StandardCharsets.UTF_8)))
         ));

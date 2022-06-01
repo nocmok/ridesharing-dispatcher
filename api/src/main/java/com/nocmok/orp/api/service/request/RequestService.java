@@ -15,4 +15,6 @@ public interface RequestService {
     List<ServiceRequest.OrderStatusLogEntry> getOrderStatusLog(String orderId, int page, int entriesPerPage, boolean ascending);
 
     List<ServiceRequest> getOrders(Filter filter);
+
+    void cancelOrder(String orderId);
 }

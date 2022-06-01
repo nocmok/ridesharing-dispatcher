@@ -18,5 +18,5 @@ public enum RequestStatus {
      * Запрос отклонен в процессе выполнения (Запрос был в состоянии SERVING)
      */
     @JsonProperty("SERVING_DENIED")
-    SERVING_DENIED;
+    SERVING_DENIED
 }
