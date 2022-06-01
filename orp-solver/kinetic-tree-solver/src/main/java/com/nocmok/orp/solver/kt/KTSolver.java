@@ -39,20 +39,20 @@ public class KTSolver implements OrpSolver {
     private final ShortestRouteSolver shortestRouteSolver;
     private final StateKeeper<? extends VehicleState> stateKeeper;
     private final RoadProgressStrategy roadProgressStrategy;
+    private final Integer kineticTreeSizeThreshold;
+    private final Integer candidatesFetchThreshold;
 
-    private Integer kineticTreeSizeThreshold;
-
-    public KTSolver(SpatialGraphMetadataStorage graphMetadataStorage,
-                    SpatialGraphObjectsStorage graphObjectsStorage,
+    public KTSolver(SpatialGraphMetadataStorage graphMetadataStorage, SpatialGraphObjectsStorage graphObjectsStorage,
                     ShortestRouteSolver shortestRouteSolver,
-                    StateKeeper<? extends VehicleState> stateKeeper,
-                    Integer kineticTreeSizeThreshold) {
+                    StateKeeper<? extends VehicleState> stateKeeper, Integer kineticTreeSizeThreshold,
+                    Integer candidatesFetchThreshold) {
         this.graphMetadataStorage = graphMetadataStorage;
         this.graphObjectsStorage = graphObjectsStorage;
         this.shortestRouteSolver = shortestRouteSolver;
         this.stateKeeper = stateKeeper;
         this.roadProgressStrategy = new DumbRoadProgressStrategy();
         this.kineticTreeSizeThreshold = kineticTreeSizeThreshold;
+        this.candidatesFetchThreshold = candidatesFetchThreshold;
     }
 
     private Double getVehicleProgressOnCurrentRoad(SpatialGraphObject vehicle) {
@@ -126,6 +126,7 @@ public class KTSolver implements OrpSolver {
         List<String> filteredVehiclesId = graphObjectsStorage
                 .getNeighborhood(request.getPickupRoadSegment().getStartNode().getId(), timeReserveSeconds - timeOnPickupRoadSegment)
                 .stream()
+                .limit(candidatesFetchThreshold)
                 .map(SpatialGraphObject::getId)
                 .collect(Collectors.toList());
 

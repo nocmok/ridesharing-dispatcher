@@ -41,16 +41,19 @@ public class LSSolver implements OrpSolver {
     private final ShortestRouteSolver shortestRouteSolver;
     private final StateKeeper<? extends VehicleState> stateKeeper;
     private final RoadProgressStrategy roadProgressStrategy;
+    private final Integer candidatesToFetchThreshold;
 
     public LSSolver(SpatialGraphMetadataStorage graphMetadataStorage,
                     SpatialGraphObjectsStorage graphObjectsStorage,
                     ShortestRouteSolver shortestRouteSolver,
-                    StateKeeper<? extends VehicleState> stateKeeper) {
+                    StateKeeper<? extends VehicleState> stateKeeper,
+                    Integer candidatesToFetchThreshold) {
         this.graphMetadataStorage = graphMetadataStorage;
         this.graphObjectsStorage = graphObjectsStorage;
         this.shortestRouteSolver = shortestRouteSolver;
         this.stateKeeper = stateKeeper;
         this.roadProgressStrategy = new DumbRoadProgressStrategy();
+        this.candidatesToFetchThreshold = 10;
     }
 
     private Double getVehicleProgressOnCurrentRoad(SpatialGraphObject vehicle) {
@@ -124,6 +127,7 @@ public class LSSolver implements OrpSolver {
         List<String> filteredVehiclesId = graphObjectsStorage
                 .getNeighborhood(request.getPickupRoadSegment().getStartNode().getId(), timeReserveSeconds - timeOnPickupRoadSegment)
                 .stream()
+                .limit(candidatesToFetchThreshold)
                 .map(SpatialGraphObject::getId)
                 .collect(Collectors.toList());
 

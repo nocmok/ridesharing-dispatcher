@@ -17,6 +17,9 @@ public class KTSolverConfig {
     @Value("${kt_solver.max_allowed_kinetic_tree_size:32}")
     private Integer maxAllowedKineticTreeSize;
 
+    @Value("${kt_solver.max_candidates_to_check:10}")
+    private Integer maxCandidatesToCheck;
+
     @Bean
     @Autowired
     public KTSolver ktSolver(SpatialGraphMetadataStorage graphMetadataStorage,
@@ -24,6 +27,6 @@ public class KTSolverConfig {
                              ShortestRouteSolver shortestRouteSolver,
                              StateKeeper<?> stateKeeper) {
         return new KTSolver(graphMetadataStorage, graphObjectsStorage, new CachingShortestRouteSolver(shortestRouteSolver), stateKeeper,
-                maxAllowedKineticTreeSize);
+                maxAllowedKineticTreeSize, maxCandidatesToCheck);
     }
 }
