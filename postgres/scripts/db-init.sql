@@ -36,6 +36,12 @@ create table vehicle_session
     terminated_at timestamp with time zone
 );
 
+drop index if exists idx_vese_stat cascade;
+create index idx_vese_stat on vehicle_session(started_at);
+
+drop index if exists idx_vese_stat cascade;
+create index idx_vese_teat on vehicle_session(terminated_at);
+
 drop table if exists service_request cascade;
 create table service_request
 (
@@ -56,6 +62,15 @@ create table service_request
     status service_request_status,
     serving_session_id bigint
 );
+
+drop index if exists idx_sere_reat cascade;
+create index idx_sere_reat on service_request(requested_at);
+
+drop index if exists idx_sere_coat cascade;
+create index idx_sere_coat on service_request(completed_at);
+
+drop index if exists idx_sere_seseid cascade;
+create index idx_sere_seseid on service_request(serving_session_id);
 
 drop table if exists session_route_cache cascade;
 create table session_route_cache
