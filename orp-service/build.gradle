@@ -5,14 +5,12 @@ plugins {
 }
 
 group = 'com.nocmok.orp'
-version = '0.0.1-SNAPSHOT'
+version = '1'
 sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
 }
-
-def grpcVersion = '1.45.1'
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
@@ -26,16 +24,11 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.22'
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-	implementation "io.grpc:grpc-netty:${grpcVersion}"
-	implementation "io.grpc:grpc-protobuf:${grpcVersion}"
-	implementation "io.grpc:grpc-stub:${grpcVersion}"
-
 	implementation project(':orp-solver:api')
 	implementation project(':state-keeper:api')
 	implementation project(':postgres')
 	implementation project(':state-keeper:postgres')
 
-//	implementation project(':graph-index:mem-stub:client')
 	implementation project(':graph-index:postgres')
 
 	implementation project(':orp-solver:lazy-search-solver')
@@ -61,4 +54,8 @@ configurations.implementation {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+bootJar {
+	archiveName = "dispatcher.jar"
 }

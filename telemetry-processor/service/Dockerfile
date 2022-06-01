@@ -1,7 +1,7 @@
 FROM bellsoft/liberica-openjdk-alpine:11.0.5
 
-COPY build/libs/service-0.0.1-SNAPSHOT.jar /opt/telemetry-processor/service.jar
+COPY build/libs/telemetry.jar /opt/app/telemetry.jar
 
-WORKDIR /opt/telemetry-processor
+WORKDIR /opt/app
 
-CMD java -jar $JVM_OPTS service.jar
+CMD java -jar $JVM_OPTS telemetry.jar

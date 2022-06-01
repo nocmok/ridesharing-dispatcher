@@ -1,7 +1,7 @@
 FROM bellsoft/liberica-openjdk-alpine:11.0.5
 
-COPY build/libs/notifier-0.0.1.jar /opt/orp-notifier/service.jar
+COPY build/libs/notifier.jar /opt/app/notifier.jar
 
-WORKDIR /opt/orp-notifier
+WORKDIR /opt/app
 
-CMD java -jar $JVM_OPTS service.jar
+CMD java -jar $JVM_OPTS notifier.jar

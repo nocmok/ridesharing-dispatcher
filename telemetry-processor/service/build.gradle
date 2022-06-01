@@ -12,8 +12,6 @@ repositories {
     mavenCentral()
 }
 
-def grpcVersion = '1.45.1'
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.kafka:spring-kafka'
@@ -26,10 +24,6 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
     implementation 'org.postgresql:postgresql:42.3.2'
-
-    implementation "io.grpc:grpc-netty:${grpcVersion}"
-    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
-    implementation "io.grpc:grpc-stub:${grpcVersion}"
 
     implementation project(':graph-index:postgres')
     implementation project(':kafka')
@@ -50,4 +44,8 @@ configurations.implementation {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+bootJar {
+    archiveName = "telemetry.jar"
 }

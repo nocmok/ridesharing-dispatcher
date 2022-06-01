@@ -42,3 +42,7 @@ tasks.withType(org.gradle.jvm.tasks.Jar) {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+jar {
+    archiveName("state.jar")
+}

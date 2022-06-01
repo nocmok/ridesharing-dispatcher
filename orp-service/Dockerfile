@@ -1,7 +1,7 @@
 FROM bellsoft/liberica-openjdk-alpine:11.0.5
 
-COPY build/libs/orp-service-0.0.1-SNAPSHOT.jar /opt/orp-dispatcher/service.jar
+COPY build/libs/dispatcher.jar /opt/app/dispatcher.jar
 
-WORKDIR /opt/orp-dispatcher
+WORKDIR /opt/app
 
-CMD java -jar $JVM_OPTS service.jar
+CMD java -jar $JVM_OPTS dispatcher.jar
