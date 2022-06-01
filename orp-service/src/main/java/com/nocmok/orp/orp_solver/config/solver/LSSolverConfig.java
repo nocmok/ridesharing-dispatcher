@@ -7,12 +7,13 @@ import com.nocmok.orp.orp_solver.tools.CachingShortestRouteSolver;
 import com.nocmok.orp.solver.ls.LSSolver;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class LSSolverConfig {
 
-    //    @Bean
+    @Bean
     @Autowired
     public LSSolver lsSolver(SpatialGraphMetadataStorage graphMetadataStorage,
                              SpatialGraphObjectsStorage graphObjectsStorage,

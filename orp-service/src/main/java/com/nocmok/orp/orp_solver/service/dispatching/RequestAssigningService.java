@@ -4,7 +4,7 @@ import com.nocmok.orp.kafka.orp_output.RequestAssignmentFailedNotification;
 import com.nocmok.orp.orp_solver.service.dispatching.dto.AssignRequest;
 import com.nocmok.orp.orp_solver.service.dispatching.dto.VehicleReservation;
 import com.nocmok.orp.orp_solver.service.dispatching.mapper.ServiceRequestMapper;
-import com.nocmok.orp.orp_solver.service.notification.AssignRequestNotificationService;
+import com.nocmok.orp.orp_solver.service.notification.NotificationService;
 import com.nocmok.orp.orp_solver.service.notification.dto.AssignRequestNotification;
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageService;
 import com.nocmok.orp.orp_solver.service.route_cache.RouteCache;
@@ -34,7 +34,7 @@ public class RequestAssigningService {
     private TransactionTemplate transactionTemplate;
     private ServiceRequestStorageService serviceRequestService;
     private VehicleReservationService vehicleReservationService;
-    private AssignRequestNotificationService assignRequestNotificationService;
+    private NotificationService assignRequestNotificationService;
     private ServiceRequestMapper serviceRequestMapper;
     private RouteCache routeCache;
     private OrderAssignmentStorage orderAssignmentStorage;
@@ -43,7 +43,7 @@ public class RequestAssigningService {
     public RequestAssigningService(OrpSolver orpSolver, StateKeeper<?> stateKeeper, TransactionTemplate transactionTemplate,
                                    ServiceRequestStorageService serviceRequestService,
                                    VehicleReservationService vehicleReservationService,
-                                   AssignRequestNotificationService assignRequestNotificationService,
+                                   NotificationService assignRequestNotificationService,
                                    ServiceRequestMapper serviceRequestMapper, RouteCache routeCache,
                                    OrderAssignmentStorage orderAssignmentStorage) {
         this.orpSolver = orpSolver;

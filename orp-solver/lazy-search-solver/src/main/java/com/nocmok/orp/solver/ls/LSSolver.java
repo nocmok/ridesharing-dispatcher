@@ -10,8 +10,10 @@ import com.nocmok.orp.graph.api.SpatialGraphObject;
 import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
 import com.nocmok.orp.solver.api.OrpSolver;
 import com.nocmok.orp.solver.api.Request;
+import com.nocmok.orp.solver.api.RequestCancellation;
 import com.nocmok.orp.solver.api.RequestMatching;
 import com.nocmok.orp.solver.api.RouteNode;
+import com.nocmok.orp.solver.api.Schedule;
 import com.nocmok.orp.solver.api.ScheduleEntry;
 import com.nocmok.orp.solver.api.ScheduleEntryKind;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -387,5 +390,42 @@ public class LSSolver implements OrpSolver {
             throw new IllegalArgumentException("vehicle with id " + vehicleId + ", does not exist in graph index");
         }
         return getRequestMatchingForVehicleInternal(enrichRequestWithGeoData(request), extendedVehicle.get());
+    }
+
+    private Optional<RequestCancellation> cancelRequestInternal(Request request, ExtendedVehicle vehicle) {
+        var newSchedule = vehicle.getSchedule().asList().stream()
+                .filter(scheduleEntry -> !Objects.equals(scheduleEntry.getOrderId(), request.getRequestId()))
+                .collect(Collectors.toList());
+
+        var newRouteCheckpoints = Stream.concat(
+                Stream.of(vehicle.getRoadSegment().getStartNode().getId()),
+                newSchedule.stream().map(ScheduleEntry::getNodeId)).collect(Collectors.toList());
+
+        var newRoute = getRouteToCompleteSchedule(newRouteCheckpoints).getRoute().stream()
+                .map(this::mapNodeToRouteNode)
+                .collect(Collectors.toList());
+
+        return Optional.of(new RequestCancellation(new ListSchedule(newSchedule), newRoute));
+    }
+
+    private boolean scheduleContainsRequest(Schedule schedule, Request request) {
+        return schedule.asList().stream()
+                .map(ScheduleEntry::getOrderId)
+                .anyMatch(request.getRequestId()::equals);
+    }
+
+
+    @Override public Optional<RequestCancellation> cancelRequest(Request request, String vehicleId) {
+        var vehicle = stateKeeper.getActiveVehiclesByIdsForUpdate(List.of(vehicleId)).stream().findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("vehicle with id " + vehicleId + " does not exist"));
+
+        if (!scheduleContainsRequest(vehicle.getSchedule(), request)) {
+            return Optional.empty();
+        }
+
+        var extendedVehicle = enrichVehicleWithGeoData(vehicle).orElseThrow(
+                () -> new IllegalArgumentException("vehicle with id " + vehicleId + ", does not present in graph index"));
+
+        return cancelRequestInternal(request, extendedVehicle);
     }
 }

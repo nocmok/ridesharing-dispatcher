@@ -5,6 +5,7 @@ import com.nocmok.orp.graph.api.SpatialGraphMetadataStorage;
 import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
 import com.nocmok.orp.simulator.event_bus.EventBus;
 import com.nocmok.orp.simulator.event_bus.event.RequestAssignConfirmationEvent;
+import com.nocmok.orp.simulator.event_bus.event.RerouteEvent;
 import com.nocmok.orp.simulator.event_bus.event.ServiceRequestEvent;
 import com.nocmok.orp.simulator.event_bus.event.TicTacEvent;
 import com.nocmok.orp.simulator.service.api.DriverApi;
@@ -90,6 +91,7 @@ public class VirtualDriver {
         eventBus.subscribe(TicTacEvent.class, this::onTimePassed);
         eventBus.subscribe(ServiceRequestEvent.class, sessionId, this::onServiceRequest);
         eventBus.subscribe(RequestAssignConfirmationEvent.class, sessionId, this::onRequestAssigningConfirmation);
+        eventBus.subscribe(RerouteEvent.class, sessionId, this::onRerouteEvent);
     }
 
     private void onTimePassed(TicTacEvent event) {
@@ -161,6 +163,47 @@ public class VirtualDriver {
         var schedule = event.getSchedule();
 
         log.info("received request assignment confirmation " + event);
+
+        this.currentRoadTracker = new DefaultCurrentRoadTracker(segmentRoute, currentLatitude, currentLongitude);
+        this.walkStrategy = new FollowScheduleWalk(sessionId, segmentRoute, currentLatitude, currentLongitude);
+        this.scheduleExecutor = new DefaultScheduleExecutor(sessionId, schedule, segmentRoute, currentLatitude, currentLongitude, driverApi);
+    }
+
+    private void onRerouteEvent(RerouteEvent event) {
+        if (!Objects.equals(sessionId, event.getSessionId())) {
+            log.warn("received event with invalid session id. skip ...");
+            return;
+        }
+
+        if(event.getUpdatedSchedule() == null || event.getUpdatedSchedule().isEmpty()) {
+            this.currentRoadTracker = new IdleCurrentRoadTracker(currentRoadSegment);
+            this.walkStrategy = new NoWalk(sessionId, currentLatitude, currentLongitude);
+            this.scheduleExecutor = new IdleScheduleExecutor();
+            return;
+        }
+
+        // Обновить маршрут в генераторе телеметрии
+        if (event.getUpdatedRoute().size() < 2) {
+            log.warn("received invalid route in reroute event");
+            return;
+        }
+        var routeNodeIds = event.getUpdatedRoute().stream()
+                .map(RouteNode::getNodeId)
+                .collect(Collectors.toUnmodifiableList());
+
+        List<Segment> segmentRoute;
+
+        if (routeNodeIds.stream().anyMatch(
+                id -> !Objects.equals(id, currentRoadSegment.getStartNode().getId()) && !Objects.equals(id, currentRoadSegment.getEndNode().getId()))) {
+
+            segmentRoute = graphMetadataStorage.getSegments(
+                    routeNodeIds.subList(0, routeNodeIds.size() - 1),
+                    routeNodeIds.subList(1, routeNodeIds.size()));
+        } else {
+            segmentRoute = List.of(currentRoadSegment);
+        }
+
+        var schedule = event.getUpdatedSchedule();
 
         this.currentRoadTracker = new DefaultCurrentRoadTracker(segmentRoute, currentLatitude, currentLongitude);
         this.walkStrategy = new FollowScheduleWalk(sessionId, segmentRoute, currentLatitude, currentLongitude);

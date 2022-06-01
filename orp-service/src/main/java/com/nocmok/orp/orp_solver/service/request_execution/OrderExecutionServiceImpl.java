@@ -2,6 +2,7 @@ package com.nocmok.orp.orp_solver.service.request_execution;
 
 import com.nocmok.orp.orp_solver.service.request_management.ServiceRequestStorageServiceImpl;
 import com.nocmok.orp.postgres.storage.dto.OrderStatus;
+import com.nocmok.orp.postgres.storage.dto.ServiceRequest;
 import com.nocmok.orp.solver.api.ScheduleEntryKind;
 import com.nocmok.orp.state_keeper.api.StateKeeper;
 import com.nocmok.orp.state_keeper.api.VehicleState;
@@ -43,16 +44,19 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
     private OutOfOrderExecutionHandler outOfOrderExecutionHandler;
     private TransactionTemplate transactionTemplate;
     private ServiceRequestStorageServiceImpl serviceRequestStorageService;
+    private OrderCancellingHandler orderCancellingHandler;
 
     @Autowired
     public OrderExecutionServiceImpl(StateKeeper<?> stateKeeper,
                                      OutOfOrderExecutionHandler outOfOrderExecutionHandler,
                                      TransactionTemplate transactionTemplate,
-                                     ServiceRequestStorageServiceImpl serviceRequestStorageService) {
+                                     ServiceRequestStorageServiceImpl serviceRequestStorageService,
+                                     OrderCancellingHandler orderCancellingHandler) {
         this.stateKeeper = stateKeeper;
         this.outOfOrderExecutionHandler = outOfOrderExecutionHandler;
         this.transactionTemplate = transactionTemplate;
         this.serviceRequestStorageService = serviceRequestStorageService;
+        this.orderCancellingHandler = orderCancellingHandler;
     }
 
     private static boolean isTerminalOrderStatus(OrderStatus orderStatus) {
@@ -115,6 +119,10 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
         return outOfOrderExecutionHandler.handleOutOfOrderExecution(vehicleState, entryToRemove);
     }
 
+    private VehicleState handleCancelStatus(VehicleState vehicleState, ServiceRequest request) {
+        return orderCancellingHandler.handleOrderCancelling(vehicleState, request);
+    }
+
     @Override public void updateOrderStatus(String sessionId, String orderId, OrderStatus updatedStatus) {
         transactionTemplate.executeWithoutResult(status -> {
 
@@ -151,6 +159,8 @@ public class OrderExecutionServiceImpl implements OrderExecutionService {
                 if (updatedSession.getSchedule().empty()) {
                     updatedSession.setStatus(VehicleStatus.PENDING);
                 }
+            } else if(OrderStatus.CANCELLED.equals(updatedStatus)) {
+                updatedSession = handleCancelStatus(session, requestDetails);
             } else {
                 throw new RuntimeException("cannot update to status " + updatedStatus + " as its not implemented yet");
             }

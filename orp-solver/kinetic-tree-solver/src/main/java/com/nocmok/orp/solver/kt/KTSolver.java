@@ -10,6 +10,7 @@ import com.nocmok.orp.graph.api.SpatialGraphObject;
 import com.nocmok.orp.graph.api.SpatialGraphObjectsStorage;
 import com.nocmok.orp.solver.api.OrpSolver;
 import com.nocmok.orp.solver.api.Request;
+import com.nocmok.orp.solver.api.RequestCancellation;
 import com.nocmok.orp.solver.api.RequestMatching;
 import com.nocmok.orp.solver.api.RouteNode;
 import com.nocmok.orp.solver.api.ScheduleEntry;
@@ -406,5 +407,9 @@ public class KTSolver implements OrpSolver {
             throw new IllegalArgumentException("vehicle with id " + vehicleId + ", does not exist in graph index");
         }
         return getRequestMatchingForVehicleInternal(enrichRequestWithGeoData(request), extendedVehicle.get());
+    }
+
+    @Override public Optional<RequestCancellation> cancelRequest(Request request, String vehicleId) {
+        throw new UnsupportedOperationException("not implemented");
     }
 }

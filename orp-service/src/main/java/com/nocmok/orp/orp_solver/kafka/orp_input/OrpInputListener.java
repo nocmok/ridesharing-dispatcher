@@ -67,25 +67,10 @@ public class OrpInputListener {
         requestAssigningService.assignRequest(assignRequestMessageMapper.mapAssignRequestMessageToAssignRequest(message));
     }
 
-    private OrderStatus mapRequestStatusFromMessageToInternalOrderStatus(com.nocmok.orp.kafka.orp_input.OrderStatus orderStatus) {
-        switch (orderStatus) {
-            case SERVING:
-                return OrderStatus.SERVING;
-            case SERVED:
-                return OrderStatus.SERVED;
-            case DENIED:
-                return OrderStatus.SERVICE_DENIED;
-            case SERVING_DENIED:
-                return OrderStatus.CANCELLED;
-            default:
-                throw new IllegalArgumentException("unknown order status" + orderStatus);
-        }
-    }
-
     @KafkaHandler
     public void receiveUpdateOrderStatusMessage(@Payload UpdateOrderStatusMessage message) {
-        orderExecutionService.updateOrderStatus(message.getSessionId(), message.getOrderId(),
-                mapRequestStatusFromMessageToInternalOrderStatus(message.getUpdatedStatus()));
+        log.info("------> RECEIVED {} <-------", message.getUpdatedStatus().name());
+        orderExecutionService.updateOrderStatus(message.getSessionId(), message.getOrderId(), OrderStatus.valueOf(message.getUpdatedStatus().name()));
     }
 
     @KafkaHandler(isDefault = true)
