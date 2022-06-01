@@ -18,6 +18,7 @@ import com.nocmok.orp.simulator.storage.VehicleSessionStorage;
 import com.nocmok.orp.solver.api.RouteNode;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -154,19 +155,60 @@ public class VirtualDriver {
                     routeNodeIds.subList(0, routeNodeIds.size() - 1),
                     routeNodeIds.subList(1, routeNodeIds.size()));
         } else {
-            log.info("------> HERE WE GO AGAIN <------");
             segmentRoute = List.of(currentRoadSegment);
         }
 
-        log.info("segment route {}", segmentRoute);
-
+        segmentRoute = adjustRoute(segmentRoute, currentLatitude, currentLongitude);
         var schedule = event.getSchedule();
-
-        log.info("received request assignment confirmation " + event);
 
         this.currentRoadTracker = new DefaultCurrentRoadTracker(segmentRoute, currentLatitude, currentLongitude);
         this.walkStrategy = new FollowScheduleWalk(sessionId, segmentRoute, currentLatitude, currentLongitude);
         this.scheduleExecutor = new DefaultScheduleExecutor(sessionId, schedule, segmentRoute, currentLatitude, currentLongitude, driverApi);
+    }
+
+    private double distanceFromPointToSegment(double x, double y, double x1, double y1, double x2, double y2) {
+        double A = x - x1;
+        double B = y - y1;
+        double C = x2 - x1;
+        double D = y2 - y1;
+
+        double dot = A * C + B * D;
+        double lenSq = C * C + D * D;
+        double param = -1;
+        if (lenSq != 0) {
+            param = dot / lenSq;
+        }
+
+        double xx, yy;
+
+        if (param < 0) {
+            xx = x1;
+            yy = y1;
+        } else if (param > 1) {
+            xx = x2;
+            yy = y2;
+        } else {
+            xx = x1 + param * C;
+            yy = y1 + param * D;
+        }
+
+        double dx = x - xx;
+        double dy = y - yy;
+
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    private Segment getClosestRoadSegment(List<Segment> segments, double lat, double lon) {
+        return segments.stream().min(Comparator.comparingDouble(segment ->
+                        distanceFromPointToSegment(lat, lon, segment.getStartNode().getLatitude(), segment.getStartNode().getLongitude(),
+                                segment.getEndNode().getLatitude(), segment.getEndNode().getLongitude())))
+                .orElseThrow(() -> new IllegalArgumentException("segments list should not be empty"));
+    }
+
+    private List<Segment> adjustRoute(List<Segment> route, double lat, double lon) {
+        var closestSegment = getClosestRoadSegment(route, lat, lon);
+        var adjustedRoute = route.subList(route.indexOf(closestSegment) + 1, route.size());
+        return adjustedRoute.isEmpty() ? List.of(route.get(route.size() - 1)) : adjustedRoute;
     }
 
     private void onRerouteEvent(RerouteEvent event) {
@@ -175,7 +217,7 @@ public class VirtualDriver {
             return;
         }
 
-        if(event.getUpdatedSchedule() == null || event.getUpdatedSchedule().isEmpty()) {
+        if (event.getUpdatedSchedule() == null || event.getUpdatedSchedule().isEmpty()) {
             this.currentRoadTracker = new IdleCurrentRoadTracker(currentRoadSegment);
             this.walkStrategy = new NoWalk(sessionId, currentLatitude, currentLongitude);
             this.scheduleExecutor = new IdleScheduleExecutor();
@@ -203,6 +245,7 @@ public class VirtualDriver {
             segmentRoute = List.of(currentRoadSegment);
         }
 
+        segmentRoute = adjustRoute(segmentRoute, currentLatitude, currentLongitude);
         var schedule = event.getUpdatedSchedule();
 
         this.currentRoadTracker = new DefaultCurrentRoadTracker(segmentRoute, currentLatitude, currentLongitude);
