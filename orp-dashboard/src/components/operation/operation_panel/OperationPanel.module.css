@@ -1,0 +1,25 @@
+.OperationPanel {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 250px;
+    max-width: 400px;
+    width: 25%;
+    height: 100%;
+    padding: 30px 30px;
+    box-sizing: border-box;
+}
+
+.OperationPanel > * {
+    box-sizing: border-box;
+}
+
+.Title {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: rgba(149, 157, 165, 0.3) 0px 8px 24px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 20px 30px;
+}

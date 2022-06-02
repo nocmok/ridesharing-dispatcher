@@ -1,0 +1,78 @@
+.Wrapper {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    pointer-events: none;
+}
+
+.Title {
+    background-color: white;
+
+    padding: 20px 30px;
+
+    min-width: 250px;
+    max-width: 400px;
+    width: 15%;
+
+    border-radius: 10px;
+
+    font-size: 24px;
+    font-weight: bold;
+
+    color: #7C7C7C;
+
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.SessionsPanelWrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: all;
+}
+
+.SessionsPanel {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+
+    gap: 20px;
+
+    padding-left: 20px;
+    padding-top: 20px;
+
+    min-width: 250px;
+    max-width: 400px;
+    width: 15%;
+}
+
+.SessionsTableWrapper {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    height: 40%;
+    width: 100%;
+
+    pointer-events: all;
+}
+
+.SessionsTable {
+    /*width: 100%;*/
+    height: 100%;
+
+    box-shadow: rgba(149, 157, 165, 0.3) 0px 8px 24px;
+}
+
+.Cloud {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: white;
+    padding: 20px 30px;
+    border-radius: 20px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    width: 100%;
+    box-sizing: border-box;
+}

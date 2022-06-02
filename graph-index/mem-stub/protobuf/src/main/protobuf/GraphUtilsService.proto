@@ -1,0 +1,30 @@
+syntax = "proto3";
+option java_package = "com.nocmok.orp.road_index.mem_stub.server.grpc";
+
+import "GraphApiModels.proto";
+
+service GraphUtilsService {
+  rpc getRoadSegmentsWithinCircleArea(GetRoadSegmentsWithinCircleAreaRequest) returns (GetRoadSegmentsWithinCircleAreaResponse);
+  rpc getClosestRoadSegment(GetClosestRoadSegmentRequest) returns (GetClosestRoadSegmentResponse);
+}
+
+message GetRoadSegmentsWithinCircleAreaRequest {
+  double centerLatitude = 1;
+  double centerLongitude = 2;
+  double radius = 3;
+}
+
+message GetRoadSegmentsWithinCircleAreaResponse {
+  repeated Segment segments = 1;
+}
+
+message GetClosestRoadSegmentRequest {
+  double latitude = 1;
+  double longitude = 2;
+  bool rightHandTraffic = 4;
+}
+
+message GetClosestRoadSegmentResponse {
+  Segment closestSegment = 1;
+}
+

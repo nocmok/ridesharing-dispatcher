@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.10'
+}
+
+group 'com.nocmok'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+}
+
+javafx {
+    if (System.properties.get('os.arch') == 'aarch64') {
+        println "probably running on a sillicon m1, using local jfx sdk: ${System.getenv('JAVAFX_HOME')}"
+        sdk System.getenv('JAVAFX_HOME')
+    } else {
+        version = "17"
+    }
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing']
+}
+
+application {
+//    mainClass = 'com.nocmok.orp.proto.Main'
+    mainClass = 'com.nocmok.orp.proto.TrackGenerator'
+}
+
+test {
+    useJUnitPlatform()
+}

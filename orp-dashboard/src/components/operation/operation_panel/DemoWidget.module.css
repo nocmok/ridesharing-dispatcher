@@ -1,0 +1,27 @@
+.DemoWidget {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    background-color: white;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 20px 30px;
+    border-radius: 20px;
+    box-shadow: rgba(149, 157, 165, 0.3) 0px 8px 24px;
+}
+
+.DemoWidget > * {
+    box-sizing: border-box;
+}
+
+.IconedText {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+.Link {
+    text-decoration: none;
+}

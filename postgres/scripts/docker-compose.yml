@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: 'pgrouting/pgrouting:latest'
+    container_name: 'postgres'
+    environment:
+      POSTGRES_USER: orp
+      POSTGRES_PASSWORD: orp
+      POSTGRES_DB: orp
+    ports:
+      - '5432:5432'
+    networks:
+      - orp-network
+    volumes:
+      - ./all-dump.sql:/docker-entrypoint-initdb.d/all-dump.sql
+
+networks:
+  orp-network:
+    name: orp-network
+    driver: bridge

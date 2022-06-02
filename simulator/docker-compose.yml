@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  simulator:
+    image: nyusafonov/simulator:latest
+    container_name: simulator
+    environment:
+      KAFKA_BOOTSTRAP_ADDRESS: kafka:9092
+      KAFKA_CONSUMER_GROUP: orp_simulator
+      POSTGRES_USERNAME: orp
+      POSTGRES_PASSWORD: orp
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+    networks:
+      - orp-network
+networks:
+  orp-network:
+    name: orp-network
+    driver: bridge

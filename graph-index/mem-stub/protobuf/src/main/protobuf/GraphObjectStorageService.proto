@@ -1,0 +1,48 @@
+syntax = "proto3";
+option java_package = "com.nocmok.orp.road_index.mem_stub.server.grpc";
+
+import "GraphApiModels.proto";
+import "google/protobuf/struct.proto";
+
+service GraphObjectStorageService {
+  rpc getObject(GetObjectRequest) returns (GetObjectResponse);
+  rpc getNeighborhood(GetNeighborhoodRequest) returns (GetNeighborhoodResponse);
+  rpc updateObject(UpdateObjectRequest) returns (UpdateObjectResponse);
+  rpc removeObject(RemoveObjectRequest) returns (RemoveObjectResponse);
+}
+
+message GetObjectRequest {
+  string id = 1;
+}
+
+message GetObjectResponse {
+  oneof graphObject {
+    GraphObject data = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message GetNeighborhoodRequest {
+  string nodeId = 1;
+  double radius = 2;
+}
+
+message GetNeighborhoodResponse {
+  repeated GraphObject neighborhood = 1;
+}
+
+message UpdateObjectRequest {
+  ObjectUpdater objectUpdater = 1;
+}
+
+message UpdateObjectResponse {
+
+}
+
+message RemoveObjectRequest {
+  string objectId = 1;
+}
+
+message RemoveObjectResponse {
+
+}

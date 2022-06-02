@@ -1,0 +1,22 @@
+.Button {
+    font-size: 18px;
+    font-weight: bold;
+    min-height: 50px;
+
+    width: 250px;
+
+    background-color: #1B72E8;
+    color: white;
+
+    border-style: none;
+    border-radius: 20px;
+}
+
+.Button:hover {
+    filter: brightness(95%);
+}
+
+.Button:active {
+    filter: brightness(105%);
+    /*transform: scale(0.98);*/
+}

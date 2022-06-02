@@ -1,0 +1,8 @@
+echo '{"requestId" : 1, "recordedOriginLatitude":-7.4146388E7, "recordedOriginLongitude":4.07683E7,"recordedDestinationLatitude":-7.4147588E7, "recordedDestinationLongitude":4.0769E7,"pickupRoadSegmentStartNodeId":0,"pickupRoadSegmentEndNodeId":1,"dropOffRoadSegmentStartNodeId":1,"dropOffRoadSegmentEndNodeId":5, "requestedAt" : "2022-04-11T12:33:59.217920Z","detourConstraint" : 1.3,"maxPickupDelaySeconds" : 80000,"load" : 1}' |  kcat -P -b localhost:29092 -t orp.input -H __TypeId__=com.nocmok.orp.kafka.orp_input.ServiceRequestMessage
+
+echo '{"serviceRequestId":1,"sessionId":"1","reservationId":1}' |  kcat -P -b localhost:29092 -t orp.input -H __TypeId__=com.nocmok.orp.kafka.orp_input.AssignRequestMessage
+
+
+echo '{"requestId" : 1, "recordedOriginLatitude":55.6702733, "recordedOriginLongitude":37.2815007,"recordedDestinationLatitude":55.66788207814125, "recordedDestinationLongitude":37.28398433213127,"pickupRoadSegmentStartNodeId":903418639,"pickupRoadSegmentEndNodeId":5041062626,"dropOffRoadSegmentStartNodeId":1137814881,"dropOffRoadSegmentEndNodeId":903295633, "requestedAt" : "2022-04-17T19:09:26.517047Z","detourConstraint" : 1.3,"maxPickupDelaySeconds" : 80000,"load" : 1}' |  kcat -P -b localhost:29092 -t orp.input -H __TypeId__=com.nocmok.orp.kafka.orp_input.ServiceRequestMessage
+
+echo '{"sessionId": 127, "orderId": 69, "updatedStatus": "SERVING"}' |  kcat -P -b localhost:29092 -t orp.input -H __TypeId__=com.nocmok.orp.kafka.orp_input.UpdateOrderStatusMessage

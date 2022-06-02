@@ -1,0 +1,1 @@
+kcat -G vehicle_position_actuator -b localhost:29092 orp.telemetry

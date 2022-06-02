@@ -1,0 +1,5 @@
+# Dimacs files
+*.co
+*.gr
+
+*.csv
